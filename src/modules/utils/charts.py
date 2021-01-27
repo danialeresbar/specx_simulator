@@ -69,7 +69,7 @@ class PDFChart(QChart):
         """
         Generates a graph of a Bernoulli PDF (Probability density function) with the respective parameters
         """
-        p = self.parameters.get('Success prob')
+        p = self.parameters.get('success_probability')
         legends = LEGENDS_BERNOULLI
         x_axis = X_AXIS_LABELS_BERNOULLI
         bars = [p, 1-p]

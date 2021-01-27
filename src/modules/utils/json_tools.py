@@ -11,7 +11,7 @@ def save(filepath, data):
             with open(filepath, 'a') as outfile:
                 json.dump(data, outfile, indent=4)
     except Exception as e:
-        print(type(e))
+        print(e)
 
 
 def load(filepath):
@@ -20,4 +20,4 @@ def load(filepath):
             data = json.load(file)
             return data
     except Exception as e:
-        print(type(e))
+        print(e)

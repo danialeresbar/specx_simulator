@@ -1,4 +1,3 @@
-import decimal
 from . import generators as gen
 from . import json_tools
 from .charts import PDFChart
@@ -115,6 +114,15 @@ class Distribution(object):
                 ''',
             parameters=self.parameters
         )
+
+    def serialize_distribution(self):
+        serialized_distribution = {
+            'name': self.name,
+            'kind': self.kind,
+            'parameters': self.parameters,
+        }
+
+        return serialized_distribution
 
     def __str__(self):
         return f'Distribution: {self.name}, type: {self.kind}, parameters: {self.parameters}'
@@ -381,6 +389,15 @@ class Channel(object):
     def set_distribution(self, distribution):
         self.distribution = distribution
 
+    def serialize_channel(self):
+        serialized_channel = {
+            'id': self.id,
+            'frequency': self.frequency,
+            'distribution': self.distribution.serialize_distribution(),
+        }
+
+        return serialized_channel
+
     def __str__(self):
         return f'Channel_id: {self.id}, Frequency: {self.frequency}, {self.distribution}'
 
@@ -418,7 +435,7 @@ class SimulationEnvironment(object):
         data = {
             'id': self.id,
             'timestamp': self.timestamp,
-            'channels': self.channels,
+            'channels': [channel.serialize_channel() for channel in self.channels],
             'settings': self.settings,
         }
         json_tools.save(filepath, data)

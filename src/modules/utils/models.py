@@ -16,7 +16,6 @@ CONTINUOUS_TYPE = 'Continuous'
 
 # ---- Bernoulli Distribution ----
 BERNOULLI = 'Bernoulli'
-SUCCESS_PROB_LABEL = 'Probabilidad\nde exito:'
 SUCCESS_PROB = 0.5
 
 
@@ -81,26 +80,6 @@ WEIBULL = 'Weibull'
 WEIBULL_SHAPE = 7.1476
 WEIBULL_LOC = -0.01445
 WEIBULL_SCALE = 0.58176
-
-
-class Parameter(object):
-    """
-    Class used to represent a parameter of a probability distribution
-    """
-
-    def __init__(self, **kwargs):
-        self.name = kwargs.get('name', 'Nameless')
-        self.label = f'{kwargs.get("label")}-{self.name}'  # "" used instead ' due to context
-        self.value = kwargs.get('value', decimal.Decimal())
-
-    def set_name(self, name):
-        self.name = name
-
-    def set_label(self, label):
-        self.label = label
-
-    def set_value(self, value):
-        self.value = decimal.Decimal(value=value)
 
 
 class Distribution(object):

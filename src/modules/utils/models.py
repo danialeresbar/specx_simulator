@@ -4,10 +4,6 @@ from .charts import PDFChart
 from datetime import datetime
 
 
-# ---- Parameter attributes ----
-PRECISION = 10
-
-
 # ---- Distribution types ----
 DISCRETE_TYPE = 'Discrete'
 CONTINUOUS_TYPE = 'Continuous'
@@ -115,14 +111,12 @@ class Distribution(object):
             parameters=self.parameters
         )
 
-    def serialize_distribution(self):
-        serialized_distribution = {
+    def distribution_as_dict(self):
+        return {
             'name': self.name,
             'kind': self.kind,
             'parameters': self.parameters,
         }
-
-        return serialized_distribution
 
     def __str__(self):
         return f'Distribution: {self.name}, type: {self.kind}, parameters: {self.parameters}'
@@ -378,7 +372,7 @@ class Channel(object):
     def __init__(self, **kwargs):
         self.id = kwargs.get('id', 0)
         self.frequency = kwargs.get('frequency', 0)
-        self.distribution = Distribution()
+        self.distribution = kwargs.get('distribution', Distribution())
 
     def set_id(self, id):
         self.id = id
@@ -389,14 +383,12 @@ class Channel(object):
     def set_distribution(self, distribution):
         self.distribution = distribution
 
-    def serialize_channel(self):
-        serialized_channel = {
+    def channel_as_dict(self):
+        return {
             'id': self.id,
             'frequency': self.frequency,
-            'distribution': self.distribution.serialize_distribution(),
+            'distribution': self.distribution.distribution_as_dict(),
         }
-
-        return serialized_channel
 
     def __str__(self):
         return f'Channel_id: {self.id}, Frequency: {self.frequency}, {self.distribution}'
@@ -404,12 +396,12 @@ class Channel(object):
 
 class SimulationEnvironment(object):
     """
-    Class
+    Class representing an environment for simulating the occupation of some channels in the UHF band
     """
 
     def __init__(self, **kwargs):
         self.id = kwargs.get('id', 'Test id')
-        self.timestamp = datetime.now().strftime("%m-%d-%Y-%H:%M:%S")
+        self.timestamp = kwargs.get('timestamp', datetime.now().strftime("%m-%d-%Y-%H:%M:%S"))
         self.channels = list()
         self.settings = dict()
         self.results = list()
@@ -435,17 +427,33 @@ class SimulationEnvironment(object):
         data = {
             'id': self.id,
             'timestamp': self.timestamp,
-            'channels': [channel.serialize_channel() for channel in self.channels],
+            'channels': [channel.channel_as_dict() for channel in self.channels],
             'settings': self.settings,
         }
         json_tools.save(filepath, data)
 
-    def load_settings(self, filepath):
+    def load_data(self, filepath):
         data = json_tools.load(filepath)
-        self.id = data.get('id', None)
-        self.timestamp = data.get('timestamp', datetime.now().strftime("%m-%d-%Y-%H:%M:%S"))
-        self.channels = data.get('channels', dict())
-        self.settings = data.get('settings', dict())
+        try:
+            self.set_id(data.get('id', None))
+            self.set_timestamp(data.get('timestamp', datetime.now().strftime("%m-%d-%Y-%H:%M:%S")))
+            self.set_settings(data.get('settings', dict()))
+            self.build_channels(data.get('channels', list()))
+            return True
+        except Exception as e:
+            print(e)
+            return False
+
+    def build_channels(self, channels):
+        for channel in channels:
+            distribution_content = channel.get('distribution')
+            new_channel = Channel(
+                id=channel.get('id'),
+                frequency=channel.get('frequency'),
+                distribution=find_distribution(distribution_content.get('name'))()  # Callback implementation
+            )
+            new_channel.distribution.set_parameters(distribution_content.get('parameters', dict()))
+            self.add_or_update_channel(new_channel)
 
     def __str__(self):
         return f'Environment: {self.id}, at the: {self.timestamp}'

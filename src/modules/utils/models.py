@@ -87,6 +87,7 @@ class Distribution(object):
         self.name = kwargs.get('name', 'Nameless')
         self.parameters = kwargs.get('parameters', dict())
         self.kind = kwargs.get('kind', 'Typeless')
+        self.variant = kwargs.get('variant', False)
         self.rv_generator = kwargs.get('rv_generator', None)
         self.chart = PDFChart()
 
@@ -134,6 +135,7 @@ class Bernoulli(Distribution):
                 'success_probability': kwargs.get('success_probability', SUCCESS_PROB),
             },
             kind=DISCRETE_TYPE,
+            variant=False,
             rv_generator=gen.bernoulli
         )
 
@@ -158,6 +160,7 @@ class Beta(Distribution):
                 'scale': kwargs.get('scale', BETA_SCALE),
             },
             kind=CONTINUOUS_TYPE,
+            variant=False,
             rv_generator=gen.beta
         )
 
@@ -181,6 +184,7 @@ class Gamma(Distribution):
                 'scale': kwargs.get('scale', GAMMA_SCALE),
             },
             kind=CONTINUOUS_TYPE,
+            variant=True,
             rv_generator=gen.gamma
         )
 
@@ -203,6 +207,7 @@ class Gumbel(Distribution):
                 'scale': kwargs.get('scale', GUMBEL_SCALE),
             },
             kind=CONTINUOUS_TYPE,
+            variant=False,
             rv_generator=gen.gumbel
         )
 
@@ -225,6 +230,7 @@ class Laplace(Distribution):
                 'scale': kwargs.get('scale', LAPLACE_SCALE),
             },
             kind=CONTINUOUS_TYPE,
+            variant=False,
             rv_generator=gen.laplace
         )
 
@@ -248,6 +254,7 @@ class Lognorm(Distribution):
                 'scale': kwargs.get('scale', LOGNORM_SCALE),
             },
             kind=CONTINUOUS_TYPE,
+            variant=True,
             rv_generator=gen.lognormal
         )
 
@@ -270,6 +277,7 @@ class Norm(Distribution):
                 'scale': kwargs.get('scale', NORM_SCALE),
             },
             kind=CONTINUOUS_TYPE,
+            variant=False,
             rv_generator=gen.normal
         )
 
@@ -292,6 +300,7 @@ class Rayleigh(Distribution):
                 'scale': kwargs.get('scale', RAYLEIGH_SCALE),
             },
             kind=CONTINUOUS_TYPE,
+            variant=True,
             rv_generator=gen.rayleigh
         )
 
@@ -314,6 +323,7 @@ class Uniform(Distribution):
                 'upper_bound': kwargs.get('scale', UNIFORM_SUP),
             },
             kind=CONTINUOUS_TYPE,
+            variant=False,
             rv_generator=gen.uniform
         )
 
@@ -337,6 +347,7 @@ class Weibull(Distribution):
                 'scale': kwargs.get('scale', WEIBULL_SCALE),
             },
             kind=CONTINUOUS_TYPE,
+            variant=True,
             rv_generator=gen.weibull
         )
 

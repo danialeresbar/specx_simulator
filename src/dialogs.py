@@ -89,10 +89,20 @@ class ParametrizationDialog(UiConfigDialog, QtWidgets.QDialog):
             self.__show_params(True, True, True, False)
 
     def plot_chart_preview(self):
+        """
+        Method
+        :return:
+        """
+        updated_values = {name: spbox.value() for name, spbox in zip(self.distribution.parameters.keys(), self.spboxes)}
+        self.distribution.set_parameters(updated_values)
         self.distribution.plot_chart()
         self.pdf_chartview.setChart(self.distribution.chart)
 
     def setup_dialog_components(self):
+        """
+        Method
+        :return:
+        """
         labels = self.distribution.parameters.keys()
         values = self.distribution.parameters.values()
         for index, label in enumerate(labels):

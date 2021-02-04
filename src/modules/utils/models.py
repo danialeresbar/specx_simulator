@@ -1,12 +1,7 @@
-import decimal
 from . import generators as gen
 from . import json_tools
 from .charts import PDFChart
 from datetime import datetime
-
-
-# ---- Parameter attributes ----
-PRECISION = 10
 
 
 # ---- Distribution types ----
@@ -92,6 +87,7 @@ class Distribution(object):
         self.name = kwargs.get('name', 'Nameless')
         self.parameters = kwargs.get('parameters', dict())
         self.kind = kwargs.get('kind', 'Typeless')
+        self.variant = kwargs.get('variant', False)
         self.rv_generator = kwargs.get('rv_generator', None)
         self.chart = PDFChart()
 
@@ -116,6 +112,13 @@ class Distribution(object):
             parameters=self.parameters
         )
 
+    def distribution_as_dict(self):
+        return {
+            'name': self.name,
+            'kind': self.kind,
+            'parameters': self.parameters,
+        }
+
     def __str__(self):
         return f'Distribution: {self.name}, type: {self.kind}, parameters: {self.parameters}'
 
@@ -132,6 +135,7 @@ class Bernoulli(Distribution):
                 'success_probability': kwargs.get('success_probability', SUCCESS_PROB),
             },
             kind=DISCRETE_TYPE,
+            variant=False,
             rv_generator=gen.bernoulli
         )
 
@@ -156,6 +160,7 @@ class Beta(Distribution):
                 'scale': kwargs.get('scale', BETA_SCALE),
             },
             kind=CONTINUOUS_TYPE,
+            variant=False,
             rv_generator=gen.beta
         )
 
@@ -179,6 +184,7 @@ class Gamma(Distribution):
                 'scale': kwargs.get('scale', GAMMA_SCALE),
             },
             kind=CONTINUOUS_TYPE,
+            variant=True,
             rv_generator=gen.gamma
         )
 
@@ -201,6 +207,7 @@ class Gumbel(Distribution):
                 'scale': kwargs.get('scale', GUMBEL_SCALE),
             },
             kind=CONTINUOUS_TYPE,
+            variant=False,
             rv_generator=gen.gumbel
         )
 
@@ -223,6 +230,7 @@ class Laplace(Distribution):
                 'scale': kwargs.get('scale', LAPLACE_SCALE),
             },
             kind=CONTINUOUS_TYPE,
+            variant=False,
             rv_generator=gen.laplace
         )
 
@@ -246,6 +254,7 @@ class Lognorm(Distribution):
                 'scale': kwargs.get('scale', LOGNORM_SCALE),
             },
             kind=CONTINUOUS_TYPE,
+            variant=True,
             rv_generator=gen.lognormal
         )
 
@@ -268,6 +277,7 @@ class Norm(Distribution):
                 'scale': kwargs.get('scale', NORM_SCALE),
             },
             kind=CONTINUOUS_TYPE,
+            variant=False,
             rv_generator=gen.normal
         )
 
@@ -290,6 +300,7 @@ class Rayleigh(Distribution):
                 'scale': kwargs.get('scale', RAYLEIGH_SCALE),
             },
             kind=CONTINUOUS_TYPE,
+            variant=True,
             rv_generator=gen.rayleigh
         )
 
@@ -312,6 +323,7 @@ class Uniform(Distribution):
                 'upper_bound': kwargs.get('scale', UNIFORM_SUP),
             },
             kind=CONTINUOUS_TYPE,
+            variant=False,
             rv_generator=gen.uniform
         )
 
@@ -335,6 +347,7 @@ class Weibull(Distribution):
                 'scale': kwargs.get('scale', WEIBULL_SCALE),
             },
             kind=CONTINUOUS_TYPE,
+            variant=True,
             rv_generator=gen.weibull
         )
 
@@ -370,7 +383,7 @@ class Channel(object):
     def __init__(self, **kwargs):
         self.id = kwargs.get('id', 0)
         self.frequency = kwargs.get('frequency', 0)
-        self.distribution = Distribution()
+        self.distribution = kwargs.get('distribution', Distribution())
 
     def set_id(self, id):
         self.id = id
@@ -381,18 +394,25 @@ class Channel(object):
     def set_distribution(self, distribution):
         self.distribution = distribution
 
+    def channel_as_dict(self):
+        return {
+            'id': self.id,
+            'frequency': self.frequency,
+            'distribution': self.distribution.distribution_as_dict(),
+        }
+
     def __str__(self):
         return f'Channel_id: {self.id}, Frequency: {self.frequency}, {self.distribution}'
 
 
 class SimulationEnvironment(object):
     """
-    Class
+    Class representing an environment for simulating the occupation of some channels in the UHF band
     """
 
     def __init__(self, **kwargs):
         self.id = kwargs.get('id', 'Test id')
-        self.timestamp = datetime.now().strftime("%m-%d-%Y-%H:%M:%S")
+        self.timestamp = kwargs.get('timestamp', datetime.now().strftime("%m-%d-%Y-%H:%M:%S"))
         self.channels = list()
         self.settings = dict()
         self.results = list()
@@ -418,17 +438,33 @@ class SimulationEnvironment(object):
         data = {
             'id': self.id,
             'timestamp': self.timestamp,
-            'channels': self.channels,
+            'channels': [channel.channel_as_dict() for channel in self.channels],
             'settings': self.settings,
         }
         json_tools.save(filepath, data)
 
-    def load_settings(self, filepath):
+    def load_data(self, filepath):
         data = json_tools.load(filepath)
-        self.id = data.get('id', None)
-        self.timestamp = data.get('timestamp', datetime.now().strftime("%m-%d-%Y-%H:%M:%S"))
-        self.channels = data.get('channels', dict())
-        self.settings = data.get('settings', dict())
+        try:
+            self.set_id(data.get('id', None))
+            self.set_timestamp(data.get('timestamp', datetime.now().strftime("%m-%d-%Y-%H:%M:%S")))
+            self.set_settings(data.get('settings', dict()))
+            self.build_channels(data.get('channels', list()))
+            return True
+        except Exception as e:
+            print(e)
+            return False
+
+    def build_channels(self, channels):
+        for channel in channels:
+            distribution_content = channel.get('distribution')
+            new_channel = Channel(
+                id=channel.get('id'),
+                frequency=channel.get('frequency'),
+                distribution=find_distribution(distribution_content.get('name'))()  # Callback implementation
+            )
+            new_channel.distribution.set_parameters(distribution_content.get('parameters', dict()))
+            self.add_or_update_channel(new_channel)
 
     def __str__(self):
         return f'Environment: {self.id}, at the: {self.timestamp}'

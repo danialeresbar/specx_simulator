@@ -18,10 +18,10 @@ USAGE_LABEL = 'usage'
 
 # ---- GUI messages ----
 EXIT_MESSAGE = '¿Are you sure you want to quit?'
-FILE_LOADED = 'Environment settings has been loaded successfully'
-FILE_SAVED = 'Environment settings has been saved successfully'
-LOAD_CONFIG = 'Load environment'
-SAVE_CONFIG = 'Save environment'
+ENVIRONMENT_LOADED_MESSAGE = 'Simulation environment settings has been loaded successfully'
+ENVIRONMENT_SAVED_MESSAGE = 'Simulation environment settings has been saved successfully'
+LOAD_ENVIRONMENT_MESSAGE = 'Load simulation environment'
+SAVE_ENVIRONMENT_MESSAGE = 'Save simulation environment'
 
 
 class SpecxMainWindow(QtWidgets.QMainWindow, UiMainWindow):
@@ -34,7 +34,7 @@ class SpecxMainWindow(QtWidgets.QMainWindow, UiMainWindow):
         self.setupUi(self)  # Build the GUI designed with Qt designer
 
         self.environment = models.SimulationEnvironment(id='test')
-        self.add_channels()
+        self.add_default_environment_channels()
 
         # Menu signals connection
         self.new_action_menu.triggered.connect(self.new_sim)
@@ -45,18 +45,18 @@ class SpecxMainWindow(QtWidgets.QMainWindow, UiMainWindow):
         # Button signals connection
         self.btn_simulator.clicked.connect(self.__start_simulation)
         self.btn_clean.clicked.connect(self.reset_field_values)
-        self.btn_save_file.clicked.connect(self.__save_environment)
-        self.btn_load_file.clicked.connect(self.__load_environment)
+        self.btn_save_file.clicked.connect(self.save_environment)
+        self.btn_load_file.clicked.connect(self.load_environment)
 
         # ComboBox binding to the parametrization window modal
         for box in self.boxes:
             box.activated.connect(self.show_parametrization_modal)
 
-    def add_channels(self):
-        for index in range(len(self.boxes)):
+    def add_default_environment_channels(self):
+        for index, label in enumerate(self.labels):
             channel = models.Channel(
                 id=index,
-                frequency=self.labels[index].text(),
+                frequency=label.text(),
             )
             self.environment.add_or_update_channel(channel)
 
@@ -86,35 +86,16 @@ class SpecxMainWindow(QtWidgets.QMainWindow, UiMainWindow):
     def help(self):
         pass
 
-    # def __load_config(self, channels, parameters):
-    #     """
-    #     Configure the JSON loaded values in the GUI
-    #     """
-    #     self.channels = channels.copy()
-    #     self.parameters = parameters.copy()
-    #     for channel, content in self.channels.items():
-    #         index = content.get('id')
-    #         distribution = content.get('distribution')
-    #         box = self.boxes[index - 1]
-    #         if distribution:
-    #             box.setCurrentText(
-    #                 distribution.get('name', c.BOX_DEFAULT_ITEM)
-    #             )
-    #             self.generators.insert(
-    #                 index - 1,
-    #                 c.GENERATORS.get(box.currentText())
-    #             )
-    #         else:
-    #             box.setCurrentText(c.BOX_DEFAULT_ITEM)
-    #     self.__check_boxes()
-    #     self.energy_flag.setChecked(self.parameters.get(c.ENERGY))
-    #     self.sample_time.setValue(self.parameters.get(c.SAMPLING))
-    #     self.threshold.setValue(self.parameters.get(c.THRESHOLD))
-    #     self.usage_flag.setChecked(self.parameters.get(c.USAGE))
+    def setup_gui_components(self):
+        """
+        Configure the data of the GUI components using the information stored in the simulation environment loaded
+        """
+        pass
 
     def new_sim(self):
         """
-        Delete all current settings in the GUI (Default values are loaded)
+        Delete all current settings in the GUI. Default values are loaded and the data of the former
+        simulation environment is deleted
         """
         self.reset_field_values()
 
@@ -126,12 +107,11 @@ class SpecxMainWindow(QtWidgets.QMainWindow, UiMainWindow):
         distribution_key = self.sender().currentText()
         for channel in self.environment.channels:
             if channel.id == self.boxes.index(self.sender()):
-                channel.distribution = models.find_distribution(distribution_key)()
+                channel.distribution = models.find_distribution(distribution_key)()  # Callback implementation
                 current_channel = channel
 
         modal = ParametrizationDialog(self, distribution=current_channel.distribution)
         modal.exec()
-
         if modal.result() == 1:
             pass
         else:
@@ -149,7 +129,7 @@ class SpecxMainWindow(QtWidgets.QMainWindow, UiMainWindow):
         self.threshold.setValue(DEFAULT_THRESHOLD)
         for box in self.boxes:
             box.setCurrentIndex(-1)
-        self.__check_boxes()
+        self.check_boxes()
 
     def __start_simulation(self):
         """
@@ -158,13 +138,13 @@ class SpecxMainWindow(QtWidgets.QMainWindow, UiMainWindow):
         sim_window = SimulationWindow(self, environment=self.environment)
         sim_window.show()
 
-    def __save_environment(self):
+    def save_environment(self):
         """
         Save the parametrized channels distribution (discrete or continuous) to a JSON file
         """
         filepath, _ = QtWidgets.QFileDialog.getSaveFileName(
             self,
-            'Save environment',
+            SAVE_ENVIRONMENT_MESSAGE,
             '../config',
             'JSON Files (*.json)'
         )
@@ -178,37 +158,34 @@ class SpecxMainWindow(QtWidgets.QMainWindow, UiMainWindow):
             self.environment.save_as_json(filepath)
             QtWidgets.QMessageBox.information(
                 self,
-                'Information',
+                ENVIRONMENT_SAVED_MESSAGE,
                 f'File saved at {filepath}',
                 QtWidgets.QMessageBox.Ok,
                 QtWidgets.QMessageBox.Ok
             )
 
-    def __load_environment(self):
+    def load_environment(self):
         """
         Load the parametrized channels distribution (discrete or continuous) from a JSON file
         """
         filepath, _ = QtWidgets.QFileDialog.getOpenFileName(
             self,
-            'Load environment',
+            LOAD_ENVIRONMENT_MESSAGE,
             '../config',
             'JSON Files (*.json)'
         )
         if filepath:
-            pass
-            # success = manager.load_json(filepath)
-            # if success:
-            #     self.__load_config(
-            #         manager.SETTINGS.get(c.CHANNELS),
-            #         manager.SETTINGS.get(c.PARAMETERS),
-            #     )
-            #     QtWidgets.QMessageBox.information(
-            #         self,
-            #         'Information',
-            #         c.FILE_LOADED,
-            #         QtWidgets.QMessageBox.Ok,
-            #         QtWidgets.QMessageBox.Ok
-            #     )
+            self.environment = models.SimulationEnvironment()
+            success = self.environment.load_data(filepath)
+            if success:
+                self.setup_gui_components()
+                QtWidgets.QMessageBox.information(
+                    self,
+                    'Information',
+                    ENVIRONMENT_LOADED_MESSAGE,
+                    QtWidgets.QMessageBox.Ok,
+                    QtWidgets.QMessageBox.Ok
+                )
 
     def check_boxes(self):
         """
@@ -225,7 +202,7 @@ class SpecxMainWindow(QtWidgets.QMainWindow, UiMainWindow):
         self.btn_save_file.setEnabled(True)
 
 
-# App launcher block
+# App launcher block code
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication([])

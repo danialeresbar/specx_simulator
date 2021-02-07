@@ -25,9 +25,11 @@ class ParametrizationDialog(UiConfigDialog, QtWidgets.QDialog):
         self.setupUi(self)  # Build the GUI designed with Qt designer
 
         self.distribution = kwargs.get('distribution', None)
+        self.setup_dialog_components()
+        self.plot_chart_preview()
 
         # Button signals connection
-        self.btn_submit .clicked.connect(self.pick_spinbox_values)
+        # self.btn_submit.clicked.connect(self.pick_spinbox_values)
         self.btn_reject.clicked.connect(self.close)
         self.radiobtn_1.toggled.connect(self.__radiobtn_checked)
         self.radiobtn_2.toggled.connect(self.__radiobtn_checked)
@@ -39,9 +41,7 @@ class ParametrizationDialog(UiConfigDialog, QtWidgets.QDialog):
         self.parameter_spbox_3.valueChanged.connect(self.plot_chart_preview)
         self.parameter_spbox_4.valueChanged.connect(self.plot_chart_preview)
 
-        # self.__load_distribution(kwargs.get('distribution', 'Bernoulli'))
         self.setWindowTitle(f'{self.distribution.name} Distribution')
-        self.setup_dialog_components()
 
     def closeEvent(self, event):
         """
@@ -50,14 +50,9 @@ class ParametrizationDialog(UiConfigDialog, QtWidgets.QDialog):
         self.reject()
         event.accept()
 
-    def pick_spinbox_values(self):
-        # parameters = dict()
-        for spbox in self.spboxes:
-            if spbox.isVisible():
-                pass
-            else:
-                pass
-        self.accept()
+    def update_distribution_parameters_value(self):
+        for spbox, parameter in zip(self.spboxes, self.distribution.parameters):
+            parameter.set_value(spbox.value())
 
     def __show_radio_buttons(self, f1, f2, f3):
         self.radiobtn_1.setVisible(f1)
@@ -93,8 +88,7 @@ class ParametrizationDialog(UiConfigDialog, QtWidgets.QDialog):
         Method
         :return:
         """
-        updated_values = {name: spbox.value() for name, spbox in zip(self.distribution.parameters.keys(), self.spboxes)}
-        self.distribution.set_parameters(updated_values)
+        self.update_distribution_parameters_value()
         self.distribution.plot_chart()
         self.pdf_chartview.setChart(self.distribution.chart)
 
@@ -103,10 +97,8 @@ class ParametrizationDialog(UiConfigDialog, QtWidgets.QDialog):
         Method
         :return:
         """
-        labels = self.distribution.parameters.keys()
-        values = self.distribution.parameters.values()
-        for index, label in enumerate(labels):
-            self.parameter_labels[index].setText(f'{label} \nparameter:')
-
-        for index, value in enumerate(values):
-            self.spboxes[index].setValue(value)
+        for index, parameter in enumerate(self.distribution.parameters):
+            self.parameter_labels[index].setText(f'{parameter.name} \nparameter:')
+            self.spboxes[index].setMinimum(parameter.range[0])
+            self.spboxes[index].setMaximum(parameter.range[1])
+            self.spboxes[index].setValue(parameter.value)

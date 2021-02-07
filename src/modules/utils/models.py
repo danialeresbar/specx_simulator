@@ -11,7 +11,7 @@ CONTINUOUS_TYPE = 'Continuous'
 
 # ---- Bernoulli Distribution ----
 BERNOULLI = 'Bernoulli'
-SUCCESS_PROB = 0.5
+SUCCESS_PROB = 0.8
 
 
 # ---- Beta Distribution ----
@@ -77,6 +77,42 @@ WEIBULL_LOC = -0.01445
 WEIBULL_SCALE = 0.58176
 
 
+class Parameter(object):
+
+    def __init__(self, **kwargs):
+        self.name = kwargs.get('name', 'Nameless')
+        self.range = kwargs.get('range', list())
+        self.value = kwargs.get('value', 1)
+
+    def set_name(self, name):
+        self.name = name
+
+    def set_range(self, range):
+        self.range = range
+
+    def set_value(self, value):
+        self.value = value
+
+    @classmethod
+    def location(cls, range, value):
+        return cls(
+            name='Location',
+            range=range,
+            value=value
+        )
+
+    @classmethod
+    def scale(cls, range, value):
+        return cls(
+            name='Scale',
+            range=range,
+            value=value
+        )
+
+    def __str__(self):
+        return f'Parameter: {self.name}, range: {self.range}, value: {self.value}'
+
+
 class Distribution(object):
     """
     Class for the generalization of a probability distribution. It has the common attributes of a
@@ -85,7 +121,7 @@ class Distribution(object):
 
     def __init__(self, **kwargs):
         self.name = kwargs.get('name', 'Nameless')
-        self.parameters = kwargs.get('parameters', dict())
+        self.parameters = kwargs.get('parameters', list())
         self.kind = kwargs.get('kind', 'Typeless')
         self.variant = kwargs.get('variant', False)
         self.rv_generator = kwargs.get('rv_generator', None)
@@ -116,11 +152,11 @@ class Distribution(object):
         return {
             'name': self.name,
             'kind': self.kind,
-            'parameters': self.parameters,
+            'parameters': {parameter.name: parameter.value for parameter in self.parameters},
         }
 
     def __str__(self):
-        return f'Distribution: {self.name}, type: {self.kind}, parameters: {self.parameters}'
+        return f'Distribution: {self.name}, type: {self.kind} \nparameters: {self.parameters}'
 
 
 class Bernoulli(Distribution):
@@ -131,9 +167,13 @@ class Bernoulli(Distribution):
     def __init__(self, **kwargs):
         super(Bernoulli, self).__init__(
             name=BERNOULLI,
-            parameters={
-                'success_probability': kwargs.get('success_probability', SUCCESS_PROB),
-            },
+            parameters=[
+                Parameter(
+                    name='Success probability',
+                    range=[0.0, 1.0],
+                    value=kwargs.get('success_probability', SUCCESS_PROB)
+                )
+            ],
             kind=DISCRETE_TYPE,
             variant=False,
             rv_generator=gen.bernoulli
@@ -153,12 +193,12 @@ class Beta(Distribution):
     def __init__(self, **kwargs):
         super(Beta, self).__init__(
             name=BETA,
-            parameters={
-                'alpha_shape': kwargs.get('alpha_shape', BETA_SHAPE_1),
-                'beta_shape': kwargs.get('beta_shape', BETA_SHAPE_2),
-                'location': kwargs.get('loc', BETA_LOC),
-                'scale': kwargs.get('scale', BETA_SCALE),
-            },
+            parameters=[
+                Parameter(name='Alpha shape', range=[0.0001, 9999], value=kwargs.get('alpha_shape', BETA_SHAPE_1)),
+                Parameter(name='Beta shape', range=[0.0001, 9999], value=kwargs.get('beta_shape', BETA_SHAPE_2)),
+                Parameter.location(range=[-9999, 9999], value=kwargs.get('loc', BETA_LOC)),
+                Parameter.scale(range=[0.0001, 9999], value=kwargs.get('scale', BETA_SCALE))
+            ],
             kind=CONTINUOUS_TYPE,
             variant=False,
             rv_generator=gen.beta
@@ -178,11 +218,11 @@ class Gamma(Distribution):
     def __init__(self, **kwargs):
         super(Gamma, self).__init__(
             name=GAMMA,
-            parameters={
-                'alpha_shape': kwargs.get('alpha', GAMMA_SHAPE),
-                'location': kwargs.get('loc', GAMMA_LOC),
-                'scale': kwargs.get('scale', GAMMA_SCALE),
-            },
+            parameters=[
+                Parameter(name='Alpha shape', range=[0.0001, 9999], value=kwargs.get('alpha_shape', GAMMA_SHAPE)),
+                Parameter.location(range=[-9999, 9999], value=kwargs.get('loc', GAMMA_LOC)),
+                Parameter.scale(range=[0.0001, 9999], value=kwargs.get('scale', GAMMA_SCALE))
+            ],
             kind=CONTINUOUS_TYPE,
             variant=True,
             rv_generator=gen.gamma
@@ -202,10 +242,10 @@ class Gumbel(Distribution):
     def __init__(self, **kwargs):
         super(Gumbel, self).__init__(
             name=GUMBEL,
-            parameters={
-                'location': kwargs.get('loc', GUMBEL_LOC),
-                'scale': kwargs.get('scale', GUMBEL_SCALE),
-            },
+            parameters=[
+                Parameter.location(range=[0, 9999], value=kwargs.get('loc', GUMBEL_LOC)),
+                Parameter.scale(range=[0.0001, 9999], value=kwargs.get('scale', GUMBEL_SCALE))
+            ],
             kind=CONTINUOUS_TYPE,
             variant=False,
             rv_generator=gen.gumbel
@@ -225,10 +265,10 @@ class Laplace(Distribution):
     def __init__(self, **kwargs):
         super(Laplace, self).__init__(
             name=LAPLACE,
-            parameters={
-                'location': kwargs.get('loc', LAPLACE_LOC),
-                'scale': kwargs.get('scale', LAPLACE_SCALE),
-            },
+            parameters=[
+                Parameter.location(range=[0, 9999], value=kwargs.get('loc', LAPLACE_LOC)),
+                Parameter.scale(range=[0.0001, 9999], value=kwargs.get('scale', LAPLACE_SCALE))
+            ],
             kind=CONTINUOUS_TYPE,
             variant=False,
             rv_generator=gen.laplace
@@ -248,11 +288,11 @@ class Lognorm(Distribution):
     def __init__(self, **kwargs):
         super(Lognorm, self).__init__(
             name=LOGNORM,
-            parameters={
-                'alpha_shape': kwargs.get('alpha_shape', LOGNORM_SHAPE),
-                'location': kwargs.get('loc', LOGNORM_LOC),
-                'scale': kwargs.get('scale', LOGNORM_SCALE),
-            },
+            parameters=[
+                Parameter.location(range=[-9999, 9999], value=kwargs.get('loc', LOGNORM_LOC)),
+                Parameter(name='Alpha shape', range=[0.0001, 9999], value=kwargs.get('alpha_shape', LOGNORM_SHAPE)),
+                Parameter.scale(range=[-9999, 9999], value=kwargs.get('scale', LOGNORM_SCALE))
+            ],
             kind=CONTINUOUS_TYPE,
             variant=True,
             rv_generator=gen.lognormal
@@ -272,10 +312,10 @@ class Norm(Distribution):
     def __init__(self, **kwargs):
         super(Norm, self).__init__(
             name=NORM,
-            parameters={
-                'location': kwargs.get('loc', NORM_LOC),
-                'scale': kwargs.get('scale', NORM_SCALE),
-            },
+            parameters=[
+                Parameter.location(range=[0, 9999], value=kwargs.get('loc', NORM_LOC)),
+                Parameter.scale(range=[0.0001, 9999], value=kwargs.get('scale', NORM_SCALE))
+            ],
             kind=CONTINUOUS_TYPE,
             variant=False,
             rv_generator=gen.normal
@@ -295,10 +335,10 @@ class Rayleigh(Distribution):
     def __init__(self, **kwargs):
         super(Rayleigh, self).__init__(
             name=RAYLEIGH,
-            parameters={
-                'location': kwargs.get('loc', RAYLEIGH_LOC),
-                'scale': kwargs.get('scale', RAYLEIGH_SCALE),
-            },
+            parameters=[
+                Parameter.scale(range=[0.0001, 9999], value=kwargs.get('scale', RAYLEIGH_SCALE)),
+                Parameter.location(range=[0, 9999], value=kwargs.get('loc', RAYLEIGH_LOC)),
+            ],
             kind=CONTINUOUS_TYPE,
             variant=True,
             rv_generator=gen.rayleigh
@@ -318,10 +358,10 @@ class Uniform(Distribution):
     def __init__(self, **kwargs):
         super(Uniform, self).__init__(
             name=UNIFORM,
-            parameters={
-                'lower_bound': kwargs.get('loc', UNIFORM_INF),
-                'upper_bound': kwargs.get('scale', UNIFORM_SUP),
-            },
+            parameters=[
+                Parameter(name='Lower bound', range=[-9999, 9999], value=kwargs.get('loc', UNIFORM_INF)),
+                Parameter(name='Upper bound', range=[-9999, 9999], value=kwargs.get('scale', UNIFORM_SUP))
+            ],
             kind=CONTINUOUS_TYPE,
             variant=False,
             rv_generator=gen.uniform
@@ -341,11 +381,11 @@ class Weibull(Distribution):
     def __init__(self, **kwargs):
         super(Weibull, self).__init__(
             name=WEIBULL,
-            parameters={
-                'alpha_shape': kwargs.get('alpha', WEIBULL_SHAPE),
-                'location': kwargs.get('loc', WEIBULL_LOC),
-                'scale': kwargs.get('scale', WEIBULL_SCALE),
-            },
+            parameters=[
+                Parameter(name='Alpha shape', range=[0.0001, 9999], value=kwargs.get('alpha_shape', WEIBULL_SHAPE)),
+                Parameter.scale(range=[0.0001, 9999], value=kwargs.get('scale', WEIBULL_SCALE)),
+                Parameter.location(range=[-9999, 9999], value=kwargs.get('loc', WEIBULL_LOC))
+            ],
             kind=CONTINUOUS_TYPE,
             variant=True,
             rv_generator=gen.weibull
@@ -467,8 +507,4 @@ class SimulationEnvironment(object):
             self.add_or_update_channel(new_channel)
 
     def __str__(self):
-        return f'Environment: {self.id}, at the: {self.timestamp}'
-
-
-if __name__ == "__main__":
-    print('Success test')
+        return f'Environment: {self.id}, at the: {self.timestamp} channels: \n{self.channels}'

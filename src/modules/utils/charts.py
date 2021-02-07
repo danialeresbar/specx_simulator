@@ -33,6 +33,7 @@ INDIAN_RED = QColorConstants.Svg.indianred
 
 # ---- Series attributes ----
 SERIES_WIDTH = 3
+SAMPLES = 100
 
 
 # ---- Chart fonts ----
@@ -56,7 +57,7 @@ class PDFChart(QChart):
     def __init__(self, **kwargs):
         super(PDFChart, self).__init__()
         self.title = kwargs.get('title', 'Chart default title')
-        self.parameters = kwargs.get('parameters', dict())
+        self.parameters = kwargs.get('parameters', list())
 
         self.layout().setContentsMargins(0, 0, 0, 0)
         self.setBackgroundRoundness(0)
@@ -69,111 +70,93 @@ class PDFChart(QChart):
         """
         Generates a graph of a Bernoulli PDF (Probability density function) with the respective parameters
         """
-        p = self.parameters.get('success_probability')
+        bars = [parameter.value for parameter in self.parameters]
         legends = LEGENDS_BERNOULLI
         x_axis = X_AXIS_LABELS_BERNOULLI
-        bars = [p, 1-p]
         bar_colors = [LIGHT_GREEN, INDIAN_RED]
-        self.add_bars(x=x_axis, bars=bars, bar_colors=bar_colors, bar_label_format="@value", y_label_format="",
-                      y_max=1, y_tickcount=6, legends=legends, legend_alignment=Qt.AlignBottom)
+        self.add_bars(x=x_axis, bars=bars + [1-bars[0]], bar_colors=bar_colors, bar_label_format="@value",
+                      y_label_format="", y_max=1, y_tickcount=6, legends=legends, legend_alignment=Qt.AlignBottom)
 
     def plot_beta(self):
         """
         Generates a graph of a Bernoulli PDF (Probability density function) with the respective parameters
         """
-        alpha = self.parameters.get("alpha_shape")
-        beta = self.parameters.get("beta_shape")
-        a = self.parameters.get("location")
-        b = self.parameters.get("scale")
-
+        alpha = self.parameters[0].value
+        beta = self.parameters[1].value
+        a = self.parameters[2].value
+        b = self.parameters[3].value
         x = np.linspace(
             stats.beta.ppf(0.01, alpha, beta, loc=a, scale=b),
             stats.beta.ppf(0.99, alpha, beta, loc=a, scale=b),
-            100
+            SAMPLES
         )
         y = stats.beta.pdf(x, alpha, beta, loc=a, scale=b)
-
         series = QSplineSeries()
-        series.setName(
-            f'{ALPHA_LETTER}={alpha:.4f}, {BETA_LETTER}={beta:.4f}, \
-                a={a:.4f}, b={b:.4f}'
-        )
+        series.setName(f'{ALPHA_LETTER}={alpha:.4f}, {BETA_LETTER}={beta:.4f}, a={a:.4f}, b={b:.4f}')
         self.add_spline_series(series, x, y)
 
     def plot_gamma(self):
-        alpha = self.parameters.get("alpha_shape")
-        gamma = self.parameters.get("location")
-        lmbda = self.parameters.get("scale")
+        alpha = self.parameters[0].value
+        gamma = self.parameters[1].value
+        lmbda = self.parameters[2].value
         x = np.linspace(
             stats.gamma.ppf(0.01, alpha, loc=gamma, scale=lmbda),
             stats.gamma.ppf(0.99, alpha, loc=gamma, scale=lmbda),
-            100
+            SAMPLES
         )
         y = stats.gamma.pdf(x, alpha, loc=gamma, scale=lmbda)
-
         series = QSplineSeries()
         series.setName(
-            f'{ALPHA_LETTER}={alpha:.4f}, {LAMBDA_LETTER}={lmbda:.4f}, \
-                {GAMMA_LETTER}={gamma:.4f}'
-        )
+            f'{ALPHA_LETTER}={alpha:.4f}, {LAMBDA_LETTER}={lmbda:.4f}, {GAMMA_LETTER}={gamma:.4f}')
         self.add_spline_series(series, x, y)
 
     def plot_gumbel(self):
-        mu = self.parameters.get("location")
-        sigma = self.parameters.get("scale")
+        mu = self.parameters[0].value
+        sigma = self.parameters[1].value
         x = np.linspace(
             stats.gumbel_r.ppf(0.01, loc=mu, scale=sigma),
             stats.gumbel_r.ppf(0.99, loc=mu, scale=sigma),
-            100
+            SAMPLES
         )
         y = stats.gumbel_r.pdf(x, loc=mu, scale=sigma)
-
         series = QSplineSeries()
-        series.setName(
-            f'{MU_LETTER}={mu:.4f}, {SIGMA_LETTER}={sigma:.4f}'
-        )
+        series.setName(f'{MU_LETTER}={mu:.4f}, {SIGMA_LETTER}={sigma:.4f}')
         self.add_spline_series(series, x, y)
 
     def plot_laplace(self):
-        mu = self.parameters.get("location")
-        b = self.parameters.get("scale")
+        mu = self.parameters[0].value
+        b = self.parameters[1].value
         x = np.linspace(
             stats.laplace.ppf(0.01, loc=mu, scale=b),
             stats.laplace.ppf(0.99, loc=mu, scale=b),
-            100
+            SAMPLES
         )
         y = stats.laplace.pdf(x, loc=mu, scale=b)
-
         series = QSplineSeries()
-        series.setName(
-            f'{MU_LETTER}={mu:.4f}, b={b:.4f}'
-        )
+        series.setName(f'{MU_LETTER}={mu:.4f}, b={b:.4f}')
         self.add_spline_series(series, x, y)
 
     def plot_lognorm(self):
-        mu = self.parameters.get("location")
-        sigma = self.parameters.get("alpha_shape")
-        gamma = self.parameters.get("scale")
+        mu = self.parameters[0].value
+        sigma = self.parameters[1].value
+        gamma = self.parameters[2].value
         x = np.linspace(
             stats.lognorm.ppf(0.01, sigma, loc=gamma, scale=mt.exp(mu)),
             stats.lognorm.ppf(0.99, sigma, loc=gamma, scale=mt.exp(mu)),
-            100
+            SAMPLES
         )
         y = stats.lognorm.pdf(x, sigma, loc=gamma, scale=mt.exp(mu))
         series = QSplineSeries()
-        series.setName(
-            f'{MU_LETTER}={mu:.4f}, {SIGMA_LETTER}={sigma:.4f}, \
-                {GAMMA_LETTER}={gamma:.4f}'
-        )
+        series.setName(f'{MU_LETTER}={mu:.4f}, {SIGMA_LETTER}={sigma:.4f}, {GAMMA_LETTER}={gamma:.4f}')
         self.add_spline_series(series, x, y)
 
     def plot_norm(self):
-        mu = self.parameters.get("location")
-        sigma = self.parameters.get("scale")
+        mu = self.parameters[0].value
+        sigma = self.parameters[1].value
         x = np.linspace(
             stats.norm.ppf(0.01, loc=mu, scale=sigma),
             stats.norm.ppf(0.99, loc=mu, scale=sigma),
-            100
+            SAMPLES
         )
         y = stats.norm.pdf(x, loc=mu, scale=sigma)
         series = QSplineSeries()
@@ -181,55 +164,48 @@ class PDFChart(QChart):
         self.add_spline_series(series, x, y)
 
     def plot_rayleigh(self):
-        sigma = self.parameters.get("scale")
-        lmbda = self.parameters.get("location")
+        sigma = self.parameters[0].value
+        lmbda = self.parameters[1].value
         x = np.linspace(
             stats.rayleigh.ppf(0.01, loc=lmbda, scale=sigma),
             stats.rayleigh.ppf(0.99, loc=lmbda, scale=sigma),
-            100
+            SAMPLES
         )
         y = stats.rayleigh.pdf(x, loc=lmbda, scale=sigma)
         series = QSplineSeries()
-        series.setName(
-            f'{SIGMA_LETTER}={sigma:.4f}, {LAMBDA_LETTER}={lmbda:.4f}'
-        )
+        series.setName(f'{SIGMA_LETTER}={sigma:.4f}, {LAMBDA_LETTER}={lmbda:.4f}')
         self.add_spline_series(series, x, y)
 
     def plot_uniform(self):
-        a = self.parameters.get("lower_bound")
-        b = self.parameters.get("upper_bound")
+        a = self.parameters[0].value
+        b = self.parameters[1].value
+        x = list()
+        y = list()
         try:
-
             x = np.linspace(
                 stats.uniform.ppf(0.01, loc=a, scale=b-a),
                 stats.uniform.ppf(0.99, loc=a, scale=b-a),
-                100
+                SAMPLES
             )
             y = stats.uniform.pdf(x, loc=a, scale=b-a)
-
         except Exception as e:
             print(e)
-
         series = QSplineSeries()
         series.setName(f'a={a:.4f}, b={b:.4f}')
         self.add_spline_series(series, x, y)
 
     def plot_weibull(self):
-        alpha = self.parameters.get("alpha_shape")
-        beta = self.parameters.get("scale")
-        gamma = self.parameters.get("location")
+        alpha = self.parameters[0].value
+        beta = self.parameters[1].value
+        gamma = self.parameters[2].value
         x = np.linspace(
             stats.weibull_min.ppf(0.01, alpha, loc=gamma, scale=beta),
             stats.weibull_min.ppf(0.99, alpha, loc=gamma, scale=beta),
-            100
+            SAMPLES
         )
         y = stats.weibull_min.pdf(x, alpha, loc=gamma, scale=beta)
-
         series = QSplineSeries()
-        series.setName(
-            f'{ALPHA_LETTER}={alpha:.4f}, {BETA_LETTER}={beta:.4f}, \
-                {GAMMA_LETTER}={gamma:.4f}'
-        )
+        series.setName(f'{ALPHA_LETTER}={alpha:.4f}, {BETA_LETTER}={beta:.4f}, {GAMMA_LETTER}={gamma:.4f}')
         self.add_spline_series(series, x, y)
 
     def add_spline_series(self, series, x, y):

@@ -41,7 +41,7 @@ def cong_mixto_gcc():
     return SEED_2/m
 
 
-def __var_checker(var):
+def var_checker(var):
     """
     Verify that the generated random variable is within the established range of values
     """
@@ -63,7 +63,7 @@ def beta(args):
     Generates a random variable that has a Beta distribution according to the parameters sent
     """
     r_v = stats.beta.rvs(args[0], args[1], loc=args[2], scale=args[3])
-    return __var_checker(r_v)
+    return var_checker(r_v)
 
 
 def gamma(args):
@@ -71,7 +71,7 @@ def gamma(args):
     Generates a random variable that has a Gamma distribution according to the parameters sent
     """
     r_v = stats.gamma.rvs(args[0], loc=args[2], scale=args[1])
-    return __var_checker(r_v)
+    return var_checker(r_v)
 
 
 def gumbel(args):
@@ -79,7 +79,7 @@ def gumbel(args):
     Generates a random variable that has a Gumbel distribution according to the parameters sent
     """
     r_v = np.random.gumbel(loc=args[0], scale=args[1])
-    return __var_checker(r_v)
+    return var_checker(r_v)
 
 
 def laplace(args):
@@ -87,7 +87,7 @@ def laplace(args):
     Generates a random variable that has a Laplace distribution according to the parameters sent
     """
     r_v = stats.laplace.rvs(loc=args[0], scale=args[1])
-    return __var_checker(r_v)
+    return var_checker(r_v)
 
 
 def lognormal(args):
@@ -95,7 +95,7 @@ def lognormal(args):
     Generates a random variable that has a Lognorm distribution according to the parameters sent
     """
     r_v = stats.lognorm.rvs(args[1], loc=args[2], scale=mt.exp(args[0]))
-    return __var_checker(r_v)
+    return var_checker(r_v)
 
 
 def normal(args):
@@ -103,7 +103,7 @@ def normal(args):
     Generates a random variable that has a Norm distribution according to the parameters sent
     """
     r_v = stats.norm.rvs(loc=args[0], scale=args[1])
-    return __var_checker(r_v)
+    return var_checker(r_v)
 
 
 def rayleigh(args):
@@ -122,7 +122,7 @@ def uniform(args):
     u = cong_mixto_posix()
     x = args[0] + (args[1]-args[0])*u
     print(x)
-    return __var_checker(x)
+    return var_checker(x)
 
 
 def weibull(args):
@@ -130,4 +130,4 @@ def weibull(args):
     Generates a random variable that has a Uniform distribution according to the parameters sent
     """
     r_v = stats.weibull_min.rvs(c=args[0], loc=args[2], scale=args[1])
-    return __var_checker(r_v)
+    return var_checker(r_v)

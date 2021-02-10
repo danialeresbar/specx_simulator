@@ -1,0 +1,134 @@
+{
+    "id": "test",
+    "timestamp": "02-10-2021-17:15:20",
+    "channels": [
+        {
+            "id": 0,
+            "frequency": "473 MHz",
+            "distribution": {
+                "name": "Beta",
+                "kind": "Continuous",
+                "parameters": {
+                    "Alpha shape": 14.087,
+                    "Beta shape": 4.9149,
+                    "Location": 0.05,
+                    "Scale": 0.75
+                }
+            }
+        },
+        {
+            "id": 1,
+            "frequency": "479 MHz",
+            "distribution": {
+                "name": "Gamma",
+                "kind": "Continuous",
+                "parameters": {
+                    "Alpha shape": 7.0259,
+                    "Location": 0.0,
+                    "Scale": 0.02008
+                }
+            }
+        },
+        {
+            "id": 2,
+            "frequency": "485 MHz",
+            "distribution": {
+                "name": "Beta",
+                "kind": "Continuous",
+                "parameters": {
+                    "Alpha shape": 14.087,
+                    "Beta shape": 4.9149,
+                    "Location": 0.05,
+                    "Scale": 0.75
+                }
+            }
+        },
+        {
+            "id": 3,
+            "frequency": "491 MHz",
+            "distribution": {
+                "name": "Gamma",
+                "kind": "Continuous",
+                "parameters": {
+                    "Alpha shape": 7.0259,
+                    "Location": 0.0,
+                    "Scale": 0.02008
+                }
+            }
+        },
+        {
+            "id": 4,
+            "frequency": "497 MHz",
+            "distribution": {
+                "name": "Beta",
+                "kind": "Continuous",
+                "parameters": {
+                    "Alpha shape": 14.087,
+                    "Beta shape": 4.9149,
+                    "Location": 0.05,
+                    "Scale": 0.75
+                }
+            }
+        },
+        {
+            "id": 5,
+            "frequency": "503 MHz",
+            "distribution": {
+                "name": "Gamma",
+                "kind": "Continuous",
+                "parameters": {
+                    "Alpha shape": 7.0259,
+                    "Location": 0.0,
+                    "Scale": 0.02008
+                }
+            }
+        },
+        {
+            "id": 6,
+            "frequency": "509 MHz",
+            "distribution": {
+                "name": "Beta",
+                "kind": "Continuous",
+                "parameters": {
+                    "Alpha shape": 14.087,
+                    "Beta shape": 4.9149,
+                    "Location": 0.05,
+                    "Scale": 0.75
+                }
+            }
+        },
+        {
+            "id": 7,
+            "frequency": "551 MHz",
+            "distribution": {
+                "name": "Gamma",
+                "kind": "Continuous",
+                "parameters": {
+                    "Alpha shape": 7.0259,
+                    "Location": 0.0,
+                    "Scale": 0.02008
+                }
+            }
+        },
+        {
+            "id": 8,
+            "frequency": "557 MHz",
+            "distribution": {
+                "name": "Beta",
+                "kind": "Continuous",
+                "parameters": {
+                    "Alpha shape": 14.087,
+                    "Beta shape": 4.9149,
+                    "Location": 0.05,
+                    "Scale": 0.75
+                }
+            }
+        }
+    ],
+    "settings": {
+        "sampling": 5,
+        "threshold": 0.33,
+        "energy": false,
+        "usage": false
+    }
+}

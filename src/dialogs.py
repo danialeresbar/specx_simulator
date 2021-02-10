@@ -98,7 +98,8 @@ class ParametrizationDialog(UiConfigDialog, QtWidgets.QDialog):
             self.spboxes[index].setVisible(True)
 
         if self.distribution.variant:
-            print('Variant')
+            pass
+            # print('Variant ditro')
 
         else:
             self.hide_radiobtn_rows()

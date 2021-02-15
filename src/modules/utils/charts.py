@@ -10,19 +10,15 @@ from PyQt5.QtChart import (
     QAbstractBarSeries,
     QLegend,
     QLineSeries,
-    QSplineSeries
+    QSplineSeries,
+    QValueAxis
 )
 from PyQt5.QtCore import Qt, QMargins
 from PyQt5.QtGui import QColor, QColorConstants, QFont
 
 
-# ---- Greg letters ----
-ALPHA_LETTER = 'α'
-BETA_LETTER = 'β'
-GAMMA_LETTER = 'γ'
-LAMBDA_LETTER = 'λ'
-MU_LETTER = 'μ'
-SIGMA_LETTER = 'σ'
+# ---- Bar attributes ----
+Y_TICKCOUNT = 5
 
 
 # ---- Colors ----
@@ -31,9 +27,8 @@ LIGHT_GREEN = QColorConstants.Svg.lightgreen
 INDIAN_RED = QColorConstants.Svg.indianred
 
 
-# ---- Series attributes ----
-SERIES_WIDTH = 3
-SAMPLES = 100
+# ---- Chart fonts ----
+CHART_DEFAULT_TITLE = 'Chart default title'
 
 
 # ---- Chart fonts ----
@@ -48,23 +43,37 @@ X_AXIS_LABELS_BERNOULLI = ['Success', 'Fail']
 LEGENDS_BERNOULLI = ['Success \nprobability', 'Fail \nprobability']
 
 
+# ---- Greg letters ----
+ALPHA_LETTER = 'α'
+BETA_LETTER = 'β'
+GAMMA_LETTER = 'γ'
+LAMBDA_LETTER = 'λ'
+MU_LETTER = 'μ'
+SIGMA_LETTER = 'σ'
+
+
+# ---- Series attributes ----
+SERIES_WIDTH = 3
+SAMPLES = 100
+
+
 class PDFChart(QChart):
     """
     Class to manage the graphs of the PDF (Probability density function)
-    and the percent bars for asimulations carried out
+    and the percent bars for the simulations carried out
     """
 
     def __init__(self, **kwargs):
         super(PDFChart, self).__init__()
-        self.title = kwargs.get('title', 'Chart default title')
+        self.title = kwargs.get('title', CHART_DEFAULT_TITLE)
         self.parameters = kwargs.get('parameters', list())
 
         self.layout().setContentsMargins(0, 0, 0, 0)
-        self.setBackgroundRoundness(0)
-        self.setTitle(self.title)
-        self.setMargins(QMargins(20, 20, 20, 20))
         self.setAnimationOptions(QChart.SeriesAnimations)
+        self.setBackgroundRoundness(0)
+        self.setMargins(QMargins(20, 20, 20, 20))
         self.setTheme(self.ChartThemeLight)
+        self.setTitle(self.title)
 
     def plot_bernoulli(self):
         """
@@ -263,124 +272,163 @@ class PDFChart(QChart):
         self.setTitleFont(CHART_TITLE_FONT)
 
 
-class SplineChart(QChart):
+class SimulationChart(QChart):
+    """
+
+    """
+
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.title = kwargs.get("title", "Título del gráfico")
-        self.parameters = kwargs.get("parameters", None)
+        super(SimulationChart, self).__init__()
+        self.title = kwargs.get('title')
 
+        # You can customize the chart settings in this section
         self.layout().setContentsMargins(0, 0, 0, 0)
-        self.setBackgroundRoundness(0)
-        self.setTitle(self.title)
-        self.setMargins(QMargins(10, 10, 10, 10))
-        self.setAnimationOptions(QChart.NoAnimation)
-        self.setTheme(self.ChartThemeLight)
-
-    def dynamic_spline(self):
-        serie = QSplineSeries()
-        pen = serie.pen()
-        pen.setColor(QColor("#5f85db"))
-        pen.setWidth(3)
-        serie.setPen(pen)
-        serie.setPointsVisible(True)
-        self.addSeries(serie)
-        self.createDefaultAxes()
-        self.axes(Qt.Vertical, serie)[0].setRange(0, 0.8)
-        self.axes(Qt.Vertical, serie)[0].setTickCount(3)
-        self.axes(Qt.Horizontal, serie)[0].setRange(0, 10)
-        self.axes(Qt.Horizontal, serie)[0].setTickCount(5)
+        self.legend().setAlignment(Qt.AlignBottom)
         self.legend().setVisible(False)
+        self.setAnimationOptions(QChart.NoAnimation)
+        self.setBackgroundRoundness(0)
+        self.setMargins(QMargins(5, 5, 5, 5))
+        self.setTheme(self.ChartThemeLight)
+        self.setTitle(self.title)
         self.setTitleFont(CHART_TITLE_FONT)
-        return serie
+
+    def setup_axes(self):
+        """
+        Create the default axes. After, these will ve updated with the suitable values
+        :return:
+        """
+        self.createDefaultAxes()
 
 
-class LineChart(QChart):
+class SplineChart(SimulationChart):
+    """
+
+    """
+
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.title = kwargs.get("title", "Título del gráfico")
-        self.parameters = kwargs.get("parameters", None)
+        super(SplineChart, self).__init__(
+            title=kwargs.get('title', CHART_DEFAULT_TITLE)
+        )
 
-        self.layout().setContentsMargins(0, 0, 0, 0)
-        self.legend().setVisible(False)
-        self.setBackgroundRoundness(0)
-        self.setTitle(self.title)
-        self.setMargins(QMargins(10, 10, 10, 10))
-        self.setAnimationOptions(QChart.NoAnimation)
-        self.setTheme(self.ChartThemeLight)
+        self.spseries = QSplineSeries()
+        self.spseries.setPointsVisible(True)
+        self._set_customize_pen()
 
-    def dynamic_line(self):
-        serie = QLineSeries()
-        pen = serie.pen()
-        pen.setColor(QColor("#5f85db"))
+        self.addSeries(self.spseries)
+        self.setup_axes()
+
+        self.x_axis = self.axes(Qt.Horizontal, self.series()[0])[0]
+        self.x_axis.setRange(0, 10)
+        self.x_axis.setTickCount(5)
+
+        self.y_axis = self.axes(Qt.Vertical, self.series()[0])[0]
+        self.y_axis.setRange(0, 0.8)
+        self.y_axis.setTickCount(3)
+
+    def _set_customize_pen(self):
+        pen = self.spseries.pen()
+        pen.setColor(SERIES_COLOR)
         pen.setWidth(3)
-        serie.setPen(pen)
-        serie.setPointsVisible(True)
-        self.addSeries(serie)
-        self.createDefaultAxes()
-        self.axes(Qt.Vertical, serie)[0].setRange(0, 1)
-        self.axes(Qt.Vertical, serie)[0].setTickCount(3)
-        self.axes(Qt.Horizontal, serie)[0].setRange(0, 10)
-        self.axes(Qt.Horizontal, serie)[0].setTickCount(5)
-        # self.axes(Qt.Horizontal, serie)[0].setLabelsVisible(False)
-        self.setTitleFont(CHART_TITLE_FONT)
-        return serie
+        self.spseries.setPen(pen)
+
+
+class LineChart(SimulationChart):
+    """
+
+    """
+
+    def __init__(self, **kwargs):
+        super(LineChart, self).__init__(
+            title=kwargs.get('title', CHART_DEFAULT_TITLE)
+        )
+
+        self.lnseries = QLineSeries()
+        self.lnseries.setPointsVisible(True)
+        self._set_customize_pen()
+
+        self.addSeries(self.lnseries)
+        self.setup_axes()
+
+        self.x_axis = self.axes(Qt.Horizontal, self.series()[0])[0]
+        self.x_axis.setRange(0, 10)
+        self.x_axis.setTickCount(5)
+
+        self.y_axis = self.axes(Qt.Vertical, self.series()[0])[0]
+        self.y_axis.setRange(0, 0.8)
+        self.y_axis.setTickCount(3)
+
+    def _set_customize_pen(self):
+        pen = self.lnseries.pen()
+        pen.setColor(SERIES_COLOR)
+        pen.setWidth(3)
+        self.lnseries.setPen(pen)
 
 
 class BarChart(QChart):
+    """
+
+    """
+
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.title = kwargs.get("title", "Título del gráfico")
-        self.parameters = kwargs.get("parameters", None)
+        super(BarChart, self).__init__()
+        self.title = kwargs.get('title', CHART_DEFAULT_TITLE)
+        self.x_categories = kwargs.get('categories', list())
 
+        self.bars = list()
+        self._init_bars()
+        self._setup_axes()
+
+        self.x_axis = QBarCategoryAxis()
+        self.x_axis.setCategories(self.x_categories)
+        self.x_axis.setLabelsFont(CHART_LABEL_FONT)
+        self.addAxis(self.x_axis, Qt.AlignBottom)
+
+        self.y_axis = self.axes(Qt.Vertical, self.series()[0])[0]
+        self.y_axis.setLabelsFont(CHART_LABEL_FONT)
+        self.y_axis.setRange(0, 100)
+        self.y_axis.setTickCount(Y_TICKCOUNT)
+
+        # You can customize the bar chart settings in this section
         self.layout().setContentsMargins(0, 0, 0, 0)
-        self.setBackgroundRoundness(0)
-        self.setTitle(self.title)
-        self.setMargins(QMargins(10, 10, 10, 10))
+        self.legend().setAlignment(Qt.AlignBottom)
+        self.legend().setVisible(True)
         self.setAnimationOptions(QChart.SeriesAnimations)
+        self.setBackgroundRoundness(0)
+        self.setMargins(QMargins(10, 10, 10, 10))
         self.setTheme(self.ChartThemeLight)
+        self.setTitle(self.title)
+        self.setTitleFont(CHART_TITLE_FONT)
 
-    def plot_bar_chart(self):
-        # Etiquetas para eje x
-        x = list()
-        for k, v in self.parameters.items():
-            x.append(v.get("frequency"))
-
-        # bars = [value for value in range(10, 100, 10)]
-        bars = [0]*9
-        series = self.add_bars(x=x, bars=bars, bar_colors=None, bar_label_format="@value %", y_max=100, y_tickcount=5, legends=x, legend_alignment=Qt.AlignBottom)
-        return series
-
-    def add_bars(self, x, bars, bar_colors, bar_label_format, y_max, y_tickcount, legends, legend_alignment):
-        for index in range(len(bars)):
+    def _init_bars(self):
+        """
+        Init the chart bars with default values. For this case, 50 is the default percentage
+        :return:
+        """
+        for x_category in self.x_categories:
             series = QBarSeries()
-            bar_set = QBarSet(legends[index])
-            if bar_colors:
-                bar_set.setColor(bar_colors[index])
-            bar_set.setLabelColor(Qt.black)
-            bar_set.setLabelFont(CHART_LABEL_FONT)
-            bar_set.append(bars[index])
-            series.append(bar_set)
+            bar = QBarSet(x_category)
+            bar.setLabelColor(Qt.black)
+            bar.setLabelFont(CHART_LABEL_FONT)
+            bar.append(50)
+            series.append(bar)
+            series.setLabelsFormat("@value %")
             series.setLabelsVisible(True)
-            series.setLabelsFormat(bar_label_format)
-            if bars[index] < y_max*0.2:
-                series.setLabelsPosition(QAbstractBarSeries.LabelsOutsideEnd)
-            else:
-                series.setLabelsPosition(QAbstractBarSeries.LabelsCenter)
+            self.bars.append(bar)
+            series.setLabelsPosition(2)
             self.addSeries(series)
 
+    def _setup_axes(self):
+        """
+        Create the default axes. After, these will ve updated with the suitable values
+        :return:
+        """
         self.createDefaultAxes()
-        axis_x = self.axes(Qt.Horizontal)[0]
-        self.removeAxis(axis_x)
-        axis_x = QBarCategoryAxis()
-        axis_x.append(x)
-        self.addAxis(axis_x, Qt.AlignBottom)
-        axis_x.setLabelsFont(CHART_LABEL_FONT)
-        axis_y = self.axes(Qt.Vertical, series)[0]
-        axis_y.setRange(0, y_max)
-        axis_y.setTickCount(y_tickcount)
-        axis_y.setLabelsFont(CHART_LABEL_FONT)
-        axis_y.setTitleText("Usage percentage")
-        self.legend().setAlignment(legend_alignment)
-        self.legend().setVisible(False)
-        self.setTitleFont(CHART_TITLE_FONT)
-        return self.series()
+        self.removeAxis(self.axes(Qt.Horizontal)[0])
+
+    def update_bars(self, values):
+        """
+        Update the bar values according to the usage percentage calculated in the running simulation
+        :return:
+        """
+        for index, value in enumerate(values):
+            self.bars[index].replace(0, value)

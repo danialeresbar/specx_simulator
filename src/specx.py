@@ -1,5 +1,5 @@
 from dialogs import ParametrizationDialog
-from simulator import SimulationWindow
+from simulator import SimulationScenario
 from modules.utils import models
 from modules.qt.specx_qt_ui import UiMainWindow, QtWidgets
 
@@ -30,6 +30,7 @@ class SpecxMainWindow(QtWidgets.QMainWindow, UiMainWindow):
     """
 
     def __init__(self, *args, **kwargs):
+        self.simulation_scenarios = list()
         super(SpecxMainWindow, self).__init__(*args, **kwargs)
         self.setupUi(self)  # Build the GUI designed with Qt designer
 
@@ -43,7 +44,7 @@ class SpecxMainWindow(QtWidgets.QMainWindow, UiMainWindow):
         self.help_action_menu.triggered.connect(self.help)
 
         # Button signals connection
-        self.btn_simulator.clicked.connect(self.__start_simulation)
+        self.btn_simulator.clicked.connect(self.start_simulation)
         self.btn_clean.clicked.connect(self.reset_field_values)
         self.btn_save_file.clicked.connect(self.save_environment)
         self.btn_load_file.clicked.connect(self.load_environment)
@@ -131,12 +132,18 @@ class SpecxMainWindow(QtWidgets.QMainWindow, UiMainWindow):
             box.setCurrentIndex(-1)
         self.check_boxes()
 
-    def __start_simulation(self):
+    def start_simulation(self):
         """
-        Shows a window with the simulation options and charts
+        Shows a window with the simulation options and channel's chart
         """
-        sim_window = SimulationWindow(self, environment=self.environment)
-        sim_window.show()
+        simulation_scenario = SimulationScenario(self, id='test', environment=self.environment)
+        simulation_scenario.show()
+        # try:
+        #     simulation_scenario = SimulationScenario(self, id='test', environment=self.environment)
+        #     simulation_scenario.show()
+        #     self.simulation_scenarios.append(simulation_scenario)
+        # except Exception as e:
+        #     print(f'Simulation scenario could not be initialized: \n{e}')
 
     def save_environment(self):
         """
@@ -186,6 +193,7 @@ class SpecxMainWindow(QtWidgets.QMainWindow, UiMainWindow):
                     QtWidgets.QMessageBox.Ok,
                     QtWidgets.QMessageBox.Ok
                 )
+            self.btn_simulator.setEnabled(True)
 
     def check_boxes(self):
         """

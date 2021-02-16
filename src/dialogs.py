@@ -1,4 +1,5 @@
 from modules.qt.dialogs_qt_ui import UiConfigDialog, QtWidgets
+from modules.utils.charts import PDFChart
 
 
 # ---- Bernoulli Distribution ----
@@ -25,10 +26,16 @@ class ParametrizationDialog(UiConfigDialog, QtWidgets.QDialog):
         self.setupUi(self)  # Build the GUI designed with Qt designer
 
         self.distribution = kwargs.get('distribution', None)
+        self.distribution_chart = PDFChart(
+            title=f'''
+                    Probability Density Function
+                    <center><small>{self.distribution.name} Distribution</small></center>
+            '''
+        )
         self.setWindowTitle(f'{self.distribution.name} Distribution')
         self.hide_parameter_rows()
         self.setup_dialog_components()
-        self.plot_chart_preview()
+        # self.plot_chart_preview()
 
         # Button signals connection
         self.btn_submit.clicked.connect(self.accept)
@@ -38,10 +45,10 @@ class ParametrizationDialog(UiConfigDialog, QtWidgets.QDialog):
         self.radiobtn_3.toggled.connect(self.__radiobtn_checked)
 
         # Spin signals connection
-        self.parameter_spbox_1.valueChanged.connect(self.plot_chart_preview)
-        self.parameter_spbox_2.valueChanged.connect(self.plot_chart_preview)
-        self.parameter_spbox_3.valueChanged.connect(self.plot_chart_preview)
-        self.parameter_spbox_4.valueChanged.connect(self.plot_chart_preview)
+        # self.parameter_spbox_1.valueChanged.connect(self.plot_chart_preview)
+        # self.parameter_spbox_2.valueChanged.connect(self.plot_chart_preview)
+        # self.parameter_spbox_3.valueChanged.connect(self.plot_chart_preview)
+        # self.parameter_spbox_4.valueChanged.connect(self.plot_chart_preview)
 
     def closeEvent(self, event):
         """

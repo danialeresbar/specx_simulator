@@ -1,6 +1,5 @@
 from . import generators as gen
 from . import json_tools
-from .charts import PDFChart
 from datetime import datetime
 
 
@@ -113,7 +112,7 @@ class Parameter(object):
         return f'Parameter: {self.name}, range: {self.range}, value: {self.value}'
 
 
-class Distribution(object):
+class Distribution:
     """
     Class for the generalization of a probability distribution. It has the common attributes of a
     probability distribution
@@ -122,16 +121,15 @@ class Distribution(object):
     def __init__(self, **kwargs):
         self.name = kwargs.get('name', 'Nameless')
         self.parameters = kwargs.get('parameters', list())
-        self.kind = kwargs.get('kind', 'Typeless')
+        self.category = kwargs.get('category', None)
         self.variant = kwargs.get('variant', False)
         self.rv_generator = kwargs.get('rv_generator', None)
-        self.chart = PDFChart()
 
     def set_name(self, name):
         self.name = name
 
-    def set_type(self, kind):
-        self.kind = kind
+    def set_type(self, category):
+        self.category = category
 
     def set_parameters(self, parameters):
         self.parameters = parameters
@@ -139,24 +137,18 @@ class Distribution(object):
     def set_rv_generator(self, rv_generator):
         self.rv_generator = rv_generator
 
-    def build_chart(self):
-        self.chart = PDFChart(
-            title=f'''
-                    Probability Density Function
-                    <center><small>{self.name} Distribution</small></center>
-                ''',
-            parameters=self.parameters
-        )
+    def generate_random_variable(self):
+        return self.rv_generator([parameter.value for parameter in self.parameters])
 
     def distribution_as_dict(self):
         return {
             'name': self.name,
-            'kind': self.kind,
+            'category': self.category,
             'parameters': {parameter.name: parameter.value for parameter in self.parameters},
         }
 
     def __str__(self):
-        return f'Distribution: {self.name}, type: {self.kind} \nparameters: {self.parameters}'
+        return f'Distribution: {self.name}, type: {self.category} \nparameters: {self.parameters}'
 
 
 class Bernoulli(Distribution):
@@ -174,14 +166,10 @@ class Bernoulli(Distribution):
                     value=kwargs.get('success_probability', SUCCESS_PROB)
                 )
             ],
-            kind=DISCRETE_TYPE,
+            category=DISCRETE_TYPE,
             variant=False,
             rv_generator=gen.bernoulli
         )
-
-    def plot_chart(self):
-        self.build_chart()
-        self.chart.plot_bernoulli()
 
 
 class Beta(Distribution):
@@ -199,14 +187,10 @@ class Beta(Distribution):
                 Parameter.location(range=[-9999, 9999], value=kwargs.get('loc', BETA_LOC)),
                 Parameter.scale(range=[0.0001, 9999], value=kwargs.get('scale', BETA_SCALE))
             ],
-            kind=CONTINUOUS_TYPE,
+            category=CONTINUOUS_TYPE,
             variant=False,
             rv_generator=gen.beta
         )
-
-    def plot_chart(self):
-        self.build_chart()
-        self.chart.plot_beta()
 
 
 class Gamma(Distribution):
@@ -223,14 +207,10 @@ class Gamma(Distribution):
                 Parameter.location(range=[-9999, 9999], value=kwargs.get('loc', GAMMA_LOC)),
                 Parameter.scale(range=[0.0001, 9999], value=kwargs.get('scale', GAMMA_SCALE))
             ],
-            kind=CONTINUOUS_TYPE,
+            category=CONTINUOUS_TYPE,
             variant=True,
             rv_generator=gen.gamma
         )
-
-    def plot_chart(self):
-        self.build_chart()
-        self.chart.plot_gamma()
 
 
 class Gumbel(Distribution):
@@ -246,14 +226,10 @@ class Gumbel(Distribution):
                 Parameter.location(range=[0, 9999], value=kwargs.get('loc', GUMBEL_LOC)),
                 Parameter.scale(range=[0.0001, 9999], value=kwargs.get('scale', GUMBEL_SCALE))
             ],
-            kind=CONTINUOUS_TYPE,
+            category=CONTINUOUS_TYPE,
             variant=False,
             rv_generator=gen.gumbel
         )
-
-    def plot_chart(self):
-        self.build_chart()
-        self.chart.plot_gumbel()
 
 
 class Laplace(Distribution):
@@ -269,14 +245,10 @@ class Laplace(Distribution):
                 Parameter.location(range=[0, 9999], value=kwargs.get('loc', LAPLACE_LOC)),
                 Parameter.scale(range=[0.0001, 9999], value=kwargs.get('scale', LAPLACE_SCALE))
             ],
-            kind=CONTINUOUS_TYPE,
+            category=CONTINUOUS_TYPE,
             variant=False,
             rv_generator=gen.laplace
         )
-
-    def plot_chart(self):
-        self.build_chart()
-        self.chart.plot_laplace()
 
 
 class Lognorm(Distribution):
@@ -293,14 +265,10 @@ class Lognorm(Distribution):
                 Parameter(name='Alpha shape', range=[0.0001, 9999], value=kwargs.get('alpha_shape', LOGNORM_SHAPE)),
                 Parameter.scale(range=[-9999, 9999], value=kwargs.get('scale', LOGNORM_SCALE))
             ],
-            kind=CONTINUOUS_TYPE,
+            category=CONTINUOUS_TYPE,
             variant=True,
             rv_generator=gen.lognormal
         )
-
-    def plot_chart(self):
-        self.build_chart()
-        self.chart.plot_lognorm()
 
 
 class Norm(Distribution):
@@ -316,14 +284,10 @@ class Norm(Distribution):
                 Parameter.location(range=[0, 9999], value=kwargs.get('loc', NORM_LOC)),
                 Parameter.scale(range=[0.0001, 9999], value=kwargs.get('scale', NORM_SCALE))
             ],
-            kind=CONTINUOUS_TYPE,
+            category=CONTINUOUS_TYPE,
             variant=False,
             rv_generator=gen.normal
         )
-
-    def plot_chart(self):
-        self.build_chart()
-        self.chart.plot_norm()
 
 
 class Rayleigh(Distribution):
@@ -339,14 +303,10 @@ class Rayleigh(Distribution):
                 Parameter.scale(range=[0.0001, 9999], value=kwargs.get('scale', RAYLEIGH_SCALE)),
                 Parameter.location(range=[0, 9999], value=kwargs.get('loc', RAYLEIGH_LOC)),
             ],
-            kind=CONTINUOUS_TYPE,
+            category=CONTINUOUS_TYPE,
             variant=True,
             rv_generator=gen.rayleigh
         )
-
-    def plot_chart(self):
-        self.build_chart()
-        self.chart.plot_rayleigh()
 
 
 class Uniform(Distribution):
@@ -362,14 +322,10 @@ class Uniform(Distribution):
                 Parameter(name='Lower bound', range=[-9999, 9999], value=kwargs.get('loc', UNIFORM_INF)),
                 Parameter(name='Upper bound', range=[-9999, 9999], value=kwargs.get('scale', UNIFORM_SUP))
             ],
-            kind=CONTINUOUS_TYPE,
+            category=CONTINUOUS_TYPE,
             variant=False,
             rv_generator=gen.uniform
         )
-
-    def plot_chart(self):
-        self.build_chart()
-        self.chart.plot_uniform()
 
 
 class Weibull(Distribution):
@@ -386,14 +342,10 @@ class Weibull(Distribution):
                 Parameter.scale(range=[0.0001, 9999], value=kwargs.get('scale', WEIBULL_SCALE)),
                 Parameter.location(range=[-9999, 9999], value=kwargs.get('loc', WEIBULL_LOC))
             ],
-            kind=CONTINUOUS_TYPE,
+            category=CONTINUOUS_TYPE,
             variant=True,
             rv_generator=gen.weibull
         )
-
-    def plot_chart(self):
-        self.build_chart()
-        self.chart.plot_weibull()
 
 
 DISTRIBUTION_CHOICES = {
@@ -408,10 +360,6 @@ DISTRIBUTION_CHOICES = {
     UNIFORM: Uniform,
     WEIBULL: Weibull,
 }
-
-
-def find_distribution(key):
-    return DISTRIBUTION_CHOICES.get(key, Distribution())
 
 
 class Channel(object):
@@ -501,7 +449,7 @@ class SimulationEnvironment(object):
             new_channel = Channel(
                 id=channel.get('id'),
                 frequency=channel.get('frequency'),
-                distribution=find_distribution(distribution_content.get('name'))()  # Callback implementation
+                distribution=DISTRIBUTION_CHOICES.get(distribution_content.get('name'))()  # Callback implementation
             )
             new_channel.distribution.set_parameters(distribution_content.get('parameters', dict()))
             self.add_or_update_channel(new_channel)

@@ -30,10 +30,9 @@ class SpecxMainWindow(QtWidgets.QMainWindow, UiMainWindow):
     """
 
     def __init__(self, *args, **kwargs):
-        self.simulation_scenarios = list()
         super(SpecxMainWindow, self).__init__(*args, **kwargs)
         self.setupUi(self)  # Build the GUI designed with Qt designer
-
+        self.simulation_scenarios = list()
         self.environment = models.SimulationEnvironment(id='test')
         self.add_default_environment_channels()
 
@@ -108,7 +107,7 @@ class SpecxMainWindow(QtWidgets.QMainWindow, UiMainWindow):
         distribution_key = self.sender().currentText()
         for channel in self.environment.channels:
             if channel.id == self.boxes.index(self.sender()):
-                channel.distribution = models.find_distribution(distribution_key)()  # Callback implementation
+                channel.distribution = models.DISTRIBUTION_CHOICES.get(distribution_key)()  # Callback implementation
                 current_channel = channel
 
         modal = ParametrizationDialog(self, distribution=current_channel.distribution)

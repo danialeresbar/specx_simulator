@@ -2,11 +2,12 @@ import threading
 import time
 
 from datetime import datetime, timedelta
-from PyQt5.QtCore import Qt
 
 
-# ---- Labels ----
+# ---- CONSTANTS ----
 CHANNELS = 'channels'
+# The simulation time is given in minutes and every two seconds a random variable is generated
+RANDOM_VARIABLES_GENERATED = 60/2  # 60s for each minute
 
 
 class SimulationThread(threading.Thread):
@@ -14,42 +15,41 @@ class SimulationThread(threading.Thread):
     Class that inherits that from Thread to override the 'run' method in order to simulate the system behavior
     """
 
-    def __init__(self, target=None, name=None, kwargs=None):
-        threading.Thread.__init__(self, target=target, name=name)
-        # self.channels = [
-        #     channel for channel in kwargs.get(CHANNELS).values()
-        # ]
-        # self.series = [serie for serie in kwargs.get(c.SERIES)]
-        # self.parameters = kwargs.get(c.PARAMETERS)
-        # self.generators = kwargs.get("generators")
-        # self.wait = target
-        # self.callback_exit = kwargs.get("callback")
-        # self.filepath = kwargs.get("filepath")
+    def __init__(self, *args, **kwargs):
+        super(SimulationThread, self).__init__(*args)
+        # Simulation scenario attributes
+        self.channels = kwargs.get('channels', list())
+        self.charts = kwargs.get('charts', list())
+        self.delay = kwargs.get('delay', None)
+        self.energy_threshold = kwargs.get('threshold', 0.33)  # 0.33 Is the default value
+        self.sample_time = kwargs.get('sample_time', 0)
 
+        # Thread manager attributes
         self.pause_cond = threading.Condition(threading.Lock())
-        self.paused = False  # Indicador de hilo pausado
+        self.paused = False  # Pause indicator
         self.stop_cond = threading.Condition(threading.Lock())
-        self.stopped = False  # Indicador de hilo detenido
-        self.finish_flag = True
+        self.stopped = False  # Stop indicator
+        self.finished = True  # Finished indicator
+
+    def update_chart(self, chart, x, y):
+        pass
 
     def run(self):
         """
         Generation of Random Variables and update of charts
+        :return:
         """
-        # bars = self.series[-1]
-        # delta = datetime.now()
-        # index = 0
-        # limit = self.parameters.get(c.SAMPLING)*30
-        #
-        # for channel in self.channels:
-        #     generator = self.generators[index]
-        #     serie = self.series[index]
-        #     usage_percent = 0
-        #     var_count = 0
-        #
-        #     while var_count < limit and not self.stopped:
-        #         var = generator(channel['distribution'].get(c.PARAMETERS))
-        #         var_count += 1
+        global RANDOM_VARIABLES_GENERATED
+
+        delta = datetime.now()
+        for index, channel in enumerate(self.channels):
+            print(f'Simulating channel {channel.frequency} for {self.sample_time}')
+            var_count = 0
+
+            while var_count < RANDOM_VARIABLES_GENERATED*self.sample_time and not self.stopped:
+                var = channel.distribution.generate_random_variable()
+                print(var)
+                var_count += 1
         #         self.__update_chart(serie, var_count*2, var)
         #         self.__update_outfile(
         #             delta,
@@ -57,17 +57,17 @@ class SimulationThread(threading.Thread):
         #             channel['distribution'].get('name'),
         #             var
         #         )
-        #         time.sleep(2/self.wait())  # Delta entre la generación de VAs
-        #         delta += timedelta(seconds=2)
+                time.sleep(2/self.delay())  # Time interval between the generation of random variables
+                delta += timedelta(seconds=2)
         #         if var >= self.parameters.get(c.THRESHOLD):
         #             usage_percent += 1
-        #         with self.pause_cond:
-        #             while self.paused:
-        #                 self.pause_cond.wait()
-        #     with self.stop_cond:
-        #         if self.stopped:
-        #             self.finish_flag = False
-        #             break
+                with self.pause_cond:
+                    while self.paused:
+                        self.pause_cond.wait()
+            with self.stop_cond:
+                if self.stopped:
+                    self.finished = False
+                    break
         #     self.__update_bars(bars[index], (usage_percent/var_count)*100)
         #     index += 1
         #
@@ -93,29 +93,29 @@ class SimulationThread(threading.Thread):
         Stop the execution of the thread by setting the lock state of the stopped condition to closed (locked)
         """
         self.stopped = True
-        # self.stop_cond.acquire
 
-    def __update_chart(self, serie, x, y):
-        serie.append(x, y)
-        if x >= 12:
-            dx = serie.chart().plotArea().width() / \
-                serie.chart().axes(Qt.Horizontal, serie)[0].tickCount()
-            serie.chart().scroll(dx, 0)
+    # def __update_chart(self, serie, x, y):
+    #     serie.append(x, y)
+    #     if x >= 12:
+    #         dx = serie.chart().plotArea().width() / \
+    #             serie.chart().axes(Qt.Horizontal, serie)[0].tickCount()
+    #         serie.chart().scroll(dx, 0)
+    #
+    # def __update_bars(self, bar, usage_percent):
+    #     bar.barSets()[0].replace(0, usage_percent)
+    #     if usage_percent > 20:
+    #         bar.setLabelsPosition(0)
 
-    def __update_bars(self, bar, usage_percent):
-        bar.barSets()[0].replace(0, usage_percent)
-        if usage_percent > 20:
-            bar.setLabelsPosition(0)
-
-    def __update_outfile(self, delta, frequency, distribution, var):
+    @staticmethod
+    def update_csvfile(filepath, timestamp, frequency, distribution, value):
         line = "{};{};{};{}".format(
-            delta.strftime("%m-%d-%Y-%H:%M:%S"),
+            timestamp.strftime("%m-%d-%Y %H:%M:%S"),
             frequency,
             distribution,
-            var
+            value
         )
-        with open(self.filepath, 'a') as outfile:
-            outfile.write(line + '\n')
+        with open(filepath, 'a') as csvfile:
+            csvfile.write(line + '\n')
 
 
 class FileThread(threading.Thread):
@@ -124,9 +124,9 @@ class FileThread(threading.Thread):
     simulation results to file
     """
 
-    def __init__(self, target=None, name=None, kwargs=None):
-        threading.Thread.__init__(self, target=target, name=name)
+    def __init__(self, **kwargs):
         self.filepath = kwargs.get('filepath')
+        super(FileThread, self).__init__(**kwargs)
 
     def run(self):
         """

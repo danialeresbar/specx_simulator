@@ -44,7 +44,7 @@ class SpecxMainWindow(QtWidgets.QMainWindow, UiMainWindow):
 
         # Button signals connection
         self.btn_simulator.clicked.connect(self.start_simulation)
-        self.btn_clean.clicked.connect(self.reset_field_values)
+        self.btn_clean.clicked.connect(self.reset_settings)
         self.btn_save_file.clicked.connect(self.save_environment)
         self.btn_load_file.clicked.connect(self.load_environment)
 
@@ -97,7 +97,7 @@ class SpecxMainWindow(QtWidgets.QMainWindow, UiMainWindow):
         Delete all current settings in the GUI. Default values are loaded and the data of the former
         simulation environment is deleted
         """
-        self.reset_field_values()
+        self.reset_settings()
 
     def show_parametrization_modal(self):
         """
@@ -121,7 +121,7 @@ class SpecxMainWindow(QtWidgets.QMainWindow, UiMainWindow):
         # for channel in self.environment.channels:
         #     print(channel)
 
-    def reset_field_values(self):
+    def reset_settings(self):
         """
         Reset all current settings in the GUI (Default values will be loaded)
         """

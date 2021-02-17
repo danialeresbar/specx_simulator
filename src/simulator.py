@@ -1,12 +1,13 @@
 from datetime import datetime
-from uuid import uuid4
+# from uuid import uuid4
 
 from modules.qt.simulator_qt_ui import UiSimWindow, QtWidgets, QtGui
+from modules.utils.charts import BarChart, LineChart, SplineChart
 from modules.utils.thread_tools import FileThread, SimulationThread
 
 
 # ---- Date formats ----
-DATE_FORMAT = "%m-%d-%Y-%H-%M-%S"
+DATE_FORMAT = "%m-%d-%Y %H-%M-%S"
 
 
 # ---- GUI default values ----
@@ -21,37 +22,46 @@ SAVE_CHART_SUCCESS = 'Chart saved successfully'
 
 
 # ---- Paths ----
-PROJECT_PATH = '../../'
-SETTINGS_PATH = f'{PROJECT_PATH}/config'
+PROJECT_PATH = '../'
+ENVIRONMENTS_PATH = f'{PROJECT_PATH}/environments'
 SIMULATIONS_PATH = f'{PROJECT_PATH}/simulations/'
 
 
-class SimulationWindow(QtWidgets.QMainWindow, UiSimWindow):
+class SimulationScenario(QtWidgets.QMainWindow, UiSimWindow):
     """
     Class with the components required to simulate a scenario (Previously configured in the Main window)
     """
 
-    def __init__(self, **kwargs):
-        super(SimulationWindow, self).__init__()
+    def __init__(self, *args, **kwargs):
+        super(SimulationScenario, self).__init__(*args)
         self.setupUi(self)
-
+        self.id = kwargs.get('id', None)
         self.environment = kwargs.get('environment', None)
-        self.simulation_filepath = f'{SIMULATIONS_PATH}Simulation-{datetime.now().strftime(DATE_FORMAT)}.csv'
+        self.output_filepath = f'{SIMULATIONS_PATH}Simulation-{datetime.now().strftime(DATE_FORMAT)}.csv'
         self.speed_factor = 1
+        self.channel_charts = list()
+        self.build_channel_charts()
+        self.simulation = SimulationThread(
+            channels=self.environment.channels,
+            charts=self.channel_charts,
+            delay=self.check_speed_value,
+            sample_time=self.environment.settings.get('sampling'),
+            threshold=self.environment.settings.get('threshold'),
+        )
 
-        # Button signals connection
-        self.btn_start.clicked.connect(self.__start)
-        self.btn_play.clicked.connect(self.__resume)
-        self.btn_pause.clicked.connect(self.__pause)
-        self.btn_stop.clicked.connect(self.__stop)
-        self.btn_increase_speed.clicked.connect(self.increase_speed)
-        self.btn_decrease_speed.clicked.connect(self.decrease_speed)
-        self.btn_max_speed.clicked.connect(self.__max_speed)
-        self.btn_reset_speed.clicked.connect(self.__default_speed)
+        # Simulation manager button signals connection
+        self.btn_start.clicked.connect(self.start)
+        self.btn_play.clicked.connect(self.resume)
+        self.btn_pause.clicked.connect(self.pause)
+        self.btn_stop.clicked.connect(self.stop)
         self.btn_save_chart.clicked.connect(self.save_chart)
-        self.btn_open_csvfile.clicked.connect(self.show_outfile)
+        self.btn_show_csvfile.clicked.connect(self.show_csvfile)
 
-        self.__prepare_simulation()
+        # Simulation speed button signals connection
+        # self.btn_increase_speed.clicked.connect(self.increase_speed)
+        # self.btn_decrease_speed.clicked.connect(self.decrease_speed)
+        # self.btn_max_speed.clicked.connect(self.__max_speed)
+        self.btn_reset_speed.clicked.connect(self.reset_speed)
 
     def closeEvent(self, event):
         """
@@ -70,43 +80,34 @@ class SimulationWindow(QtWidgets.QMainWindow, UiSimWindow):
         #     event.ignore()
         event.accept()
 
-    def plot_channel_charts(self):
+    def check_speed_value(self):
+        return self.speed_factor
+
+    def build_channel_charts(self):
         """
         Build and initialize the graphs of each channel taking into account whether the assigned distribution
         is continuous or discrete simulation
         """
-        pass
-        # index = 0
-        # for channel in self.channels.values():
-        #     if channel["distribution"].get('name') == c.BERNOULLI:
-        #         chart = LineChart(title="Canal {}".format(channel.get("id")))
-        #         self.series.append(
-        #             chart.dynamic_line()
-        #         )
-        #         self.chartviews[index].setChart(chart)
-        #     else:
-        #         chart = SplineChart(title="Canal {}".format(channel.get("id")))
-        #         self.series.append(
-        #             chart.dynamic_spline()
-        #         )
-        #         self.chartviews[index].setChart(chart)
-        #     index += 1
-        #
-        # self.percent_chart = BarChart(
-        #     title="%  Channel usage",
-        #     parameters=self.channels.copy()
-        # )
-        # self.series.append(self.percent_chart.plot_bar_chart())
-        # self.chartviews[9].setChart(self.percent_chart)
+        for index, channel in enumerate(self.environment.channels):
+            if channel.distribution.category == 'Discrete':
+                channel_chart = LineChart(
+                    title=f'{channel.frequency} Channel'
+                )
+            else:
+                channel_chart = SplineChart(
+                    title=f'{channel.frequency} Channel'
+                )
 
-    def __prepare_simulation(self):
-        """
-        Prepare the simulation scenario by calling each setting method
-        """
-        self.__simulation_btn_mannager(True, False, False, False)
-        self.__speed_btn_mannager(False, False, False, False)
-        self.series = list()
-        self.plot_channel_charts()
+            self.channel_charts.append(channel_chart)
+            self.chartviews[index].setChart(channel_chart)
+
+        barchart = BarChart(
+            categories=[channel.frequency for channel in self.environment.channels],
+            title='Usage percentage for TV channels'
+        )
+        barchart.update_bars([20, 10, 30, 50, 40, 70, 90, 40, 80])
+        self.channel_charts.append(barchart)
+        self.chartviews[9].setChart(barchart)
 
     def save_chart(self):
         """
@@ -138,109 +139,102 @@ class SimulationWindow(QtWidgets.QMainWindow, UiSimWindow):
                     QtWidgets.QMessageBox.Ok
                 )
 
-    def show_outfile(self):
+    def show_csvfile(self):
         """
-        Opens an instance of the file with the results of the current simulation
+        Opens a file instance for show the results of the current simulation scenario
         """
-        self.__file_thread = FileThread(
-            name=f'File-{self.simulation_filepath}',
-            kwargs={
-                'filepath': self.simulation_filepath
-            }
-        )
-        self.__file_thread.setDaemon(True)
-        self.__file_thread.start()
+        try:
+            csvfile = FileThread(
+                kwargs={
+                    'filepath': self.output_filepath
+                }
+            )
+            csvfile.setDaemon(True)
+            csvfile.start()
+        except Exception as e:
+            print(f'{e}')
 
-    def __start(self):
+    def start(self):
         """
         Start the simulation process
         """
-        self.__thread = SimulationThread(
-            name=f'Simulation-{uuid4()}',
-            target=self.speed_value,
-            kwargs={
-                'callback': self.__finish_sim,
-                'channels': self.channels.copy(),
-                'filepath': self.simulation_filepath,
-                'generators': self.generators.copy(),
-                'parameters': self.parameters.copy(),
-                'series': self.series.copy()
-            }
-        )
-        self.__thread.setDaemon(True)
-        self.__thread.start()
-        self.__simulation_btn_mannager(False, False, True, True)
-        self.__speed_btn_mannager(True, True, True, True)
-        self.btn_start.setText("RESTART")
+        try:
+            self.simulation.setDaemon(True)
+            self.simulation.start()
+            # self.__simulation_btn_manager(False, False, True, True)
+            # self.__speed_btn_manager(True, True, True, True)
+            self.btn_start.setText("RESTART")
+        except Exception as e:
+            print(f'Error in starting or restarting Simulation:\n {e}')
 
-    def __resume(self):
-        self.__thread.resume()
-        self.__simulation_btn_mannager(False, False, True, True)
+    def resume(self):
+        self.simulation.resume()
+        # self.__simulation_btn_manager(False, False, True, True)
 
-    def __pause(self):
-        self.__thread.pause()
-        self.__simulation_btn_mannager(False, True, False, True)
+    def pause(self):
+        self.simulation.pause()
+        # self.__simulation_btn_manager(False, True, False, True)
 
-    def __stop(self):
-        if self.__thread.is_alive:
-            if self.__thread.paused:
-                self.__thread.resume()
-                self.__thread.stop()
+    def stop(self):
+        if self.simulation.is_alive():
+            if self.simulation.paused:
+                self.simulation.resume()
+                self.simulation.stop()
             else:
-                self.__thread.stop()
-            self.__speed_btn_mannager(False, False, False, False)
-            self.__simulation_btn_mannager(True, False, False, False)
-        self.__prepare_simulation()
+                self.simulation.stop()
 
-    def speed_value(self):
-        return self.speed
+    # def increase_speed(self):
+    #     self.speed_factor *= 2
+    #     self.__speed_btn_manager(True, True, True, True)
+    #     if self.speed_factor < 1:
+    #         self.label_speed.setText("X{}".format(self.speed_factor))
+    #     else:
+    #         self.label_speed.setText("X{}".format(int(self.speed_factor)))
+    #     if self.speed_factor == c.MAX_SPEED:
+    #         self.__speed_btn_manager(False, True, False, True)
+    #
+    # def decrease_speed(self):
+    #     self.speed_factor /= 2
+    #     self.__speed_btn_manager(True, True, True, True)
+    #     if self.speed_factor < 1:
+    #         self.label_speed.setText("X{}".format(self.speed_factor))
+    #     else:
+    #         self.label_speed.setText("X{}".format(int(self.speed_factor)))
+    #     if self.speed_factor == c.MIN_SPEED:
+    #         self.__speed_btn_manager(True, False, True, True)
+    #
+    def reset_speed(self):
+        self.speed_factor = DEFAULT_SPEED
+        self.label_speed.setText("X{}".format(int(self.speed_factor)))
 
-    def increase_speed(self):
-        self.speed *= 2
-        self.__speed_btn_mannager(True, True, True, True)
-        if self.speed < 1:
-            self.label_speed.setText("X{}".format(self.speed))
-        else:
-            self.label_speed.setText("X{}".format(int(self.speed)))
-        if self.speed == c.MAX_SPEED:
-            self.__speed_btn_mannager(False, True, False, True)
+    def reset_settings(self):
+        self.reset_speed()
+        self.btn_start.setText('START')
 
-    def decrease_speed(self):
-        self.speed /= 2
-        self.__speed_btn_mannager(True, True, True, True)
-        if self.speed < 1:
-            self.label_speed.setText("X{}".format(self.speed))
-        else:
-            self.label_speed.setText("X{}".format(int(self.speed)))
-        if self.speed == c.MIN_SPEED:
-            self.__speed_btn_mannager(True, False, True, True)
-
-    def __default_speed(self):
-        self.speed = 1
-        self.label_speed.setText("X{}".format(int(self.speed)))
-        self.__speed_btn_mannager(True, True, True, True)
-
-    def __max_speed(self):
-        self.speed = c.MAX_SPEED
-        self.label_speed.setText("X{}".format(int(self.speed)))
-        self.__speed_btn_mannager(False, True, False, True)
-
-    def __simulation_btn_mannager(self, f1, f2, f3, f4):
-        self.btn_start.setEnabled(f1)
-        self.btn_play.setEnabled(f2)
-        self.btn_pause.setEnabled(f3)
-        self.btn_stop.setEnabled(f4)
-
-    def __speed_btn_mannager(self, f1, f2, f3, f4):
-        self.btn_increase_speed.setEnabled(f1)
-        self.btn_decrease_speed.setEnabled(f2)
-        self.btn_max_speed.setEnabled(f3)
-        self.btn_reset_speed.setEnabled(f4)
-
-    def __finish_sim(self, interrupted):
-        self.__simulation_btn_mannager(True, False, False, False)
-        self.__speed_btn_mannager(False, False, False, False)
-        self.speed = 1
-        self.label_speed.setText("X{}".format(int(self.speed)))
-        self.btn_open_csvfile.setEnabled(interrupted)
-        self.btn_save_chart.setEnabled(interrupted)
+    #     self.__speed_btn_manager(True, True, True, True)
+    #
+    # def __max_speed(self):
+    #     self.speed_factor = c.MAX_SPEED
+    #     self.label_speed.setText("X{}".format(int(self.speed_factor)))
+    #     self.__speed_btn_manager(False, True, False, True)
+    #
+    # def __simulation_btn_manager(self, f1, f2, f3, f4):
+    #     self.btn_start.setEnabled(f1)
+    #     self.btn_play.setEnabled(f2)
+    #     self.btn_pause.setEnabled(f3)
+    #     self.btn_stop.setEnabled(f4)
+    #
+    # def __speed_btn_manager(self, f1, f2, f3, f4):
+    #     self.btn_increase_speed.setEnabled(f1)
+    #     self.btn_decrease_speed.setEnabled(f2)
+    #     self.btn_max_speed.setEnabled(f3)
+    #     self.btn_reset_speed.setEnabled(f4)
+    #
+    def _simulation_finished(self, interrupted):
+        self.reset_settings()
+    #     self.__simulation_btn_manager(True, False, False, False)
+    #     self.__speed_btn_manager(False, False, False, False)
+    #     self.speed_factor = 1
+    #     self.label_speed.setText("X{}".format(int(self.speed_factor)))
+    #     self.btn_open_csvfile.setEnabled(interrupted)
+    #     self.btn_save_chart.setEnabled(interrupted)

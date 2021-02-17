@@ -108,9 +108,6 @@ class Parameter(object):
             value=value
         )
 
-    def __str__(self):
-        return f'Parameter: {self.name}, range: {self.range}, value: {self.value}'
-
 
 class Distribution:
     """
@@ -445,14 +442,22 @@ class SimulationEnvironment(object):
 
     def build_channels(self, channels):
         for channel in channels:
-            distribution_content = channel.get('distribution')
+            distribution_data = channel.get('distribution')
             new_channel = Channel(
                 id=channel.get('id'),
                 frequency=channel.get('frequency'),
-                distribution=DISTRIBUTION_CHOICES.get(distribution_content.get('name'))()  # Callback implementation
+                distribution=self._build_distribution(
+                    distribution_data.get('name'),
+                    distribution_data.get('parameters')
+                )
             )
-            new_channel.distribution.set_parameters(distribution_content.get('parameters', dict()))
             self.add_or_update_channel(new_channel)
+
+    def _build_distribution(self, name, parameters):
+        distribution = DISTRIBUTION_CHOICES.get(name)()  # Callback implementation
+        for parameter, value in zip(distribution.parameters, parameters.values()):
+            parameter.set_value(value)
+        return distribution
 
     def __str__(self):
         return f'Environment: {self.id}, at the: {self.timestamp} channels: \n{self.channels}'

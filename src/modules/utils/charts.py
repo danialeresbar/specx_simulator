@@ -331,6 +331,9 @@ class SplineChart(SimulationChart):
         pen.setWidth(3)
         self.spseries.setPen(pen)
 
+    def update_series(self, values):
+        self.spseries.append()
+
 
 class LineChart(SimulationChart):
     """

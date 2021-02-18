@@ -15,9 +15,7 @@ SUCCESS_PROB = 0.8
 
 # ---- Beta Distribution ----
 BETA = 'Beta'
-BETA_SHAPE_1_LABEL = 'Parámetro de\nforma alpha:'
 BETA_SHAPE_1 = 14.087
-BETA_SHAPE_2_LABEL = 'Parámetro de\nforma beta:'
 BETA_SHAPE_2 = 4.9149
 BETA_LOC = 0.05
 BETA_SCALE = 0.75
@@ -43,14 +41,14 @@ LAPLACE_SCALE = 0.11365703
 
 
 # ---- Lognormal Distribution ----
-LOGNORM = 'Lognormal'
+LOGNORM = 'Lognorm'
 LOGNORM_SHAPE = 0.01758
 LOGNORM_LOC = 1.86636
 LOGNORM_SCALE = -5.8362
 
 
 # ---- Normal Distribution ----
-NORM = 'Normal'
+NORM = 'Norm'
 NORM_LOC = 0.60998
 NORM_SCALE = 0.06172
 
@@ -62,10 +60,8 @@ RAYLEIGH_SCALE = 0.1003
 
 
 # ---- Uniform Distribution ----
-UNIFORM = 'Uniforme'
-UNIFORM_INF_LABEL = 'Parámetro de\ncota inferior:'
+UNIFORM = 'Uniform'
 UNIFORM_INF = 0.27671
-UNIFORM_SUP_LABEL = 'Parámetro de\ncota superior:'
 UNIFORM_SUP = 0.61845
 
 
@@ -164,7 +160,6 @@ class Bernoulli(Distribution):
                 )
             ],
             category=DISCRETE_TYPE,
-            variant=False,
             rv_generator=gen.bernoulli
         )
 
@@ -179,15 +174,18 @@ class Beta(Distribution):
         super(Beta, self).__init__(
             name=BETA,
             parameters=[
-                Parameter(name='Alpha shape', range=[0.0001, 9999], value=kwargs.get('alpha_shape', BETA_SHAPE_1)),
-                Parameter(name='Beta shape', range=[0.0001, 9999], value=kwargs.get('beta_shape', BETA_SHAPE_2)),
+                Parameter(name='Alpha shape', range=[0.15, 9999], value=kwargs.get('alpha_shape', BETA_SHAPE_1)),
+                Parameter(name='Beta shape', range=[0.15, 9999], value=kwargs.get('beta_shape', BETA_SHAPE_2)),
                 Parameter.location(range=[-9999, 9999], value=kwargs.get('loc', BETA_LOC)),
                 Parameter.scale(range=[0.0001, 9999], value=kwargs.get('scale', BETA_SCALE))
             ],
             category=CONTINUOUS_TYPE,
-            variant=False,
             rv_generator=gen.beta
         )
+
+    @staticmethod
+    def plot_pdfchart(pdfchart):
+        pdfchart.plot_beta()
 
 
 class Gamma(Distribution):
@@ -209,6 +207,10 @@ class Gamma(Distribution):
             rv_generator=gen.gamma
         )
 
+    @staticmethod
+    def plot_pdfchart(pdfchart):
+        pdfchart.plot_gamma()
+
 
 class Gumbel(Distribution):
     """
@@ -224,9 +226,12 @@ class Gumbel(Distribution):
                 Parameter.scale(range=[0.0001, 9999], value=kwargs.get('scale', GUMBEL_SCALE))
             ],
             category=CONTINUOUS_TYPE,
-            variant=False,
             rv_generator=gen.gumbel
         )
+
+    @staticmethod
+    def plot_pdfchart(pdfchart):
+        pdfchart.plot_gumbel()
 
 
 class Laplace(Distribution):
@@ -243,9 +248,12 @@ class Laplace(Distribution):
                 Parameter.scale(range=[0.0001, 9999], value=kwargs.get('scale', LAPLACE_SCALE))
             ],
             category=CONTINUOUS_TYPE,
-            variant=False,
             rv_generator=gen.laplace
         )
+
+    @staticmethod
+    def plot_pdfchart(pdfchart):
+        pdfchart.plot_laplace()
 
 
 class Lognorm(Distribution):
@@ -267,6 +275,10 @@ class Lognorm(Distribution):
             rv_generator=gen.lognormal
         )
 
+    @staticmethod
+    def plot_pdfchart(pdfchart):
+        pdfchart.plot_lognorm()
+
 
 class Norm(Distribution):
     """
@@ -282,9 +294,12 @@ class Norm(Distribution):
                 Parameter.scale(range=[0.0001, 9999], value=kwargs.get('scale', NORM_SCALE))
             ],
             category=CONTINUOUS_TYPE,
-            variant=False,
             rv_generator=gen.normal
         )
+
+    @staticmethod
+    def plot_pdfchart(pdfchart):
+        pdfchart.plot_norm()
 
 
 class Rayleigh(Distribution):
@@ -305,6 +320,10 @@ class Rayleigh(Distribution):
             rv_generator=gen.rayleigh
         )
 
+    @staticmethod
+    def plot_pdfchart(pdfchart):
+        pdfchart.plot_rayleigh()
+
 
 class Uniform(Distribution):
     """
@@ -316,13 +335,16 @@ class Uniform(Distribution):
         super(Uniform, self).__init__(
             name=UNIFORM,
             parameters=[
-                Parameter(name='Lower bound', range=[-9999, 9999], value=kwargs.get('loc', UNIFORM_INF)),
-                Parameter(name='Upper bound', range=[-9999, 9999], value=kwargs.get('scale', UNIFORM_SUP))
+                Parameter(name='Lower bound', range=[0, 9999], value=kwargs.get('loc', UNIFORM_INF)),
+                Parameter(name='Upper bound', range=[0, 9999], value=kwargs.get('scale', UNIFORM_SUP))
             ],
             category=CONTINUOUS_TYPE,
-            variant=False,
             rv_generator=gen.uniform
         )
+
+    @staticmethod
+    def plot_pdfchart(pdfchart):
+        pdfchart.plot_uniform()
 
 
 class Weibull(Distribution):
@@ -344,19 +366,9 @@ class Weibull(Distribution):
             rv_generator=gen.weibull
         )
 
-
-DISTRIBUTION_CHOICES = {
-    BERNOULLI: Bernoulli,
-    BETA: Beta,
-    GAMMA: Gamma,
-    GUMBEL: Gumbel,
-    LAPLACE: Laplace,
-    LOGNORM: Lognorm,
-    NORM: Norm,
-    RAYLEIGH: Rayleigh,
-    UNIFORM: Uniform,
-    WEIBULL: Weibull,
-}
+    @staticmethod
+    def plot_pdfchart(pdfchart):
+        pdfchart.plot_weibull()
 
 
 class Channel(object):
@@ -446,14 +458,15 @@ class SimulationEnvironment(object):
             new_channel = Channel(
                 id=channel.get('id'),
                 frequency=channel.get('frequency'),
-                distribution=self._build_distribution(
+                distribution=self.build_distribution(
                     distribution_data.get('name'),
                     distribution_data.get('parameters')
                 )
             )
             self.add_or_update_channel(new_channel)
 
-    def _build_distribution(self, name, parameters):
+    @staticmethod
+    def build_distribution(name, parameters):
         distribution = DISTRIBUTION_CHOICES.get(name)()  # Callback implementation
         for parameter, value in zip(distribution.parameters, parameters.values()):
             parameter.set_value(value)
@@ -461,3 +474,20 @@ class SimulationEnvironment(object):
 
     def __str__(self):
         return f'Environment: {self.id}, at the: {self.timestamp} channels: \n{self.channels}'
+
+
+def distribution_selector(key):
+    choices = {
+        BERNOULLI: Bernoulli,
+        BETA: Beta,
+        GAMMA: Gamma,
+        GUMBEL: Gumbel,
+        LAPLACE: Laplace,
+        LOGNORM: Lognorm,
+        NORM: Norm,
+        RAYLEIGH: Rayleigh,
+        UNIFORM: Uniform,
+        WEIBULL: Weibull,
+    }
+    distribution = choices.get(key, Distribution)
+    return distribution()

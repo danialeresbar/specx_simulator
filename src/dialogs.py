@@ -30,12 +30,13 @@ class ParametrizationDialog(UiConfigDialog, QtWidgets.QDialog):
             title=f'''
                     Probability Density Function
                     <center><small>{self.distribution.name} Distribution</small></center>
-            '''
+            ''',
+            parameters=self.distribution.parameters
         )
         self.setWindowTitle(f'{self.distribution.name} Distribution')
         self.hide_parameter_rows()
         self.setup_dialog_components()
-        # self.plot_chart_preview()
+        self.plot_chart_preview()
 
         # Button signals connection
         self.btn_submit.clicked.connect(self.accept)
@@ -45,10 +46,10 @@ class ParametrizationDialog(UiConfigDialog, QtWidgets.QDialog):
         self.radiobtn_3.toggled.connect(self.__radiobtn_checked)
 
         # Spin signals connection
-        # self.parameter_spbox_1.valueChanged.connect(self.plot_chart_preview)
-        # self.parameter_spbox_2.valueChanged.connect(self.plot_chart_preview)
-        # self.parameter_spbox_3.valueChanged.connect(self.plot_chart_preview)
-        # self.parameter_spbox_4.valueChanged.connect(self.plot_chart_preview)
+        self.parameter_spbox_1.valueChanged.connect(self.plot_chart_preview)
+        self.parameter_spbox_2.valueChanged.connect(self.plot_chart_preview)
+        self.parameter_spbox_3.valueChanged.connect(self.plot_chart_preview)
+        self.parameter_spbox_4.valueChanged.connect(self.plot_chart_preview)
 
     def closeEvent(self, event):
         """
@@ -88,8 +89,8 @@ class ParametrizationDialog(UiConfigDialog, QtWidgets.QDialog):
         :return:
         """
         self.update_distribution_parameters()
-        self.distribution.plot_chart()
-        self.pdf_chartview.setChart(self.distribution.chart)
+        self.distribution.plot_pdfchart(self.distribution_chart)
+        self.pdf_chartview.setChart(self.distribution_chart)
 
     def setup_dialog_components(self):
         """

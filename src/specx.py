@@ -107,7 +107,7 @@ class SpecxMainWindow(QtWidgets.QMainWindow, UiMainWindow):
         distribution_key = self.sender().currentText()
         for channel in self.environment.channels:
             if channel.id == self.boxes.index(self.sender()):
-                channel.distribution = models.DISTRIBUTION_CHOICES.get(distribution_key)()  # Callback implementation
+                channel.distribution = models.distribution_selector(distribution_key)
                 current_channel = channel
 
         modal = ParametrizationDialog(self, distribution=current_channel.distribution)

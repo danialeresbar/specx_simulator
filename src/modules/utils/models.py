@@ -467,7 +467,7 @@ class SimulationEnvironment(object):
 
     @staticmethod
     def build_distribution(name, parameters):
-        distribution = DISTRIBUTION_CHOICES.get(name)()  # Callback implementation
+        distribution = distribution_selector(name)
         for parameter, value in zip(distribution.parameters, parameters.values()):
             parameter.set_value(value)
         return distribution

@@ -2,20 +2,6 @@ from modules.qt.dialogs_qt_ui import UiConfigDialog, QtWidgets
 from modules.utils.charts import PDFChart
 
 
-# ---- Bernoulli Distribution ----
-SUCCESS_PROB_LABEL = 'Probabilidad\nde exito:'
-
-
-# ---- Beta Distribution ----
-BETA_SHAPE_1_LABEL = 'Parámetro de\nforma alpha:'
-BETA_SHAPE_2_LABEL = 'Parámetro de\nforma beta:'
-
-
-# ---- Uniform Distribution ----
-UNIFORM_INF_LABEL = 'Parámetro de\ncota inferior:'
-UNIFORM_SUP_LABEL = 'Parámetro de\ncota superior:'
-
-
 class ParametrizationDialog(UiConfigDialog, QtWidgets.QDialog):
     """
     Class with the required components for the parameterization of a probability distribution assigned to a channel
@@ -41,9 +27,9 @@ class ParametrizationDialog(UiConfigDialog, QtWidgets.QDialog):
         # Button signals connection
         self.btn_submit.clicked.connect(self.accept)
         self.btn_reject.clicked.connect(self.close)
-        self.radiobtn_1.toggled.connect(self.__radiobtn_checked)
-        self.radiobtn_2.toggled.connect(self.__radiobtn_checked)
-        self.radiobtn_3.toggled.connect(self.__radiobtn_checked)
+        # self.radiobtn_1.toggled.connect(self.__radiobtn_checked)
+        # self.radiobtn_2.toggled.connect(self.__radiobtn_checked)
+        # self.radiobtn_3.toggled.connect(self.__radiobtn_checked)
 
         # Spin signals connection
         self.parameter_spbox_1.valueChanged.connect(self.plot_chart_preview)
@@ -72,17 +58,6 @@ class ParametrizationDialog(UiConfigDialog, QtWidgets.QDialog):
         for spbox, parameter in zip(self.spboxes, self.distribution.parameters):
             parameter.set_value(spbox.value())
 
-    def __radiobtn_checked(self):
-        radiobtn = self.sender()
-        if radiobtn.isChecked() and radiobtn.text() == '1P':
-            self.__show_params(True, False, False, False)
-
-        elif radiobtn.isChecked() and radiobtn.text() == '2P':
-            self.__show_params(True, True, False, False)
-
-        elif radiobtn.isChecked() and radiobtn.text() == '3P':
-            self.__show_params(True, True, True, False)
-
     def plot_chart_preview(self):
         """
         Method
@@ -107,7 +82,6 @@ class ParametrizationDialog(UiConfigDialog, QtWidgets.QDialog):
 
         if self.distribution.variant:
             pass
-            # print('Variant ditro')
 
         else:
             self.hide_radiobtn_rows()

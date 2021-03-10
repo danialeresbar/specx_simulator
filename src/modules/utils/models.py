@@ -163,6 +163,10 @@ class Bernoulli(Distribution):
             rv_generator=gen.bernoulli
         )
 
+    @staticmethod
+    def plot_pdfchart(pdfchart):
+        pdfchart.plot_bernoulli()
+
 
 class Beta(Distribution):
     """

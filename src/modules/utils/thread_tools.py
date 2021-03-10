@@ -5,7 +5,6 @@ from datetime import datetime, timedelta
 
 
 # ---- CONSTANTS ----
-CHANNELS = 'channels'
 # The simulation time is given in minutes and every two seconds a random variable is generated
 RANDOM_VARIABLES_GENERATED = 60/2  # 60s for each minute
 
@@ -31,32 +30,21 @@ class SimulationThread(threading.Thread):
         self.stopped = False  # Stop indicator
         self.finished = True  # Finished indicator
 
-    def update_chart(self, chart, x, y):
-        pass
-
     def run(self):
         """
-        Generation of Random Variables and update of charts
+        Generation of Random Variables and updating of the charts
         :return:
         """
         global RANDOM_VARIABLES_GENERATED
 
         delta = datetime.now()
         for index, channel in enumerate(self.channels):
-            print(f'Simulating channel {channel.frequency} for {self.sample_time}')
             var_count = 0
 
             while var_count < RANDOM_VARIABLES_GENERATED*self.sample_time and not self.stopped:
                 var = channel.distribution.generate_random_variable()
-                print(var)
                 var_count += 1
-        #         self.__update_chart(serie, var_count*2, var)
-        #         self.__update_outfile(
-        #             delta,
-        #             channel.get('frequency'),
-        #             channel['distribution'].get('name'),
-        #             var
-        #         )
+                self.charts[index].update_series(var_count*2, var)
                 time.sleep(2/self.delay())  # Time interval between the generation of random variables
                 delta += timedelta(seconds=2)
         #         if var >= self.parameters.get(c.THRESHOLD):
@@ -69,9 +57,6 @@ class SimulationThread(threading.Thread):
                     self.finished = False
                     break
         #     self.__update_bars(bars[index], (usage_percent/var_count)*100)
-        #     index += 1
-        #
-        # self.callback_exit(self.finish_flag)
 
     def pause(self):
         """

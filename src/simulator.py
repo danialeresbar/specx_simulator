@@ -41,6 +41,7 @@ class SimulationScenario(QtWidgets.QMainWindow, UiSimWindow):
         self.speed_factor = 1
         self.channel_charts = list()
         self.build_channel_charts()
+        self._control_manager(play=False, pause=False, stop=False)
         self.simulation = SimulationThread(
             channels=self.environment.channels,
             charts=self.channel_charts,
@@ -166,23 +167,29 @@ class SimulationScenario(QtWidgets.QMainWindow, UiSimWindow):
         try:
             self.simulation.setDaemon(True)
             self.simulation.start()
-            # self.__simulation_btn_manager(False, False, True, True)
-            # self.__speed_btn_manager(True, True, True, True)
-            self.btn_start.setText("RESTART")
+            self._control_manager(start=False, play=False)
         except Exception as e:
-            print(f'Error in starting or restarting Simulation:\n {e}')
+            print(f'Error in starting Simulation:\n {e}')
 
     def resume(self):
+        """
+        Resume the simulation process
+        :return:
+        """
         try:
             self.simulation.resume()
-            # self.__simulation_btn_manager(False, False, True, True)
+            self._control_manager(start=False, play=False)
         except Exception as e:
             print(f'Error in resuming Simulation:\n {e}')
 
     def pause(self):
+        """
+        Pause the simulation process
+        :return:
+        """
         try:
             self.simulation.pause()
-            # self.__simulation_btn_manager(False, True, False, True)
+            self._control_manager(start=False, pause=False)
         except Exception as e:
             print(f'Error in pausing Simulation:\n {e}')
 
@@ -191,12 +198,11 @@ class SimulationScenario(QtWidgets.QMainWindow, UiSimWindow):
         Stop the simulation process
         """
         if self.simulation.is_alive():
+            if self.simulation.paused():
+                self.resume()
             try:
-                if self.simulation.paused:
-                    self.simulation.resume()
-                    self.simulation.stop()
-                else:
-                    self.simulation.stop()
+                self.simulation.stop()
+                self._control_manager(play=False, pause=False, stop=False)
             except Exception as e:
                 print(f'Error in stopping Simulation:\n {e}')
 

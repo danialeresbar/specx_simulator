@@ -3,7 +3,6 @@ import numpy as np
 import scipy.stats as stats
 
 from PyQt5.QtChart import (
-    QAbstractBarSeries,
     QBarCategoryAxis,
     QBarSeries,
     QBarSet,
@@ -68,7 +67,7 @@ class BarChart(QChart):
         self.x_categories = kwargs.get('categories', list())
 
         self.bars = list()
-        self._init_bars()
+        self._init_bars(kwargs.get('bars', list()))
         self._setup_axes()
 
         self.x_axis = QBarCategoryAxis()
@@ -92,17 +91,17 @@ class BarChart(QChart):
         self.setTitle(self.title)
         self.setTitleFont(CHART_TITLE_FONT)
 
-    def _init_bars(self):
+    def _init_bars(self, bars):
         """
         Init the chart bars with default values. For this case, 50 is the default percentage
         :return:
         """
-        for x_category in self.x_categories:
+        for x_category, bar_value in zip(self.x_categories, bars):
             series = QBarSeries()
             bar = QBarSet(x_category)
             bar.setLabelColor(Qt.black)
             bar.setLabelFont(CHART_LABEL_FONT)
-            bar.append(50)
+            bar.append(bar_value)
             series.append(bar)
             series.setLabelsFormat("@value %")
             series.setLabelsVisible(True)
@@ -164,8 +163,11 @@ class BaseChart(QChart):
         pen.setWidth(3)
         self.base_series.setPen(pen)
 
-    def update_series(self, values):
-        self.base_series.append(values)
+    def update_series(self, x, y):
+        self.base_series.append(x, y)
+        if x >= 12:
+            dx = self.plotArea().width() / self.x_axis.tickCount()
+            self.scroll(dx, 0)
 
 
 class SplineChart(BaseChart):
@@ -380,41 +382,3 @@ class PDFChart(BaseChart):
         for x, y in zip(x_values, y_values):
             new_points.append(QPointF(x, y))
         self.base_series.replace(new_points)
-
-    def add_bars(self, x, bars, bar_colors, bar_label_format, y_label_format, y_max, y_tickcount, legends, legend_alignment):
-        for index in range(len(bars)):
-            series = QBarSeries()
-
-            bar_set = QBarSet(legends[index])
-            if bar_colors:
-                bar_set.setColor(bar_colors[index])
-
-            bar_set.setLabelColor(Qt.black)
-            bar_set.setLabelFont(CHART_LABEL_FONT)
-            bar_set.append(bars[index])
-
-            series.append(bar_set)
-            series.setLabelsVisible(True)
-            series.setLabelsFormat(bar_label_format)
-            if bars[index] < y_max*0.2:
-                series.setLabelsPosition(QAbstractBarSeries.LabelsOutsideEnd)
-
-            else:
-                series.setLabelsPosition(QAbstractBarSeries.LabelsCenter)
-            self.addSeries(series)
-
-        self.createDefaultAxes()
-        axis_x = self.axes(Qt.Horizontal)[0]
-        self.removeAxis(axis_x)
-        axis_x = QBarCategoryAxis()
-        axis_x.append(x)
-        self.addAxis(axis_x, Qt.AlignBottom)
-        axis_x.setLabelsFont(CHART_LABEL_FONT)
-        axis_y = self.axes(Qt.Vertical, series)[0]
-        axis_y.setRange(0, y_max)
-        axis_y.setTickCount(y_tickcount)
-        axis_y.setLabelFormat(y_label_format)
-        axis_y.setLabelsFont(CHART_LABEL_FONT)
-        self.legend().setAlignment(legend_alignment)
-        self.legend().setVisible(False)
-        self.setTitleFont(CHART_TITLE_FONT)

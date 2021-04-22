@@ -55,7 +55,7 @@ def bernoulli(args):
     Generates a random variable that has a Bernoulli distribution with a probability of success 'p'
     """
     u = cong_mixto_posix()
-    return 1 if u < args[0] else 0
+    return 1 if u < args[0].value else 0
 
 
 def beta(args):

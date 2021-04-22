@@ -2,15 +2,15 @@ import math
 import numpy as np
 import scipy.stats as st
 
-from PyQt5.QtChart import QLegend, QSplineSeries
-from src.charts import base
+from PyQt5.QtChart import QSplineSeries
+from src.charts.stats import common
 
 DEFAULT_GAMMA_VALUE = 1
 DEFAULT_MEAN_VALUE = 0
 DEFAULT_SIGMA_VALUE = 1
 
 
-class LognormPDF(base.BaseChart):
+class LognormPDF(common.PDFChart):
     """
 
     """
@@ -24,33 +24,17 @@ class LognormPDF(base.BaseChart):
         )
 
         self.base_series = QSplineSeries()
-
-        # Series style customization
-        pen = self.base_series.pen()
-        pen.setColor(base.SERIES_COLOR)
-        pen.setWidth(base.CHART_DEFAULT_SERIES_WIDTH)
-
-        # Axis settings
-        self.addSeries(self.base_series)
-        self.createDefaultAxes()
-        self.x_axis = self.axes(base.Qt.Horizontal, self.series()[0])[0]
-        self.y_axis = self.axes(base.Qt.Vertical, self.series()[0])[0]
-
-        # Chart attributes
-        self.legend().setVisible(True)
-        self.legend().setMarkerShape(QLegend.MarkerShapeFromSeries)
-        self.setAnimationOptions(base.QChart.SeriesAnimations)
         self._plot()
 
     def _plot(self):
         x = np.linspace(
             st.lognorm.ppf(0.01, self.__sigma, loc=self.__gamma, scale=math.exp(self.__mean)),
             st.lognorm.ppf(0.99, self.__alpha, loc=self.__gamma, scale=math.exp(self.__mean)),
-            base.SAMPLES
+            common.SAMPLES
         )
         y = st.lognorm.pdf(x, self.__alpha, loc=self.__gamma, scale=math.exp(self.__mean))
         self.base_series.setName(
-            f'{base.MU}={self.__mean:.4f}, {base.SIGMA}={self.__sigma:.4f}, {base.GAMMA}={self.__gamma:.4f}'
+            f'{common.MU}={self.__mean:.4f}, {common.SIGMA}={self.__sigma:.4f}, {common.GAMMA}={self.__gamma:.4f}'
         )
         self.base_series.remove(0, len(self.base_series.pointsVector()))
         self.plot_series(x, y)

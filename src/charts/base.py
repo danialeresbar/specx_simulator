@@ -27,12 +27,12 @@ LIGHT_GREEN = QColorConstants.Svg.lightgreen
 INDIAN_RED = QColorConstants.Svg.indianred
 
 # ---- Greg letters ----
-ALPHA_LETTER = 'α'
-BETA_LETTER = 'β'
-GAMMA_LETTER = 'γ'
-LAMBDA_LETTER = 'λ'
-MU_LETTER = 'μ'
-SIGMA_LETTER = 'σ'
+ALPHA = 'α'
+BETA = 'β'
+GAMMA = 'γ'
+LAMBDA = 'λ'
+MU = 'μ'
+SIGMA = 'σ'
 
 # ---- Statistic ----
 SAMPLES = 100

@@ -26,17 +26,6 @@ BLACK = QColorConstants.Svg.black
 LIGHT_GREEN = QColorConstants.Svg.lightgreen
 INDIAN_RED = QColorConstants.Svg.indianred
 
-# ---- Greg letters ----
-ALPHA = 'α'
-BETA = 'β'
-GAMMA = 'γ'
-LAMBDA = 'λ'
-MU = 'μ'
-SIGMA = 'σ'
-
-# ---- Statistic ----
-SAMPLES = 100
-
 
 class BaseChart(QChart):
     """

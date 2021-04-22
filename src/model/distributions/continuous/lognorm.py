@@ -1,6 +1,6 @@
 import math
 
-from src.model import generators
+from scipy import stats as st
 from src.model.distributions import base
 
 LOGNORM = 'Gamma'
@@ -31,4 +31,11 @@ class Gamma(base.Distribution):
         )
 
     def generate_rv(self):
-        return generators.lognormal(self.parameters)
+        """
+        Generates a random variable that has a Lognorm distribution
+        with a success probability.
+        :return: Random variable following a Lognorm distribution
+        """
+
+        var = st.lognorm.rvs(self.__alpha_shape, self.__location, math.exp(self.__scale))
+        return base.clean_random_variable(var)

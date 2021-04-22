@@ -1,4 +1,4 @@
-from src.model import generators
+from scipy import stats as st
 from src.model.distributions import base
 
 NORMAL = 'Normal'
@@ -21,4 +21,11 @@ class Normal(base.Distribution):
         )
 
     def generate_rv(self):
-        return generators.normal(self.parameters)
+        """
+        Generates a random variable that has a Normal distribution
+        with a success probability.
+        :return: Random variable following a Normal distribution
+        """
+
+        var = st.norm.rvs(self.__location, self.__scale)
+        return base.clean_random_variable(var)

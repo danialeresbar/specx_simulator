@@ -1,6 +1,6 @@
 import math
 
-from src.model import generators
+from scipy import stats as st
 from src.model.distributions import base
 
 WEIBULL = 'Weibull'
@@ -31,4 +31,11 @@ class Weibull(base.Distribution):
         )
 
     def generate_rv(self):
-        return generators.weibull(self.parameters)
+        """
+        Generates a random variable that has a Weibull distribution
+        with a success probability.
+        :return: Random variable following a Weibull distribution
+        """
+
+        var = st.weibull_min.rvs(self.__alpha_shape, self.__location, self.__scale)
+        return base.clean_random_variable(var)

@@ -1,4 +1,3 @@
-from src.model import generators
 from src.model.distributions import base
 
 BERNOULLI = 'Bernoulli'
@@ -25,4 +24,12 @@ class Bernoulli(base.Distribution):
         )
 
     def generate_rv(self):
-        return generators.bernoulli(self.parameters)
+        """
+        Generates a random variable that has a Bernoulli distribution
+        with a success probability. The inverse transformation method
+        is used
+        :return: Random variable following a Bernoulli distribution
+        """
+
+        u = base.posix_mixed_congruential_generator()
+        return 1 if u < self.__success_probability else 0

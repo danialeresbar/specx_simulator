@@ -1,4 +1,4 @@
-from src.model import generators
+from scipy import stats as st
 from src.model.distributions import base
 
 RAYLEIGH = 'Rayleigh'
@@ -21,4 +21,11 @@ class Rayeigh(base.Distribution):
         )
 
     def generate_rv(self):
-        return generators.rayleigh(self.parameters)
+        """
+        Generates a random variable that has a Rayleigh distribution
+        with a success probability.
+        :return: Random variable following a Rayleigh distribution
+        """
+
+        var = st.rayleigh.rvs(self.__location, self.__scale)
+        return base.clean_random_variable(var)

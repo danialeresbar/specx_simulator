@@ -1,4 +1,4 @@
-from src.model import generators
+import numpy as np
 from src.model.distributions import base
 
 GUMBEL = 'Gumbel'
@@ -21,4 +21,11 @@ class Gumbel(base.Distribution):
         )
 
     def generate_rv(self):
-        return generators.gumbel(self.parameters)
+        """
+        Generates a random variable that has a Gumbel distribution
+        with a success probability.
+        :return: Random variable following a Gumbel distribution
+        """
+
+        var = np.random.gumbel(self.__location, self.__scale)
+        return base.clean_random_variable(var)

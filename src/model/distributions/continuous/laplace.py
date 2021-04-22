@@ -1,4 +1,4 @@
-from src.model import generators
+from scipy import stats as st
 from src.model.distributions import base
 
 LAPLACE = 'Laplace'
@@ -21,4 +21,11 @@ class Laplace(base.Distribution):
         )
 
     def generate_rv(self):
-        return generators.laplace(self.parameters)
+        """
+        Generates a random variable that has a Laplace distribution
+        with a success probability.
+        :return: Random variable following a Laplace distribution
+        """
+
+        var = st.laplace.rvs(self.__location, self.__scale)
+        return base.clean_random_variable(var)

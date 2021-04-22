@@ -1,9 +1,9 @@
 from datetime import datetime
 # from uuid import uuid4
 
-from modules.qt.simulator_qt_ui import UiSimWindow, QtWidgets, QtGui
-from modules.utils.charts import BarChart, LineChart, SplineChart
-from modules.utils.thread_tools import FileThread, SimulationThread
+from qt.simulator_qt_ui import UiSimWindow, QtWidgets, QtGui
+from charts.charts import BarChart, LineChart, SplineChart
+from tools.thread_tools import FileThread, SimulationThread
 
 
 # ---- Date formats ----

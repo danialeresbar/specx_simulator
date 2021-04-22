@@ -1,5 +1,5 @@
-from modules.qt.dialogs_qt_ui import UiConfigDialog, QtWidgets
-from modules.utils.charts import PDFChart
+from qt.dialogs_qt_ui import UiConfigDialog, QtWidgets
+from charts.charts import PDFChart
 
 
 class ParametrizationDialog(UiConfigDialog, QtWidgets.QDialog):

@@ -1,7 +1,7 @@
 from dialogs import ParametrizationDialog
 from simulator import SimulationScenario
-from modules.utils import models
-from modules.qt.specx_qt_ui import UiMainWindow, QtWidgets
+from model import models
+from qt.specx_qt_ui import UiMainWindow, QtWidgets
 
 
 # ---- GUI default values ----

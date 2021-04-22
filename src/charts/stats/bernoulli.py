@@ -1,7 +1,3 @@
-import numpy as np
-import scipy.stats as st
-
-from PyQt5.QtChart import QSplineSeries
 from src.charts import base
 
 X_CATEGORIES = ['Success', 'Failure']

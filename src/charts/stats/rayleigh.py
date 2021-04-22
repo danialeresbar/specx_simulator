@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.stats as st
 
-from PyQt5.QtChart import QSplineSeries
+from PyQt5.QtChart import QLegend, QSplineSeries
 from src.charts import base
 
 DEFAULT_LAMBDA_VALUE = 0
@@ -27,15 +27,24 @@ class RayleighPDF(base.BaseChart):
         pen.setColor(base.SERIES_COLOR)
         pen.setWidth(base.CHART_DEFAULT_SERIES_WIDTH)
 
+        # Axis settings
         self.addSeries(self.base_series)
         self.createDefaultAxes()
+        self.x_axis = self.axes(base.Qt.Horizontal, self.series()[0])[0]
+        self.y_axis = self.axes(base.Qt.Vertical, self.series()[0])[0]
 
-    def plot(self):
+        # Chart attributes
+        self.legend().setVisible(True)
+        self.legend().setMarkerShape(QLegend.MarkerShapeFromSeries)
+        self.setAnimationOptions(base.QChart.SeriesAnimations)
+        self._plot()
+
+    def _plot(self):
         x = np.linspace(
             st.rayleigh.ppf(0.01, loc=self.__lambda, scale=self.__sigma),
             st.rayleigh.ppf(0.99, loc=self.__lambda, scale=self.__sigma),
             base.SAMPLES
         )
         y = st.rayleigh.pdf(x, loc=self.__lambda, scale=self.__sigma)
-        self.base_series.setName(f'{base.MU_LETTER}={self.__mean:.4f}, {base.SIGMA_LETTER}={self.__sigma:.4f}')
+        self.base_series.setName(f'{base.MU}={self.__mean:.4f}, {base.SIGMA}={self.__sigma:.4f}')
         self.switch_series(x, y)

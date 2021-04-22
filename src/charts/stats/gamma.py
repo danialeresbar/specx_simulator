@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.stats as st
 
-from PyQt5.QtChart import QSplineSeries
+from PyQt5.QtChart import QLegend, QSplineSeries
 from src.charts import base
 
 DEFAULT_ALPHA_VALUE = 0
@@ -29,10 +29,19 @@ class GammaPDF(base.BaseChart):
         pen.setColor(base.SERIES_COLOR)
         pen.setWidth(base.CHART_DEFAULT_SERIES_WIDTH)
 
+        # Axis settings
         self.addSeries(self.base_series)
         self.createDefaultAxes()
+        self.x_axis = self.axes(base.Qt.Horizontal, self.series()[0])[0]
+        self.y_axis = self.axes(base.Qt.Vertical, self.series()[0])[0]
 
-    def plot(self):
+        # Chart attributes
+        self.legend().setVisible(True)
+        self.legend().setMarkerShape(QLegend.MarkerShapeFromSeries)
+        self.setAnimationOptions(base.QChart.SeriesAnimations)
+        self._plot()
+
+    def _plot(self):
         x = np.linspace(
             st.gamma.ppf(0.01, self.__alpha, loc=self.__gamma, scale=self.__lambda),
             st.gamma.ppf(0.99, self.__alpha, loc=self.__gamma, scale=self.__lambda),
@@ -40,7 +49,7 @@ class GammaPDF(base.BaseChart):
         )
         y = st.gamma.pdf(x, self.__alpha, loc=self.__gamma, scale=self.__lambda)
         self.base_series.setName(
-            f'{base.ALPHA_LETTER}={self.__alpha:.4f}, {base.GAMMA_LETTER}={self.__gamma:.4f}, {base.LAMBDA_LETTER}={self.__lambda:.4f}'
+            f'{base.ALPHA}={self.__alpha:.4f}, {base.GAMMA}={self.__gamma:.4f}, {base.LAMBDA}={self.__lambda:.4f}'
         )
         self.base_series.remove(0, len(self.base_series.pointsVector()))
         self.plot_series(x, y)

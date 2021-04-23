@@ -3,8 +3,8 @@ import json
 
 def save(filepath, data):
     """
-    It allows saving the information of a simulation environment in a
-    file with JSON format
+    It allows you saving the information of a simulation environment
+    in a file with JSON format
     :param filepath: The path of the file to save
     :param data: The simulation environment information that will be saved
     """

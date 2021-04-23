@@ -76,6 +76,13 @@ class Distribution:
     def set_parameters(self, parameters):
         self.parameters = parameters
 
+    def to_dict(self):
+        return {
+            'name': self.name,
+            'category': self.category,
+            'parameters': [parameter.to_dict() for parameter in self.parameters]
+        }
+
     def generate_rv(self):
         return None
 
@@ -96,6 +103,12 @@ class Parameter:
 
     def set_value(self, value):
         self.value = value
+
+    def to_dict(self):
+        return {
+            'name': self.name,
+            'vale': self.value
+        }
 
     @classmethod
     def location(cls, value=0):

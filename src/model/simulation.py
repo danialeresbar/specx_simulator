@@ -1,5 +1,16 @@
 from datetime import datetime
-from src.model.distributions import base
+
+FREQUENCIES = (
+    '473',
+    '479',
+    '485',
+    '491',
+    '497',
+    '503',
+    '509',
+    '551',
+    '557'
+)
 
 DATE_FORMAT = "%m-%d-%Y-%H:%M:%S"
 DEFAULT_ENERGY_FLAG_VALUE = True
@@ -17,7 +28,7 @@ class Channel(object):
     def __init__(self, **kwargs):
         self.number = kwargs.get('number', 0)
         self.frequency = kwargs.get('frequency', 0)
-        self.distribution = kwargs.get('distribution', base.Distribution())
+        self.distribution = kwargs.get('distribution', None)
 
     def set_frequency(self, frequency):
         self.frequency = frequency

@@ -27,7 +27,7 @@ RADIO_LABEL_FONT = QtGui.QFont()
 RADIO_LABEL_FONT.setPointSizeF(10)
 
 
-class DialogTemplate:
+class DialogTemplate(object):
     def setup(self, dialog, **kwargs):
         dialog.setObjectName("dialog")
         dialog.resize(kwargs.get('width', DEFAULT_WIDTH), kwargs.get('height', DEFAULT_HEIGHT))
@@ -374,6 +374,9 @@ class DialogTemplate:
         self.parameter_box.setFont(BOX_LABEL_FONT)
 
         # Layouts
+        parameter_box_layout = QtWidgets.QVBoxLayout(self.parameter_box)
+        parameter_box_layout.setSpacing(5)
+        parameter_box_layout.setContentsMargins(10,20,10,10)
         row_layouts = [QtWidgets.QHBoxLayout() for _ in range(len(DEFAULT_PARAMETER_LABELS))]
 
         # Labels
@@ -394,7 +397,7 @@ class DialogTemplate:
             row_layout.addWidget(self.parameter_spinners[index])
             row_layout.setStretch(0, 40)
             row_layout.setStretch(0, 60)
-            self.control_layout.addLayout(row_layout)
+            parameter_box_layout.addLayout(row_layout)
 
         self.control_layout.addWidget(self.parameter_box)
 

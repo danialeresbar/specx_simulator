@@ -21,10 +21,10 @@ class PDFChart(base.BaseChart):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        # Series style customization
-        pen = self.base_series.pen()
-        pen.setColor(base.SERIES_COLOR)
-        pen.setWidth(base.CHART_DEFAULT_SERIES_WIDTH)
+        # Chart attributes
+        self.legend().setVisible(True)
+        self.legend().setMarkerShape(QLegend.MarkerShapeFromSeries)
+        self.setAnimationOptions(base.QChart.SeriesAnimations)
 
         # Axis settings
         self.addSeries(self.base_series)
@@ -32,7 +32,7 @@ class PDFChart(base.BaseChart):
         self.x_axis = self.axes(base.Qt.Horizontal, self.series()[0])[0]
         self.y_axis = self.axes(base.Qt.Vertical, self.series()[0])[0]
 
-        # Chart attributes
-        self.legend().setVisible(True)
-        self.legend().setMarkerShape(QLegend.MarkerShapeFromSeries)
-        self.setAnimationOptions(base.QChart.SeriesAnimations)
+        # Series style customization
+        pen = self.base_series.pen()
+        pen.setColor(base.SERIES_COLOR)
+        pen.setWidth(base.CHART_DEFAULT_SERIES_WIDTH)

@@ -10,7 +10,7 @@ DEFAULT_LOCATION = 1.86636
 DEFAULT_SCALE = -5.8362
 
 
-class Gamma(base.Distribution):
+class Lognorm(base.Distribution):
     """
     Class used to represent a Lognorm distribution
     """
@@ -24,7 +24,7 @@ class Gamma(base.Distribution):
         )
         self.__location = base.Parameter.location(kwargs.get('location', DEFAULT_LOCATION))
         self.__scale = base.Parameter.scale(kwargs.get('scale', DEFAULT_SCALE))
-        super(Gamma, self).__init__(
+        super(Lognorm, self).__init__(
             category=base.CONTINUOUS,
             name=LOGNORM,
             parameters=[self.__alpha_shape, self.__location, self.__scale]

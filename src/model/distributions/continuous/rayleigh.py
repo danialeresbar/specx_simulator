@@ -6,7 +6,7 @@ DEFAULT_LOCATION = 0.05
 DEFAULT_SCALE = 0.1003
 
 
-class Rayeigh(base.Distribution):
+class Rayleigh(base.Distribution):
     """
     Class used to represent a Rayleigh distribution
     """
@@ -14,7 +14,7 @@ class Rayeigh(base.Distribution):
     def __init__(self, **kwargs):
         self.__location = base.Parameter.location(kwargs.get('location', DEFAULT_LOCATION))
         self.__scale = base.Parameter.scale(kwargs.get('scale', DEFAULT_SCALE))
-        super(Rayeigh, self).__init__(
+        super(Rayleigh, self).__init__(
             category=base.CONTINUOUS,
             name=RAYLEIGH,
             parameters=[self.__location, self.__scale]

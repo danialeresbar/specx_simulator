@@ -516,6 +516,7 @@ class MainViewTemplate:
             drop.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
             # Adding items (probability distribution names)
             for item in base.ALLOWED_CONTINUOUS_DISTRIBUTIONS:
+                drop.setPlaceholderText('Choose')
                 drop.addItem(item[1])  # This position contain the distribution name
 
         for index, channel_layout in enumerate(channel_layouts):

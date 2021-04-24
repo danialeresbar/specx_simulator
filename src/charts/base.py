@@ -37,7 +37,7 @@ class BaseChart(QChart):
         super(BaseChart, self).__init__()
 
         # Base properties
-        self.base_series = QLineSeries()
+        self.base_series = kwargs.get('base_series', QLineSeries())
         self.x_axis = QValueAxis()
         self.y_axis = QValueAxis()
 

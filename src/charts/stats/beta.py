@@ -20,14 +20,16 @@ class BetaPDF(common.PDFChart):
         self.__beta = kwargs.get('beta', DEFAULT_BETA_VALUE)
         self.__a = kwargs.get('a', DEFAULT_A_VALUE)
         self.__b = kwargs.get('b', DEFAULT_B_VALUE)
+        self.base_series = QSplineSeries()
+
         super(BetaPDF, self).__init__(
-            title=kwargs.get('title')
+            title=kwargs.get('title'),
+            base_series=QSplineSeries()
         )
 
-        self.base_series = QSplineSeries()
-        self._plot()
+        self.plot()
 
-    def _plot(self):
+    def plot(self):
         x = np.linspace(
             st.beta.ppf(0.01, self.__alpha, self.__beta, loc=self.__a, scale=self.__b),
             st.beta.ppf(0.99, self.__alpha, self.__beta, loc=self.__a, scale=self.__b),

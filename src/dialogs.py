@@ -1,15 +1,15 @@
-from qt.dialogs_qt_ui import UiConfigDialog, QtWidgets
-from charts.charts import PDFChart
+from src.qt.dialog import UiConfigDialog, QtWidgets
 
 
 class ParametrizationDialog(UiConfigDialog, QtWidgets.QDialog):
     """
-    Class with the required components for the parameterization of a probability distribution assigned to a channel
+    Class used for the construction of a dialog box that allows
+    the parameterization of a probability distribution
     """
 
     def __init__(self, *args, **kwargs):
         super(ParametrizationDialog, self).__init__(*args)
-        self.setupUi(self)  # Build the GUI designed with Qt designer
+        self.setupUi(self)  # Build the GUI designed with Qt designer assistant
 
         self.distribution = kwargs.get('distribution', None)
         self.distribution_chart = PDFChart(
@@ -85,3 +85,13 @@ class ParametrizationDialog(UiConfigDialog, QtWidgets.QDialog):
 
         else:
             self.hide_radiobtn_rows()
+
+
+class CloseWindowDialog(QtWidgets.QDialog):
+    """
+    Class used for the construction of a dialog box that allows
+    confirmation of the closing of a window
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(CloseWindowDialog, self).__init__(*args)

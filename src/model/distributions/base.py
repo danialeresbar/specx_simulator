@@ -16,6 +16,22 @@ DEFAULT_NAME = 'Distribution'
 DISCRETE = 0
 CONTINUOUS = 1
 
+ALLOWED_CONTINUOUS_DISTRIBUTIONS = (
+    (0, 'Beta'),
+    (1, 'Gamma'),
+    (2, 'Gumbel'),
+    (3, 'Laplace'),
+    (4, 'Lognorm'),
+    (5, 'Normal'),
+    (6, 'Rayleigh'),
+    (7, 'Uniform'),
+    (8, 'Weibull')
+)
+
+ALLOWED_DISCRETE_DISTRIBUTIONS = (
+    (0, 'Bernoulli')
+)
+
 LOCATION = 'Location'
 SCALE = 'Scale'
 

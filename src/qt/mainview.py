@@ -1,36 +1,55 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-# ---- GUI fonts ----
+from src.model import simulation
+from src.model.distributions import base
+
+# ---- Window attributes ----
+MINIMUM_WIDTH = 600
+MINIMUM_HEIGHT = 450
+DEFAULT_WIDTH = 600
+DEFAULT_HEIGHT = 450
+SIZE_POLICY_EXPANDING = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+SIZE_POLICY_PREFERRED = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+
+# ---- Icons ----
+# MAIN_ICON = QtGui.QIcon()
+# MAIN_ICON.addPixmap(
+#     QtGui.QPixmap("../icons/icon.svg"),
+#     QtGui.QIcon.Normal,
+#     QtGui.QIcon.Off
+# )
+
+# ---- Fonts ----
 BOX_LABEL_FONT = QtGui.QFont()
 BOX_LABEL_FONT.setPointSizeF(12)
 MAIN_LABEL_FONT = QtGui.QFont()
 MAIN_LABEL_FONT.setPointSizeF(10)
 
-# ---- Parameters ----
-BOX_DEFAULT_LABEL = 'Choose a distribution'
-BOX_VISIBLE_ITEMS = 5
-DISTRIBUTIONS = 10
+# ---- Drops ----
+DROP_DEFAULT_ITEM_LABEL = 'Choose a distribution'
+DROP_VISIBLE_ITEMS = 5
+
+# ---- Spin Boxes ----
+SAMPLE_TIME_DEFAULT_VALUE = 5
+SAMPLE_TIME_MINIMUM_VALUE = 1
+SAMPLE_TIME_MAXIMUM_VALUE = 30
+THRESHOLD_DEFAULT_VALUE = 0.33
+THRESHOLD_MINIMUM_VALUE = 0.01
+THRESHOLD_MAXIMUM_VALUE = 0.45
 
 
-class UiMainWindow(object):
-    def setupUi(self, main_window):
-        main_window.setObjectName("main_window")
-        main_window.resize(600, 450)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(main_window.sizePolicy().hasHeightForWidth())
-        main_window.setSizePolicy(sizePolicy)
-        main_window.setMinimumSize(QtCore.QSize(600, 450))
-        icon = QtGui.QIcon()
-        icon.addPixmap(
-            QtGui.QPixmap("../icons/icon.svg"),
-            QtGui.QIcon.Normal,
-            QtGui.QIcon.Off
-        )
-        main_window.setWindowIcon(icon)
-
-        main_window.setStyleSheet("* {\n"
+class MainViewTemplate:
+    def setup(self, mainview, **kwargs):
+        mainview.setObjectName("mainview")
+        mainview.resize(kwargs.get('width', DEFAULT_WIDTH), kwargs.get('height', DEFAULT_HEIGHT))
+        mainview.setMinimumSize(QtCore.QSize(MINIMUM_WIDTH, MINIMUM_HEIGHT))
+        mainview_size_policy = SIZE_POLICY_PREFERRED
+        mainview_size_policy.setHorizontalStretch(0)
+        mainview_size_policy.setVerticalStretch(0)
+        mainview_size_policy.setHeightForWidth(mainview.sizePolicy().hasHeightForWidth())
+        mainview.setSizePolicy(mainview_size_policy)
+        # mainview.setWindowIcon(MAIN_ICON)
+        mainview.setStyleSheet("* {\n"
                                   "    background: #26282b;\n"
                                   "    color: #DDDDDD;\n"
                                   "    border: 1px solid #5A5A5A;\n"
@@ -295,13 +314,13 @@ class UiMainWindow(object):
                                   "QMenu::separator {\n"
                                   "    background: #7971ea;\n"
                                   "}")
-        self.container = QtWidgets.QWidget(main_window)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.container.sizePolicy().hasHeightForWidth())
-        self.container.setSizePolicy(sizePolicy)
+
+        self.container = QtWidgets.QWidget(mainview)
+        container_size_policy = SIZE_POLICY_EXPANDING
+        container_size_policy.setHorizontalStretch(0)
+        container_size_policy.setVerticalStretch(0)
+        container_size_policy.setHeightForWidth(self.container.sizePolicy().hasHeightForWidth())
+        self.container.setSizePolicy(container_size_policy)
         self.container.setStyleSheet("QGroupBox::title {\n"
                                      "    subcontrol-origin: margin;\n"
                                      "    padding-left: 5px;\n"
@@ -309,187 +328,57 @@ class UiMainWindow(object):
                                      "    padding-top: 4px;\n"
                                      "}")
 
-        self.main_layout = QtWidgets.QGridLayout(self.container)
+        # TODO: Check this layout
+        self.container_layout = QtWidgets.QGridLayout(self.container)
         self.config_layout = QtWidgets.QVBoxLayout()
         self.config_layout.setContentsMargins(10, 40, 10, 40)
         self.config_layout.setSpacing(60)
-        self.box_params = QtWidgets.QGroupBox(self.container)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.box_params.sizePolicy().hasHeightForWidth())
-        self.box_params.setSizePolicy(sizePolicy)
-        self.box_params.setFont(BOX_LABEL_FONT)
-        self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.box_params)
-        self.verticalLayout_2.setContentsMargins(10, 10, 10, 10)
-        self.verticalLayout_2.setSpacing(5)
 
-        self.param_1 = QtWidgets.QHBoxLayout()
-        self.param_1.setSpacing(5)
+        # Settings components
+        self.settings_box = QtWidgets.QGroupBox(self.container)
+        self.sample_time_label = QtWidgets.QLabel(self.settings_box)
+        self.threshold_label = QtWidgets.QLabel(self.settings_box)
+        self.sample_time = QtWidgets.QSpinBox(self.settings_box)
+        self.threshold = QtWidgets.QDoubleSpinBox(self.settings_box)
+        self.energy_flag = QtWidgets.QCheckBox(self.settings_box)
+        self.usage_flag = QtWidgets.QCheckBox(self.settings_box)
+        self._build_settings_box()
 
-        self.sample_label = QtWidgets.QLabel(self.box_params)
-        self.sample_label.setFont(MAIN_LABEL_FONT)
-
-        self.param_1.addWidget(self.sample_label)
-
-        self.sample_time = QtWidgets.QSpinBox(self.box_params)
-        self.sample_time.setFont(MAIN_LABEL_FONT)
-        self.sample_time.setMinimum(1)
-        self.sample_time.setMaximum(15)
-        self.sample_time.setProperty("value", 5)
-
-        self.param_1.addWidget(self.sample_time)
-        self.param_1.setStretch(0, 60)
-        self.param_1.setStretch(1, 40)
-        self.verticalLayout_2.addLayout(self.param_1)
-
-        self.param_2 = QtWidgets.QHBoxLayout()
-        self.param_2.setSpacing(5)
-
-        self.threshold_label = QtWidgets.QLabel(self.box_params)
-        self.threshold_label.setFont(MAIN_LABEL_FONT)
-
-        self.param_2.addWidget(self.threshold_label)
-
-        self.threshold = QtWidgets.QDoubleSpinBox(self.box_params)
-        self.threshold.setFont(MAIN_LABEL_FONT)
-        self.threshold.setMinimum(0.01)
-        self.threshold.setMaximum(0.8)
-        self.threshold.setSingleStep(0.05)
-        self.threshold.setProperty("value", 0.33)
-
-        self.param_2.addWidget(self.threshold)
-        self.param_2.setStretch(0, 60)
-        self.param_2.setStretch(1, 40)
-        self.verticalLayout_2.addLayout(self.param_2)
-
-        self.options = QtWidgets.QHBoxLayout()
-
-        self.energy_flag = QtWidgets.QCheckBox(self.box_params)
-        self.energy_flag.setFont(MAIN_LABEL_FONT)
-        self.options.addWidget(self.energy_flag)
-
-        self.usage_flag = QtWidgets.QCheckBox(self.box_params)
-        self.usage_flag.setFont(MAIN_LABEL_FONT)
-
-        self.options.addWidget(self.usage_flag)
-        self.verticalLayout_2.addLayout(self.options)
-        self.config_layout.addWidget(self.box_params)
-        self.buttons_layout = QtWidgets.QHBoxLayout()
-        self.buttons_layout.setContentsMargins(20, -1, 20, -1)
-        self.buttons_layout.setSpacing(5)
-
+        # Action components
         self.btn_simulator = QtWidgets.QPushButton(self.container)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.btn_simulator.sizePolicy().hasHeightForWidth())
-        self.btn_simulator.setSizePolicy(sizePolicy)
-        self.btn_simulator.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.btn_simulator.setStyleSheet("QPushButton{\n"
-                                         "    border: none;\n"
-                                         "}")
-        icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap("../icons/run.svg"),
-                        QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.btn_simulator.setIcon(icon1)
-        self.btn_simulator.setIconSize(QtCore.QSize(110, 110))
-        self.btn_simulator.setFlat(True)
-        self.buttons_layout.addWidget(self.btn_simulator)
-        self.btn_simulator.setEnabled(False)
-
         self.btn_clean = QtWidgets.QPushButton(self.container)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.btn_clean.sizePolicy().hasHeightForWidth())
-        self.btn_clean.setSizePolicy(sizePolicy)
-        self.btn_clean.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.btn_clean.setStyleSheet("QPushButton{\n"
-                                     "    border: none;\n"
-                                     "}")
-        icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap("../icons/clean.svg"),
-                        QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.btn_clean.setIcon(icon2)
-        self.btn_clean.setIconSize(QtCore.QSize(110, 110))
-        self.btn_clean.setFlat(True)
-        self.buttons_layout.addWidget(self.btn_clean)
-        self.config_layout.addLayout(self.buttons_layout)
+        self._build_button_box()
+
+        self.config_layout.addWidget(self.settings_box)
+        # self.config_layout.addLayout(self.buttons_layout)
         self.config_layout.setStretch(0, 50)
         self.config_layout.setStretch(1, 50)
-        self.main_layout.addLayout(self.config_layout, 0, 1, 1, 1)
+
+        self.container_layout.addLayout(self.config_layout, 0, 1, 1, 1)
+
+        # TODO: Check this layout
         self.freq_layout = QtWidgets.QGridLayout()
         self.freq_layout.setContentsMargins(5, 5, 5, 5)
         self.freq_layout.setSpacing(5)
-        self.box_freq = QtWidgets.QGroupBox(self.container)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.box_freq.sizePolicy().hasHeightForWidth())
-        self.box_freq.setSizePolicy(sizePolicy)
-        self.box_freq.setFont(BOX_LABEL_FONT)
-        self.freq_layout_2 = QtWidgets.QVBoxLayout(self.box_freq)
-        self.freq_layout_2.setContentsMargins(10, 10, 10, 5)
-        self.freq_layout_2.setSpacing(5)
 
-        self.add_labels()
-        self.add_boxes()
+        # Channel section
+        self.channel_box = QtWidgets.QGroupBox(self.container)
+        self.channel_labels = [QtWidgets.QLabel(self.channel_box) for _ in range(len(simulation.FREQUENCIES))]
+        self.channel_drops = [QtWidgets.QComboBox(self.channel_box) for _ in range(len(simulation.FREQUENCIES))]
+        self.btn_save_settings = QtWidgets.QPushButton(self.channel_box)
+        self.btn_load_settings = QtWidgets.QPushButton(self.channel_box)
+        self._build_channel_box()
 
-        self.field_1 = QtWidgets.QHBoxLayout()
-        self.field_2 = QtWidgets.QHBoxLayout()
-        self.field_3 = QtWidgets.QHBoxLayout()
-        self.field_4 = QtWidgets.QHBoxLayout()
-        self.field_5 = QtWidgets.QHBoxLayout()
-        self.field_6 = QtWidgets.QHBoxLayout()
-        self.field_7 = QtWidgets.QHBoxLayout()
-        self.field_8 = QtWidgets.QHBoxLayout()
-        self.field_9 = QtWidgets.QHBoxLayout()
+        self.freq_layout.addWidget(self.channel_box, 0, 0, 1, 1)
 
-        self.fields = [self.field_1, self.field_2, self.field_3, self.field_4, self.field_5, self.field_6,
-                       self.field_7, self.field_8, self.field_9]
+        self.container_layout.addLayout(self.freq_layout, 0, 0, 1, 1)
+        self.container_layout.setColumnStretch(0, 50)
+        self.container_layout.setColumnStretch(1, 50)
 
-        for index in range(len(self.fields)):
-            self.fields[index].setSpacing(5)
-            self.fields[index].addWidget(self.labels[index])
-            self.fields[index].addWidget(self.boxes[index])
-            self.fields[index].setStretch(0, 30)
-            self.fields[index].setStretch(1, 70)
+        mainview.setCentralWidget(self.container)
 
-        self.freq_layout_2.addLayout(self.field_1)
-        self.freq_layout_2.addLayout(self.field_2)
-        self.freq_layout_2.addLayout(self.field_3)
-        self.freq_layout_2.addLayout(self.field_4)
-        self.freq_layout_2.addLayout(self.field_5)
-        self.freq_layout_2.addLayout(self.field_6)
-        self.freq_layout_2.addLayout(self.field_7)
-        self.freq_layout_2.addLayout(self.field_8)
-        self.freq_layout_2.addLayout(self.field_9)
-
-        self.foot_layout = QtWidgets.QHBoxLayout()
-        self.foot_layout.setSpacing(5)
-
-        self.btn_save_file = QtWidgets.QPushButton(self.box_freq)
-        self.btn_save_file.setFont(MAIN_LABEL_FONT)
-        self.btn_save_file.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.btn_save_file.setEnabled(False)
-        self.foot_layout.addWidget(self.btn_save_file)
-
-        self.btn_load_file = QtWidgets.QPushButton(self.box_freq)
-        self.btn_load_file.setFont(MAIN_LABEL_FONT)
-        self.btn_load_file.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.foot_layout.addWidget(self.btn_load_file)
-        self.foot_layout.setStretch(0, 50)
-        self.foot_layout.setStretch(1, 50)
-        self.freq_layout_2.addLayout(self.foot_layout)
-        self.freq_layout.addWidget(self.box_freq, 0, 0, 1, 1)
-        self.main_layout.addLayout(self.freq_layout, 0, 0, 1, 1)
-        self.main_layout.setColumnStretch(0, 50)
-        self.main_layout.setColumnStretch(1, 50)
-
-        main_window.setCentralWidget(self.container)
-
-        self.menubar = QtWidgets.QMenuBar(main_window)
+        # Menu bar
+        self.menubar = QtWidgets.QMenuBar(mainview)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 600, 25))
         self.menubar.setFont(MAIN_LABEL_FONT)
         self.menubar.setObjectName("menubar")
@@ -499,187 +388,223 @@ class UiMainWindow(object):
         self.about_menu = QtWidgets.QMenu(self.menubar)
         self.about_menu.setFont(MAIN_LABEL_FONT)
         self.about_menu.setObjectName("about_menu")
-        main_window.setMenuBar(self.menubar)
-        self.statusBar = QtWidgets.QStatusBar(main_window)
-        self.statusBar.setObjectName("statusBar")
-        main_window.setStatusBar(self.statusBar)
-        self.toolBar = QtWidgets.QToolBar(main_window)
-        self.toolBar.setObjectName("toolBar")
-        main_window.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
-        self.new_action_menu = QtWidgets.QAction(main_window)
-        self.new_action_menu.setObjectName("new_action_menu")
-        self.exit_action_menu = QtWidgets.QAction(main_window)
-        self.exit_action_menu.setObjectName("exit_action_menu")
-        self.about_action_menu = QtWidgets.QAction(main_window)
-        self.about_action_menu.setObjectName("about_action_menu")
-        self.help_action_menu = QtWidgets.QAction(main_window)
-        self.help_action_menu.setObjectName("help_action_menu")
-        self.file_menu.addAction(self.new_action_menu)
-        self.file_menu.addAction(self.exit_action_menu)
-        self.about_menu.addAction(self.about_action_menu)
-        self.about_menu.addAction(self.help_action_menu)
+        mainview.setMenuBar(self.menubar)
+
+        # Menu items
+        self.action_menu_new = QtWidgets.QAction(mainview)
+        self.action_menu_new.setObjectName("action_menu_new")
+        self.action_menu_exit = QtWidgets.QAction(mainview)
+        self.action_menu_exit.setObjectName("action_menu_exit")
+        self.action_menu_about = QtWidgets.QAction(mainview)
+        self.action_menu_about.setObjectName("action_menu_about")
+        self.action_menu_help = QtWidgets.QAction(mainview)
+        self.action_menu_help.setObjectName("action_menu_help")
+
+        self.file_menu.addAction(self.action_menu_new)
+        self.file_menu.addAction(self.action_menu_exit)
+        self.about_menu.addAction(self.action_menu_about)
+        self.about_menu.addAction(self.action_menu_help)
         self.menubar.addAction(self.file_menu.menuAction())
         self.menubar.addAction(self.about_menu.menuAction())
 
-        self.retranslateUi(main_window)
-        QtCore.QMetaObject.connectSlotsByName(main_window)
+        # Status bar
+        self.statusBar = QtWidgets.QStatusBar(mainview)
+        self.statusBar.setObjectName("statusBar")
+        mainview.setStatusBar(self.statusBar)
 
-    def add_labels(self):
-        self.label_channel_1 = QtWidgets.QLabel(self.box_freq)
-        self.label_channel_2 = QtWidgets.QLabel(self.box_freq)
-        self.label_channel_3 = QtWidgets.QLabel(self.box_freq)
-        self.label_channel_4 = QtWidgets.QLabel(self.box_freq)
-        self.label_channel_5 = QtWidgets.QLabel(self.box_freq)
-        self.label_channel_6 = QtWidgets.QLabel(self.box_freq)
-        self.label_channel_7 = QtWidgets.QLabel(self.box_freq)
-        self.label_channel_8 = QtWidgets.QLabel(self.box_freq)
-        self.label_channel_9 = QtWidgets.QLabel(self.box_freq)
+        # Tool bar
+        self.toolBar = QtWidgets.QToolBar(mainview)
+        self.toolBar.setObjectName("toolBar")
+        mainview.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
 
-        self.labels = [self.label_channel_1, self.label_channel_2, self.label_channel_3, self.label_channel_4,
-                       self.label_channel_5, self.label_channel_6, self.label_channel_7, self.label_channel_8,
-                       self.label_channel_9]
+        self.translate(mainview)
+        QtCore.QMetaObject.connectSlotsByName(mainview)
 
-        for label in self.labels:
+    def _build_settings_box(self):
+        """
+
+        """
+
+        # Size policies
+        settings_box_size_policy = SIZE_POLICY_EXPANDING
+        settings_box_size_policy.setHorizontalStretch(0)
+        settings_box_size_policy.setVerticalStretch(0)
+        settings_box_size_policy.setHeightForWidth(self.settings_box.sizePolicy().hasHeightForWidth())
+        self.settings_box.setSizePolicy(settings_box_size_policy)
+        self.settings_box.setFont(BOX_LABEL_FONT)
+
+        # Layouts
+        settings_box_layout = QtWidgets.QVBoxLayout(self.settings_box)
+        settings_box_layout.setContentsMargins(10, 10, 10, 10)
+        settings_box_layout.setSpacing(5)
+        optional_parameter_layout = QtWidgets.QHBoxLayout()
+        sample_parameter_layout = QtWidgets.QHBoxLayout()
+        sample_parameter_layout.setSpacing(5)
+        threshold_parameter_layout = QtWidgets.QHBoxLayout()
+        threshold_parameter_layout.setSpacing(5)
+
+        # Labels
+        self.energy_flag.setFont(MAIN_LABEL_FONT)
+        self.sample_time_label.setFont(MAIN_LABEL_FONT)
+        self.threshold_label.setFont(MAIN_LABEL_FONT)
+        self.usage_flag.setFont(MAIN_LABEL_FONT)
+
+        # Spins
+        self.sample_time.setFont(MAIN_LABEL_FONT)
+        self.sample_time.setMinimum(SAMPLE_TIME_MINIMUM_VALUE)
+        self.sample_time.setMaximum(SAMPLE_TIME_MAXIMUM_VALUE)
+        self.sample_time.setValue(SAMPLE_TIME_DEFAULT_VALUE)
+        self.threshold.setFont(MAIN_LABEL_FONT)
+        self.threshold.setMinimum(THRESHOLD_MINIMUM_VALUE)
+        self.threshold.setMaximum(THRESHOLD_MAXIMUM_VALUE)
+        self.threshold.setSingleStep(0.05)
+        self.threshold.setValue(THRESHOLD_DEFAULT_VALUE)
+
+        optional_parameter_layout.addWidget(self.energy_flag)
+        optional_parameter_layout.addWidget(self.usage_flag)
+        sample_parameter_layout.addWidget(self.sample_time_label)
+        sample_parameter_layout.addWidget(self.sample_time)
+        sample_parameter_layout.setStretch(0, 60)
+        sample_parameter_layout.setStretch(1, 40)
+        threshold_parameter_layout.addWidget(self.threshold_label)
+        threshold_parameter_layout.addWidget(self.threshold)
+        threshold_parameter_layout.setStretch(0, 60)
+        threshold_parameter_layout.setStretch(1, 40)
+
+        settings_box_layout.addLayout(sample_parameter_layout)
+        settings_box_layout.addLayout(threshold_parameter_layout)
+        settings_box_layout.addLayout(optional_parameter_layout)
+
+    def _build_channel_box(self):
+        """
+
+        """
+
+        # Size policies
+        channel_box_size_policy = SIZE_POLICY_EXPANDING
+        channel_box_size_policy.setHorizontalStretch(0)
+        channel_box_size_policy.setVerticalStretch(0)
+        channel_box_size_policy.setHeightForWidth(self.channel_box.sizePolicy().hasHeightForWidth())
+        self.channel_box.setSizePolicy(channel_box_size_policy)
+        self.channel_box.setFont(BOX_LABEL_FONT)
+
+        # Layouts
+        button_layout = QtWidgets.QHBoxLayout()
+        button_layout.setSpacing(5)
+        channel_box_layout = QtWidgets.QVBoxLayout(self.channel_box)
+        channel_box_layout.setSpacing(5)
+        channel_box_layout.setContentsMargins(10, 10, 10, 5)
+        channel_layouts = [QtWidgets.QHBoxLayout() for _ in range(len(simulation.FREQUENCIES))]
+
+        # Labels
+        for label, frequency in zip(self.channel_labels, simulation.FREQUENCIES):
             label.setFont(MAIN_LABEL_FONT)
+            label.setText(frequency)
 
-    def add_boxes(self):
-        self.box_1 = QtWidgets.QComboBox(self.box_freq)
-        self.box_2 = QtWidgets.QComboBox(self.box_freq)
-        self.box_3 = QtWidgets.QComboBox(self.box_freq)
-        self.box_4 = QtWidgets.QComboBox(self.box_freq)
-        self.box_5 = QtWidgets.QComboBox(self.box_freq)
-        self.box_6 = QtWidgets.QComboBox(self.box_freq)
-        self.box_7 = QtWidgets.QComboBox(self.box_freq)
-        self.box_8 = QtWidgets.QComboBox(self.box_freq)
-        self.box_9 = QtWidgets.QComboBox(self.box_freq)
+        # Buttons
+        self.btn_save_settings.setFont(MAIN_LABEL_FONT)
+        self.btn_save_settings.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.btn_save_settings.setEnabled(False)
+        self.btn_load_settings.setFont(MAIN_LABEL_FONT)
+        self.btn_load_settings.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
 
-        self.boxes = [self.box_1, self.box_2, self.box_3, self.box_4, self.box_5, self.box_6, self.box_7,
-                      self.box_8, self.box_9]
+        # Drops
+        for drop in self.channel_drops:
+            drop.setFont(MAIN_LABEL_FONT)
+            drop.setMaxVisibleItems(DROP_VISIBLE_ITEMS)
+            drop.setPlaceholderText(DROP_DEFAULT_ITEM_LABEL)
+            drop.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+            # Adding items (probability distribution names)
+            for item in base.ALLOWED_CONTINUOUS_DISTRIBUTIONS:
+                drop.addItem(item[1])  # This position contain the distribution name
 
-        for box in self.boxes:
-            box.setFont(MAIN_LABEL_FONT)
-            box.setMaxVisibleItems(BOX_VISIBLE_ITEMS)
-            box.setPlaceholderText(BOX_DEFAULT_LABEL)
-            for _ in range(DISTRIBUTIONS):
-                box.addItem("")
+        for index, channel_layout in enumerate(channel_layouts):
+            channel_layout.setSpacing(5)
+            channel_layout.addWidget(self.channel_labels[index])
+            channel_layout.addWidget(self.channel_drops[index])
+            channel_layout.setStretch(0, 30)
+            channel_layout.setStretch(1, 70)
+            channel_box_layout.addLayout(channel_layout)
 
-            box.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        button_layout.addWidget(self.btn_save_settings)
+        button_layout.addWidget(self.btn_load_settings)
+        button_layout.setStretch(0, 50)
+        button_layout.setStretch(1, 50)
+        channel_box_layout.addLayout(button_layout)
 
-    def retranslateUi(self, main_window):
+    def _build_button_box(self):
+        """
+
+        """
+
+        # Size policies
+        btn_simulate_size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        btn_simulate_size_policy.setHorizontalStretch(0)
+        btn_simulate_size_policy.setVerticalStretch(0)
+        btn_simulate_size_policy.setHeightForWidth(self.btn_simulator.sizePolicy().hasHeightForWidth())
+        self.btn_simulator.setSizePolicy(btn_simulate_size_policy)
+        btn_clean_size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        btn_clean_size_policy.setHorizontalStretch(0)
+        btn_clean_size_policy.setVerticalStretch(0)
+        btn_clean_size_policy.setHeightForWidth(self.btn_clean.sizePolicy().hasHeightForWidth())
+        self.btn_clean.setSizePolicy(btn_clean_size_policy)
+
+        # Layouts
+        button_box_layout = QtWidgets.QHBoxLayout()
+        button_box_layout.setSpacing(5)
+        button_box_layout.setContentsMargins(20, -1, 20, -1)
+
+        # Buttons
+        btn_simulate_icon = QtGui.QIcon()
+        btn_simulate_icon.addPixmap(
+            QtGui.QPixmap("../icons/run.svg"),
+            QtGui.QIcon.Normal,
+            QtGui.QIcon.Off
+        )
+
+        self.btn_simulator.setIcon(btn_simulate_icon)
+        self.btn_simulator.setIconSize(QtCore.QSize(110, 110))
+        self.btn_simulator.setFlat(True)
+        self.btn_simulator.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.btn_simulator.setEnabled(False)
+        self.btn_simulator.setStyleSheet("QPushButton{\n"
+                                         "    border: none;\n"
+                                         "}")
+        btn_clean_icon = QtGui.QIcon()
+        btn_clean_icon.addPixmap(
+            QtGui.QPixmap("../icons/clean.svg"),
+            QtGui.QIcon.Normal,
+            QtGui.QIcon.Off
+        )
+        self.btn_clean.setIcon(btn_clean_icon)
+        self.btn_clean.setIconSize(QtCore.QSize(110, 110))
+        self.btn_clean.setFlat(True)
+        self.btn_clean.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.btn_clean.setStyleSheet("QPushButton{\n"
+                                     "    border: none;\n"
+                                     "}")
+
+        button_box_layout.addWidget(self.btn_simulator)
+        button_box_layout.addWidget(self.btn_clean)
+
+        pass
+
+    def translate(self, mainview):
         _translate = QtCore.QCoreApplication.translate
-        main_window.setWindowTitle(_translate("main_window", "Specx"))
-        self.box_params.setTitle(_translate("main_window", "Parámetros"))
-        self.sample_label.setText(_translate("main_window", "Tiempo de muestreo:"))
-        self.sample_time.setSuffix(_translate("main_window", "min"))
-        self.threshold_label.setText(_translate("main_window", "Umbral de energía:"))
-        self.energy_flag.setText(_translate("main_window", "Energía"))
-        self.usage_flag.setText(_translate("main_window", "Ocupación de canal"))
-        self.box_freq.setTitle(_translate("main_window", "Frecuencias"))
-        self.label_channel_1.setText(_translate("main_window", "473 MHz"))
-        self.box_1.setItemText(0, _translate("main_window", "Bernoulli"))
-        self.box_1.setItemText(1, _translate("main_window", "Beta"))
-        self.box_1.setItemText(2, _translate("main_window", "Gamma"))
-        self.box_1.setItemText(3, _translate("main_window", "Gumbel max"))
-        self.box_1.setItemText(4, _translate("main_window", "Laplace"))
-        self.box_1.setItemText(5, _translate("main_window", "Lognorm"))
-        self.box_1.setItemText(6, _translate("main_window", "Norm"))
-        self.box_1.setItemText(7, _translate("main_window", "Rayleigh"))
-        self.box_1.setItemText(8, _translate("main_window", "Uniform"))
-        self.box_1.setItemText(9, _translate("main_window", "Weibull"))
-        self.label_channel_2.setText(_translate("main_window", "479 MHz"))
-        self.box_2.setItemText(0, _translate("main_window", "Bernoulli"))
-        self.box_2.setItemText(1, _translate("main_window", "Beta"))
-        self.box_2.setItemText(2, _translate("main_window", "Gamma"))
-        self.box_2.setItemText(3, _translate("main_window", "Gumbel max"))
-        self.box_2.setItemText(4, _translate("main_window", "Laplace"))
-        self.box_2.setItemText(5, _translate("main_window", "Lognorm"))
-        self.box_2.setItemText(6, _translate("main_window", "Norm"))
-        self.box_2.setItemText(7, _translate("main_window", "Rayleigh"))
-        self.box_2.setItemText(8, _translate("main_window", "Uniform"))
-        self.box_2.setItemText(9, _translate("main_window", "Weibull"))
-        self.label_channel_3.setText(_translate("main_window", "485 MHz"))
-        self.box_3.setItemText(0, _translate("main_window", "Bernoulli"))
-        self.box_3.setItemText(1, _translate("main_window", "Beta"))
-        self.box_3.setItemText(2, _translate("main_window", "Gamma"))
-        self.box_3.setItemText(3, _translate("main_window", "Gumbel max"))
-        self.box_3.setItemText(4, _translate("main_window", "Laplace"))
-        self.box_3.setItemText(5, _translate("main_window", "Lognorm"))
-        self.box_3.setItemText(6, _translate("main_window", "Norm"))
-        self.box_3.setItemText(7, _translate("main_window", "Rayleigh"))
-        self.box_3.setItemText(8, _translate("main_window", "Uniform"))
-        self.box_3.setItemText(9, _translate("main_window", "Weibull"))
-        self.label_channel_4.setText(_translate("main_window", "491 MHz"))
-        self.box_4.setItemText(0, _translate("main_window", "Bernoulli"))
-        self.box_4.setItemText(1, _translate("main_window", "Beta"))
-        self.box_4.setItemText(2, _translate("main_window", "Gamma"))
-        self.box_4.setItemText(3, _translate("main_window", "Gumbel max"))
-        self.box_4.setItemText(4, _translate("main_window", "Laplace"))
-        self.box_4.setItemText(5, _translate("main_window", "Lognorm"))
-        self.box_4.setItemText(6, _translate("main_window", "Norm"))
-        self.box_4.setItemText(7, _translate("main_window", "Rayleigh"))
-        self.box_4.setItemText(8, _translate("main_window", "Uniform"))
-        self.box_4.setItemText(9, _translate("main_window", "Weibull"))
-        self.label_channel_5.setText(_translate("main_window", "497 MHz"))
-        self.box_5.setItemText(0, _translate("main_window", "Bernoulli"))
-        self.box_5.setItemText(1, _translate("main_window", "Beta"))
-        self.box_5.setItemText(2, _translate("main_window", "Gamma"))
-        self.box_5.setItemText(3, _translate("main_window", "Gumbel max"))
-        self.box_5.setItemText(4, _translate("main_window", "Laplace"))
-        self.box_5.setItemText(5, _translate("main_window", "Lognorm"))
-        self.box_5.setItemText(6, _translate("main_window", "Norm"))
-        self.box_5.setItemText(7, _translate("main_window", "Rayleigh"))
-        self.box_5.setItemText(8, _translate("main_window", "Uniform"))
-        self.box_5.setItemText(9, _translate("main_window", "Weibull"))
-        self.label_channel_6.setText(_translate("main_window", "503 MHz"))
-        self.box_6.setItemText(0, _translate("main_window", "Bernoulli"))
-        self.box_6.setItemText(1, _translate("main_window", "Beta"))
-        self.box_6.setItemText(2, _translate("main_window", "Gamma"))
-        self.box_6.setItemText(3, _translate("main_window", "Gumbel max"))
-        self.box_6.setItemText(4, _translate("main_window", "Laplace"))
-        self.box_6.setItemText(5, _translate("main_window", "Lognorm"))
-        self.box_6.setItemText(6, _translate("main_window", "Norm"))
-        self.box_6.setItemText(7, _translate("main_window", "Rayleigh"))
-        self.box_6.setItemText(8, _translate("main_window", "Uniform"))
-        self.box_6.setItemText(9, _translate("main_window", "Weibull"))
-        self.label_channel_7.setText(_translate("main_window", "509 MHz"))
-        self.box_7.setItemText(0, _translate("main_window", "Bernoulli"))
-        self.box_7.setItemText(1, _translate("main_window", "Beta"))
-        self.box_7.setItemText(2, _translate("main_window", "Gamma"))
-        self.box_7.setItemText(3, _translate("main_window", "Gumbel max"))
-        self.box_7.setItemText(4, _translate("main_window", "Laplace"))
-        self.box_7.setItemText(5, _translate("main_window", "Lognorm"))
-        self.box_7.setItemText(6, _translate("main_window", "Norm"))
-        self.box_7.setItemText(7, _translate("main_window", "Rayleigh"))
-        self.box_7.setItemText(8, _translate("main_window", "Uniform"))
-        self.box_7.setItemText(9, _translate("main_window", "Weibull"))
-        self.label_channel_8.setText(_translate("main_window", "551 MHz"))
-        self.box_8.setItemText(0, _translate("main_window", "Bernoulli"))
-        self.box_8.setItemText(1, _translate("main_window", "Beta"))
-        self.box_8.setItemText(2, _translate("main_window", "Gamma"))
-        self.box_8.setItemText(3, _translate("main_window", "Gumbel max"))
-        self.box_8.setItemText(4, _translate("main_window", "Laplace"))
-        self.box_8.setItemText(5, _translate("main_window", "Lognorm"))
-        self.box_8.setItemText(6, _translate("main_window", "Norm"))
-        self.box_8.setItemText(7, _translate("main_window", "Rayleigh"))
-        self.box_8.setItemText(8, _translate("main_window", "Uniform"))
-        self.box_8.setItemText(9, _translate("main_window", "Weibull"))
-        self.label_channel_9.setText(_translate("main_window", "557 MHz"))
-        self.box_9.setItemText(0, _translate("main_window", "Bernoulli"))
-        self.box_9.setItemText(1, _translate("main_window", "Beta"))
-        self.box_9.setItemText(2, _translate("main_window", "Gamma"))
-        self.box_9.setItemText(3, _translate("main_window", "Gumbel max"))
-        self.box_9.setItemText(4, _translate("main_window", "Laplace"))
-        self.box_9.setItemText(5, _translate("main_window", "Lognorm"))
-        self.box_9.setItemText(6, _translate("main_window", "Norm"))
-        self.box_9.setItemText(7, _translate("main_window", "Rayleigh"))
-        self.box_9.setItemText(8, _translate("main_window", "Uniform"))
-        self.box_9.setItemText(9, _translate("main_window", "Weibull"))
-        self.btn_save_file.setText(_translate("main_window", "Exportar"))
-        self.btn_load_file.setText(_translate("main_window", "Importar"))
-        self.file_menu.setTitle(_translate("main_window", "Archivo"))
-        self.about_menu.setTitle(_translate("main_window", "Acerca"))
-        self.toolBar.setWindowTitle(_translate("main_window", "toolBar"))
-        self.new_action_menu.setText(_translate("main_window", "Nuevo..."))
-        self.exit_action_menu.setText(_translate("main_window", "Salir"))
-        self.about_action_menu.setText(_translate("main_window", "Acerca de"))
-        self.help_action_menu.setText(_translate("main_window", "Ayuda"))
+        mainview.setWindowTitle(_translate("mainview", "Specx"))
+        self.settings_box.setTitle(_translate("mainview", "Parámetros"))
+        self.sample_time_label.setText(_translate("mainview", "Tiempo de muestreo:"))
+        self.sample_time.setSuffix(_translate("mainview", "min"))
+        self.threshold_label.setText(_translate("mainview", "Umbral de energía:"))
+        self.energy_flag.setText(_translate("mainview", "Energía"))
+        self.usage_flag.setText(_translate("mainview", "Ocupación de canal"))
+        self.channel_box.setTitle(_translate("mainview", "Frecuencias"))
+        self.btn_save_settings.setText(_translate("mainview", "Exportar"))
+        self.btn_load_settings.setText(_translate("mainview", "Importar"))
+        self.file_menu.setTitle(_translate("mainview", "Archivo"))
+        self.about_menu.setTitle(_translate("mainview", "Acerca"))
+        self.toolBar.setWindowTitle(_translate("mainview", "toolBar"))
+        self.action_menu_new.setText(_translate("mainview", "Nuevo..."))
+        self.action_menu_exit.setText(_translate("mainview", "Salir"))
+        self.action_menu_about.setText(_translate("mainview", "Acerca de"))
+        self.action_menu_help.setText(_translate("mainview", "Ayuda"))

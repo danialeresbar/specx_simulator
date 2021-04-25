@@ -38,31 +38,6 @@ class SpecxMainWindow(QtWidgets.QMainWindow, MainViewTemplate):
         self._connect_drop_signals()
         self._connect_menu_signals()
 
-    def about(self):
-        """
-        Short Software description
-        """
-
-        pass
-
-    def closeEvent(self, event):
-        """
-        Override of the closeEvent method to close the window
-        """
-
-        # close = QtWidgets.QMessageBox.information(
-        #     self,
-        #     'Exit',
-        #     c.EXIT_MESSAGE,
-        #     QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
-        #     QtWidgets.QMessageBox.No
-        # )
-        # if close == QtWidgets.QMessageBox.Yes:
-        #     event.accept()
-        # else:
-        #     event.ignore()
-        event.accept()
-
     def _connect_button_signals(self):
         """
         Button signal connection
@@ -91,6 +66,40 @@ class SpecxMainWindow(QtWidgets.QMainWindow, MainViewTemplate):
         self.action_menu_exit.triggered.connect(self.close)
         self.action_menu_about.triggered.connect(self.about)
         self.action_menu_help.triggered.connect(self.help)
+
+    def _reset_component_values(self):
+        """
+        Reset all current settings in the GUI (Default values will be loaded)
+        """
+        self.sample_time.setValue(simulation.DEFAULT_SAMPLE_INTERVAL_VALUE)
+        self.threshold.setValue(simulation.DEFAULT_THRESHOLD_VALUE)
+        for box in self.boxes:
+            box.setCurrentIndex(-1)
+
+    def about(self):
+        """
+        Short Software description
+        """
+
+        pass
+
+    def closeEvent(self, event):
+        """
+        Override of the closeEvent method to close the window
+        """
+
+        # close = QtWidgets.QMessageBox.information(
+        #     self,
+        #     'Exit',
+        #     c.EXIT_MESSAGE,
+        #     QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
+        #     QtWidgets.QMessageBox.No
+        # )
+        # if close == QtWidgets.QMessageBox.Yes:
+        #     event.accept()
+        # else:
+        #     event.ignore()
+        event.accept()
 
     def help(self):
         """
@@ -133,15 +142,6 @@ class SpecxMainWindow(QtWidgets.QMainWindow, MainViewTemplate):
             self.btn_simulator.setEnabled(len(self.environment.channels) == len(self.channel_drops))
         else:
             self.sender().setCurrentIndex(-1)
-
-    def _reset_component_values(self):
-        """
-        Reset all current settings in the GUI (Default values will be loaded)
-        """
-        self.sample_time.setValue(simulation.DEFAULT_SAMPLE_INTERVAL_VALUE)
-        self.threshold.setValue(simulation.DEFAULT_THRESHOLD_VALUE)
-        for box in self.boxes:
-            box.setCurrentIndex(-1)
 
     def start_simulation(self):
         """

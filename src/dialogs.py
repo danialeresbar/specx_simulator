@@ -11,24 +11,65 @@ class ParametrizationDialog(QtWidgets.QDialog, DialogTemplate):
     """
 
     def __init__(self, *args, **kwargs):
+        self.distribution = kwargs.get('distribution', None)
         super(ParametrizationDialog, self).__init__(*args)
         self.setup(self)                                        # Build the GUI designed with Qt designer assistant
-        self.distribution = kwargs.get('distribution', None)
-        self.distribution_chart = self.distribution.pdf_chart()
-        # self.hide_parameter_rows()
-        self.setup_dialog_components()
-        self.plot_chart_preview()
 
-        # Button signals connection
+        # Signals
+        self._connect_button_signals()
+        self._connect_spinner_signals()
+
+        # Components
+        self._setup_parameters()
+        self._update_chart_preview()
+
+    def _connect_button_signals(self):
+        """
+        Button signal connection
+        """
+
         self.btn_submit.clicked.connect(self.accept)
         self.btn_reject.clicked.connect(self.close)
         # self.radiobtn_1.toggled.connect(self.__radiobtn_checked)
         # self.radiobtn_2.toggled.connect(self.__radiobtn_checked)
         # self.radiobtn_3.toggled.connect(self.__radiobtn_checked)
 
+    def _connect_spinner_signals(self):
+        """
+        Spinner signal connection
+        """
+
         # Spin signals connection
-        # for spinner in self.parameter_spinners:
-        #     spinner.valueChanged.connect(self.plot_chart_preview())
+        for spinner in self.parameter_spinners:
+            spinner.valueChanged.connect(self._update_chart_preview)
+
+    def _setup_parameters(self):
+        """
+
+        """
+
+        for index, parameter in enumerate(self.distribution.parameters):
+            self.parameter_labels[index].setText(f'{parameter.name} \nparameter:')
+            self.parameter_labels[index].setVisible(True)
+            # self.parameter_spinners[index].setMinimum(parameter.range[0])
+            # self.parameter_spinners[index].setMaximum(parameter.range[1])
+            self.parameter_spinners[index].setValue(parameter.value)
+            self.parameter_spinners[index].setVisible(True)
+
+    def _update_chart_preview(self):
+        """
+
+        """
+
+        self._update_parameter_values()
+        chart = self.distribution.pdf_chart(
+
+        )
+        self.chart_preview.setChart(chart)
+
+    def _update_parameter_values(self):
+        for spinner, parameter in zip(self.parameter_spinners, self.distribution.parameters):
+            parameter.set_value(spinner.value())
 
     def closeEvent(self, event):
         """
@@ -37,41 +78,6 @@ class ParametrizationDialog(QtWidgets.QDialog, DialogTemplate):
 
         self.reject()
         event.accept()
-
-    def hide_parameter_rows(self):
-        for label, spinner in zip(self.parameter_labels, self.parameter_spinners):
-            label.setVisible(False)
-            spinner.setVisible(False)
-
-    # def hide_radiobtn_rows(self):
-    #     self.radiobtn_1.setVisible(False)
-    #     self.radiobtn_2.setVisible(False)
-    #     self.radiobtn_3.setVisible(False)
-
-    def update_distribution_parameters(self):
-        for spinner, parameter in zip(self.parameter_spinners, self.distribution.parameters):
-            parameter.set_value(spinner.value())
-
-    def plot_chart_preview(self):
-        """
-
-        :return:
-        """
-        self.update_distribution_parameters()
-        self.chart_preview.setChart(self.distribution_chart)
-
-    def setup_dialog_components(self):
-        """
-        Method
-        :return:
-        """
-        for index, parameter in enumerate(self.distribution.parameters):
-            self.parameter_labels[index].setText(f'{parameter.name} \nparameter:')
-            self.parameter_labels[index].setVisible(True)
-            # self.parameter_spinners[index].setMinimum(parameter.range[0])
-            # self.parameter_spinners[index].setMaximum(parameter.range[1])
-            self.parameter_spinners[index].setValue(parameter.value)
-            self.parameter_spinners[index].setVisible(True)
 
 
 class CloseWindowDialog(QtWidgets.QDialog):

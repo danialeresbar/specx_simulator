@@ -1,8 +1,9 @@
 from PyQt5 import QtWidgets
 
-# from dialogs import ParametrizationDialog
 # from simulator import SimulationScenario
-from model import simulation
+from src.model import  simulation
+from src.model.distributions import continuous, discreet
+from src.dialogs import ParametrizationDialog
 from src.qt.mainview import MainViewTemplate
 
 
@@ -31,39 +32,17 @@ class SpecxMainWindow(QtWidgets.QMainWindow, MainViewTemplate):
         super(SpecxMainWindow, self).__init__()
         self.setup(self)                                                    # Build the GUI designed with Qt designer
         self.environment = simulation.Environment(id='uJ96^YJtgTbkLHxA')    # Random ID
-        self.add_environment_channels()
 
-        # Menu signals connection
-        self.action_menu_new.triggered.connect(self.new_sim)
-        self.action_menu_exit.triggered.connect(self.close)
-        self.action_menu_about.triggered.connect(self.about)
-        self.action_menu_help.triggered.connect(self.help)
-
-        # Button signals connection
-        self.btn_simulator.clicked.connect(self.start_simulation)
-        self.btn_clean.clicked.connect(self.reset_settings)
-        self.btn_save_settings.clicked.connect(self.save_environment)
-        self.btn_load_settings.clicked.connect(self.load_environment)
-
-        # ComboBox binding to the parametrization window modal
-        for drop in self.channel_drops:
-            drop.activated.connect(self.show_parametrization_modal)
-
-    def add_environment_channels(self):
-        """
-
-        :return:
-        """
-
-        pass
-        # for index, label in enumerate(self.labels):
-        #     channel = simulation.Channel(number=index, frequency=label.text())
-        #     self.environment.add_or_update_channel(channel)
+        # Signals
+        self._connect_button_signals()
+        self._connect_drop_signals()
+        self._connect_menu_signals()
 
     def about(self):
         """
         Short Software description
         """
+
         pass
 
     def closeEvent(self, event):
@@ -84,46 +63,78 @@ class SpecxMainWindow(QtWidgets.QMainWindow, MainViewTemplate):
         #     event.ignore()
         event.accept()
 
+    def _connect_button_signals(self):
+        """
+        Button signal connection
+        """
+
+        self.btn_simulator.clicked.connect(self.start_simulation)
+        self.btn_clean.clicked.connect(self.reset_settings)
+        self.btn_save_settings.clicked.connect(self.save_environment)
+        self.btn_load_settings.clicked.connect(self.load_environment)
+
+    def _connect_drop_signals(self):
+        """
+        Drop down signal connection
+        """
+
+        for drop in self.channel_drops:
+            drop.setCurrentIndex(-1)
+            drop.activated.connect(self.show_parametrization_modal)
+
+    def _connect_menu_signals(self):
+        """
+        Menu signal connection
+        """
+
+        self.action_menu_new.triggered.connect(self.new_simulation_environment)
+        self.action_menu_exit.triggered.connect(self.close)
+        self.action_menu_about.triggered.connect(self.about)
+        self.action_menu_help.triggered.connect(self.help)
+
     def help(self):
+        """
+
+        """
+
         pass
 
-    def setup_gui_components(self):
-        """
-        Configure the data of the GUI components using the information stored in the simulation environment loaded
-        """
-        pass
-
-    def new_sim(self):
+    def new_simulation_environment(self):
         """
         Delete all current settings in the GUI. Default values are loaded
         and the data of the former simulation environment is deleted
         """
 
-        self.reset_settings()
+        self._reset_component_values()
+        self.btn_simulator.setEnabled(False)
+        self.environment = simulation.Environment(id='uJ96^YJtgTbkLHxA')
 
     def show_parametrization_modal(self):
         """
         Shows a modal window to parameterize a selected distribution
         """
-        selected_channel = simulation.Channel()
-        distribution_key = self.sender().currentText()
-        # for channel in self.environment.channels:
-        #     if channel.id == self.boxes.index(self.sender()):
-        #         # channel.distribution = models.distribution_selector(distribution_key)
-        #         current_channel = channel
-        #
-        # modal = ParametrizationDialog(self, distribution=selected_channel.distribution)
-        # modal.exec()
-        # if modal.result() == 1:
-        #     pass
-        # else:
-        #     self.sender().setCurrentIndex(-1)
-        # self.check_boxes()
-        # print(self.environment)
-        # for channel in self.environment.channels:
-        #     print(channel)
 
-    def reset_settings(self):
+        # Sender attributes
+        sender_index = self.channel_drops.index(self.sender())
+        sender_text = self.sender().currentText()
+
+        # Create or update channel
+        new_channel = simulation.Channel(
+            number=sender_index,
+            frequency=self.channel_labels[sender_index].text(),
+            distribution=continuous.DISTRIBUTIONS.get(sender_text)()
+        )
+
+        modal = ParametrizationDialog(self, distribution=new_channel.distribution)
+        modal.exec()
+
+        if modal.result() == 1:
+            self.environment.add_or_update_channel(new_channel)
+            self.btn_simulator.setEnabled(len(self.environment.channels) == len(self.channel_drops))
+        else:
+            self.sender().setCurrentIndex(-1)
+
+    def _reset_component_values(self):
         """
         Reset all current settings in the GUI (Default values will be loaded)
         """
@@ -131,7 +142,6 @@ class SpecxMainWindow(QtWidgets.QMainWindow, MainViewTemplate):
         self.threshold.setValue(simulation.DEFAULT_THRESHOLD_VALUE)
         for box in self.boxes:
             box.setCurrentIndex(-1)
-        self.check_boxes()
 
     def start_simulation(self):
         """
@@ -139,7 +149,7 @@ class SpecxMainWindow(QtWidgets.QMainWindow, MainViewTemplate):
         """
 
         pass
-        # simulation_scenario = SimulationScenario(self, id='test', environment=self.environment)
+        # simulator = SimulationScenario(self, id='test', environment=self.environment)
         # simulation_scenario.show()
         # try:
         #     simulation_scenario = SimulationScenario(self, id='test', environment=self.environment)
@@ -150,7 +160,8 @@ class SpecxMainWindow(QtWidgets.QMainWindow, MainViewTemplate):
 
     def save_environment(self):
         """
-        Save the parametrized channels distribution (discrete or continuous) to a JSON file
+        Save the parametrized channels distribution (discreet or continuous)
+        to a JSON file
         """
 
         filepath, _ = QtWidgets.QFileDialog.getSaveFileName(
@@ -177,7 +188,8 @@ class SpecxMainWindow(QtWidgets.QMainWindow, MainViewTemplate):
 
     def load_environment(self):
         """
-        Load the parametrized channels distribution (discrete or continuous) from a JSON file
+        Load the parametrized channels distribution (discreet or continuous)
+        from a JSON file
         """
 
         filepath, _ = QtWidgets.QFileDialog.getOpenFileName(
@@ -199,21 +211,6 @@ class SpecxMainWindow(QtWidgets.QMainWindow, MainViewTemplate):
             #         QtWidgets.QMessageBox.Ok
             #     )
             self.btn_simulator.setEnabled(True)
-
-    def check_boxes(self):
-        """
-        Check each distribution box in order to verify that all channels have been parameterized
-        """
-
-        # activation_key = bool()
-        for drop in self.channel_drops:
-            if drop.currentIndex() == -1:  # -1 is the placeholder index
-                self.btn_simulator.setEnabled(False)
-                self.btn_save_settings.setEnabled(False)
-                return
-
-        self.btn_simulator.setEnabled(True)
-        self.btn_save_settings.setEnabled(True)
 
 
 # App launcher block code

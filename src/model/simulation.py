@@ -73,7 +73,7 @@ class Environment(object):
         """
 
         for channel in self.channels:
-            if channel.id == new_channel.id:
+            if channel.number == new_channel.number:
                 channel.frequency = new_channel.frequency
                 channel.distribution = new_channel.distribution
                 return 'Update'

@@ -16,13 +16,13 @@ class WeibullPDF(common.PDFChart):
 
     def __init__(self, **kwargs):
         self.__alpha = kwargs.get('alpha', DEFAULT_ALPHA_VALUE)
-        self.__beta = kwargs.get('lambda', DEFAULT_BETA_VALUE)
+        self.__beta = kwargs.get('lambd', DEFAULT_BETA_VALUE)
         self.__gamma = kwargs.get('gamma', DEFAULT_GAMMA_VALUE)
+        self.base_series = QSplineSeries()
         super(WeibullPDF, self).__init__(
             title=kwargs.get('title')
         )
 
-        self.base_series = QSplineSeries()
         self._plot()
 
     def _plot(self):

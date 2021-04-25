@@ -16,11 +16,11 @@ class UniformPDF(common.PDFChart):
     def __init__(self, **kwargs):
         self.__lower_limit = kwargs.get('lower', DEFAULT_LOWER_LIMIT_VALUE)
         self.__upper_limit = kwargs.get('upper', DEFAULT_UPPER_LIMIT_VALUE)
+        self.base_series = QSplineSeries()
         super(UniformPDF, self).__init__(
             title=kwargs.get('title')
         )
 
-        self.base_series = QSplineSeries()
         self._plot()
 
     def _plot(self):

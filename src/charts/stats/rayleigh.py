@@ -16,11 +16,11 @@ class RayleighPDF(common.PDFChart):
     def __init__(self, **kwargs):
         self.__lambda = kwargs.get('location', DEFAULT_LAMBDA_VALUE)
         self.__sigma = kwargs.get('scale', DEFAULT_SIGMA_VALUE)
+        self.base_series = QSplineSeries()
         super(RayleighPDF, self).__init__(
             title=kwargs.get('title')
         )
 
-        self.base_series = QSplineSeries()
         self._plot()
 
     def _plot(self):
@@ -30,5 +30,5 @@ class RayleighPDF(common.PDFChart):
             common.SAMPLES
         )
         y = st.rayleigh.pdf(x, loc=self.__lambda, scale=self.__sigma)
-        self.base_series.setName(f'{common.MU}={self.__mean:.4f}, {common.SIGMA}={self.__sigma:.4f}')
-        self.switch_series(x, y)
+        self.base_series.setName(f'{common.MU}={self.__lambda:.4f}, {common.SIGMA}={self.__sigma:.4f}')
+        self.plot_series(x, y)

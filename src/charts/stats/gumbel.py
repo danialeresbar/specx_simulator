@@ -16,11 +16,11 @@ class GumbelPDF(common.PDFChart):
     def __init__(self, **kwargs):
         self.__mean = kwargs.get('location', DEFAULT_MEAN_VALUE)
         self.__sigma = kwargs.get('scale', DEFAULT_SIGMA_VALUE)
+        self.base_series = QSplineSeries()
         super(GumbelPDF, self).__init__(
             title=kwargs.get('title')
         )
 
-        self.base_series = QSplineSeries()
         self._plot()
 
     def _plot(self):

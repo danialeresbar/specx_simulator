@@ -17,12 +17,12 @@ class GammaPDF(common.PDFChart):
     def __init__(self, **kwargs):
         self.__alpha = kwargs.get('alpha', DEFAULT_ALPHA_VALUE)
         self.__gamma = kwargs.get('gamma', DEFAULT_GAMMA_VALUE)
-        self.__lambda = kwargs.get('lambda', DEFAULT_LAMBDA_VALUE)
+        self.__lambda = kwargs.get('lambd', DEFAULT_LAMBDA_VALUE)
+        self.base_series = QSplineSeries()
         super(GammaPDF, self).__init__(
             title=kwargs.get('title')
         )
 
-        self.base_series = QSplineSeries()
         self._plot()
 
     def _plot(self):

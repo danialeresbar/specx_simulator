@@ -29,9 +29,9 @@ class SpecxMainWindow(QtWidgets.QMainWindow, MainViewTemplate):
     """
 
     def __init__(self):
+        self.environment = simulation.Environment(id='uJ96^YJtgTbkLHxA')  # Random ID
         super(SpecxMainWindow, self).__init__()
         self.setup(self)                                                    # Build the GUI designed with Qt designer
-        self.environment = simulation.Environment(id='uJ96^YJtgTbkLHxA')    # Random ID
 
         # Signals
         self._connect_button_signals()

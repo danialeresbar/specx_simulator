@@ -1,3 +1,4 @@
+from src.charts.stats.uniform import UniformPDF
 from src.model.distributions import base
 
 UNIFORM = 'Uniform'
@@ -30,3 +31,13 @@ class Uniform(base.Distribution):
         u = base.gcc_mixed_congruential_generator()
         var = self.__minimum + (self.__maximum-self.__minimum)*u
         return base.clean_random_variable(var)
+
+    def pdf_chart(self):
+        return UniformPDF(
+            title=f'''
+                    Probability Density Function
+                    <center><small>{self.name} Distribution</small></center>
+            ''',
+            lower=self.__minimum.value,
+            upper=self.__maximum.value
+        )

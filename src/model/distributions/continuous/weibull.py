@@ -1,6 +1,7 @@
 import math
 
 from scipy import stats as st
+from src.charts.stats.weibull import WeibullPDF
 from src.model.distributions import base
 
 WEIBULL = 'Weibull'
@@ -39,3 +40,14 @@ class Weibull(base.Distribution):
 
         var = st.weibull_min.rvs(self.__alpha_shape, self.__location, self.__scale)
         return base.clean_random_variable(var)
+
+    def pdf_chart(self):
+        return WeibullPDF(
+            title=f'''
+                    Probability Density Function
+                    <center><small>{self.name} Distribution</small></center>
+            ''',
+            alpha=self.__alpha_shape.value,
+            gamma=self.__location.value,
+            lambd=self.__scale.value
+        )

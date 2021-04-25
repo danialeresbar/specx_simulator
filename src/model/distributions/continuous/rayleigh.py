@@ -1,4 +1,5 @@
 from scipy import stats as st
+from src.charts.stats.rayleigh import RayleighPDF
 from src.model.distributions import base
 
 RAYLEIGH = 'Rayleigh'
@@ -29,3 +30,13 @@ class Rayleigh(base.Distribution):
 
         var = st.rayleigh.rvs(self.__location, self.__scale)
         return base.clean_random_variable(var)
+
+    def pdf_chart(self):
+        return RayleighPDF(
+            title=f'''
+                    Probability Density Function
+                    <center><small>{self.name} Distribution</small></center>
+            ''',
+            location=self.__location.value,
+            scale=self.__scale.value
+        )

@@ -1,6 +1,7 @@
 import math
 
 from scipy import stats as st
+from src.charts.stats.beta import BetaPDF
 from src.model.distributions import base
 
 BETA = 'Beta'
@@ -47,3 +48,15 @@ class Beta(base.Distribution):
 
         var = st.beta.rvs(self.__alpha_shape, self.__beta_shape, self.__location, self.__scale)
         return base.clean_random_variable(var)
+
+    def pdf_chart(self):
+        return BetaPDF(
+            title=f'''
+                    Probability Density Function
+                    <center><small>{self.name} Distribution</small></center>
+            ''',
+            alpha=self.__alpha_shape.value,
+            beta=self.__beta_shape.value,
+            a=self.__location.value,
+            b=self.__scale.value
+        )

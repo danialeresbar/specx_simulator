@@ -1,4 +1,5 @@
 from scipy import stats as st
+from src.charts.stats.laplace import LaplacePDF
 from src.model.distributions import base
 
 LAPLACE = 'Laplace'
@@ -29,3 +30,13 @@ class Laplace(base.Distribution):
 
         var = st.laplace.rvs(self.__location, self.__scale)
         return base.clean_random_variable(var)
+
+    def pdf_chart(self):
+        return LaplacePDF(
+            title=f'''
+                    Probability Density Function
+                    <center><small>{self.name} Distribution</small></center>
+            ''',
+            location=self.__location.value,
+            diversity=self.__scale.value
+        )

@@ -1,6 +1,7 @@
 import math
 
 from scipy import stats as st
+from src.charts.stats.lognorm import LognormPDF
 from src.model.distributions import base
 
 LOGNORM = 'Gamma'
@@ -39,3 +40,14 @@ class Lognorm(base.Distribution):
 
         var = st.lognorm.rvs(self.__alpha_shape, self.__location, math.exp(self.__scale))
         return base.clean_random_variable(var)
+
+    def pdf_chart(self):
+        return LognormPDF(
+            title=f'''
+                    Probability Density Function
+                    <center><small>{self.name} Distribution</small></center>
+            ''',
+            gamma=self.__alpha_shape.value,
+            location=self.__location.value,
+            scale=self.__scale.value,
+        )

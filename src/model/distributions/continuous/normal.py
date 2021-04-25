@@ -1,4 +1,5 @@
 from scipy import stats as st
+from src.charts.stats.normal import NormalPDF
 from src.model.distributions import base
 
 NORMAL = 'Normal'
@@ -29,3 +30,13 @@ class Normal(base.Distribution):
 
         var = st.norm.rvs(self.__location, self.__scale)
         return base.clean_random_variable(var)
+
+    def pdf_chart(self):
+        return NormalPDF(
+            title=f'''
+                    Probability Density Function
+                    <center><small>{self.name} Distribution</small></center>
+            ''',
+            location=self.__location.value,
+            scale=self.__scale.value
+        )

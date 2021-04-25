@@ -1,4 +1,5 @@
 import numpy as np
+from src.charts.stats.gumbel import GumbelPDF
 from src.model.distributions import base
 
 GUMBEL = 'Gumbel'
@@ -29,3 +30,13 @@ class Gumbel(base.Distribution):
 
         var = np.random.gumbel(self.__location, self.__scale)
         return base.clean_random_variable(var)
+
+    def pdf_chart(self):
+        return GumbelPDF(
+            title=f'''
+                    Probability Density Function
+                    <center><small>{self.name} Distribution</small></center>
+            ''',
+            location=self.__location.value,
+            scale=self.__scale.value
+        )

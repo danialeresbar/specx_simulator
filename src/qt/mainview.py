@@ -11,14 +11,6 @@ DEFAULT_HEIGHT = 450
 SIZE_POLICY_EXPANDING = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
 SIZE_POLICY_PREFERRED = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
 
-# ---- Icons ----
-# MAIN_ICON = QtGui.QIcon()
-# MAIN_ICON.addPixmap(
-#     QtGui.QPixmap("../icons/icon.svg"),
-#     QtGui.QIcon.Normal,
-#     QtGui.QIcon.Off
-# )
-
 # ---- Fonts ----
 BOX_LABEL_FONT = QtGui.QFont()
 BOX_LABEL_FONT.setPointSizeF(12)
@@ -40,7 +32,6 @@ THRESHOLD_MAXIMUM_VALUE = 0.45
 
 class MainViewTemplate:
     def setup(self, mainview, **kwargs):
-        mainview.setObjectName("mainview")
         mainview.resize(kwargs.get('width', DEFAULT_WIDTH), kwargs.get('height', DEFAULT_HEIGHT))
         mainview.setMinimumSize(QtCore.QSize(MINIMUM_WIDTH, MINIMUM_HEIGHT))
         mainview_size_policy = SIZE_POLICY_PREFERRED
@@ -48,7 +39,13 @@ class MainViewTemplate:
         mainview_size_policy.setVerticalStretch(0)
         mainview_size_policy.setHeightForWidth(mainview.sizePolicy().hasHeightForWidth())
         mainview.setSizePolicy(mainview_size_policy)
-        # mainview.setWindowIcon(MAIN_ICON)
+        mainview_icon = QtGui.QIcon()
+        mainview_icon.addPixmap(
+            QtGui.QPixmap("../icons/icon.svg"),
+            QtGui.QIcon.Normal,
+            QtGui.QIcon.Off
+        )
+        mainview.setWindowIcon(mainview_icon)
         mainview.setStyleSheet("* {\n"
                                   "    background: #26282b;\n"
                                   "    color: #DDDDDD;\n"
@@ -381,24 +378,17 @@ class MainViewTemplate:
         self.menubar = QtWidgets.QMenuBar(mainview)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 600, 25))
         self.menubar.setFont(MAIN_LABEL_FONT)
-        self.menubar.setObjectName("menubar")
         self.file_menu = QtWidgets.QMenu(self.menubar)
         self.file_menu.setFont(MAIN_LABEL_FONT)
-        self.file_menu.setObjectName("file_menu")
         self.about_menu = QtWidgets.QMenu(self.menubar)
         self.about_menu.setFont(MAIN_LABEL_FONT)
-        self.about_menu.setObjectName("about_menu")
         mainview.setMenuBar(self.menubar)
 
         # Menu items
         self.action_menu_new = QtWidgets.QAction(mainview)
-        self.action_menu_new.setObjectName("action_menu_new")
         self.action_menu_exit = QtWidgets.QAction(mainview)
-        self.action_menu_exit.setObjectName("action_menu_exit")
         self.action_menu_about = QtWidgets.QAction(mainview)
-        self.action_menu_about.setObjectName("action_menu_about")
         self.action_menu_help = QtWidgets.QAction(mainview)
-        self.action_menu_help.setObjectName("action_menu_help")
 
         self.file_menu.addAction(self.action_menu_new)
         self.file_menu.addAction(self.action_menu_exit)
@@ -587,8 +577,6 @@ class MainViewTemplate:
 
         button_box_layout.addWidget(self.btn_simulator)
         button_box_layout.addWidget(self.btn_clean)
-
-        pass
 
     def translate(self, mainview):
         _translate = QtCore.QCoreApplication.translate

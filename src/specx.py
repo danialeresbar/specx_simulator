@@ -5,6 +5,7 @@ from src.model import  simulation
 from src.model.distributions import continuous, discreet
 from src.dialogs import ParametrizationDialog
 from src.qt.mainview import MainViewTemplate
+from src.simulator import Simulation
 
 
 # ---- GUI labels ----
@@ -44,7 +45,7 @@ class SpecxMainWindow(QtWidgets.QMainWindow, MainViewTemplate):
         """
 
         self.btn_simulator.clicked.connect(self.start_simulation)
-        self.btn_clean.clicked.connect(self.reset_settings)
+        self.btn_clean.clicked.connect(self._reset_component_values)
         self.btn_save_settings.clicked.connect(self.save_environment)
         self.btn_load_settings.clicked.connect(self.load_environment)
 
@@ -73,8 +74,8 @@ class SpecxMainWindow(QtWidgets.QMainWindow, MainViewTemplate):
         """
         self.sample_time.setValue(simulation.DEFAULT_SAMPLE_INTERVAL_VALUE)
         self.threshold.setValue(simulation.DEFAULT_THRESHOLD_VALUE)
-        for box in self.boxes:
-            box.setCurrentIndex(-1)
+        for drop in self.channel_drops:
+            drop.setCurrentIndex(-1)
 
     def about(self):
         """
@@ -148,9 +149,8 @@ class SpecxMainWindow(QtWidgets.QMainWindow, MainViewTemplate):
         Shows a window with the simulation options and channel's chart
         """
 
-        pass
-        # simulator = SimulationScenario(self, id='test', environment=self.environment)
-        # simulation_scenario.show()
+        simulator = Simulation(self, id='test', environment=self.environment)
+        simulator.show()
         # try:
         #     simulation_scenario = SimulationScenario(self, id='test', environment=self.environment)
         #     simulation_scenario.show()

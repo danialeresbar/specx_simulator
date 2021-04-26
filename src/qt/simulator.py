@@ -323,6 +323,8 @@ class SimulatorTemplate(object):
         self._build_tool_box()
 
         # Chartviews section
+        self.simulation_charts = [QtChart.QChart() for _ in range(len(simulation.FREQUENCIES))]
+        self.percentage_chart = QtChart.QChart()
         self.simulation_chartviews = [QtChart.QChartView() for _ in range(len(simulation.FREQUENCIES))]
         self.percentage_bars_chartview = QtChart.QChartView()
         self._build_chartview_box()
@@ -332,13 +334,6 @@ class SimulatorTemplate(object):
         self.container_layout.setStretch(2, 35)
 
         simulator.setCentralWidget(self.container)
-
-        """self.statusbar = QtWidgets.QStatusBar(simulator)
-        self.statusbar.setObjectName("statusbar")
-        simulator.setStatusBar(self.statusbar)
-        self.toolBar = QtWidgets.QToolBar(simulator)
-        self.toolBar.setObjectName("toolBar")
-        simulator.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)"""
 
         self.retranslateUi(simulator)
         QtCore.QMetaObject.connectSlotsByName(simulator)
@@ -375,9 +370,9 @@ class SimulatorTemplate(object):
         control_area_layout = QtWidgets.QHBoxLayout(control_area)
         control_area_layout.setSpacing(5)
         files_area_layout = QtWidgets.QHBoxLayout(files_area)
-        files_area_layout.setSpacing()
+        files_area_layout.setSpacing(0)
         time_area_layout = QtWidgets.QHBoxLayout(time_area)
-        time_area_layout.setSpacing(10)
+        time_area_layout.setSpacing(5)
         tools_layout = QtWidgets.QHBoxLayout()
         tools_layout.setSpacing(5)
 
@@ -442,7 +437,7 @@ class SimulatorTemplate(object):
         self.btn_open_csvfile.setEnabled(False)
 
         # Spaces
-        spacer_item = QtWidgets.QSpacerItem(40, 10, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        spacer_item = QtWidgets.QSpacerItem(int(DEFAULT_WIDTH/2), 10, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
 
         control_area_layout.addWidget(self.btn_start)
         control_area_layout.addWidget(self.btn_play)
@@ -455,10 +450,10 @@ class SimulatorTemplate(object):
         time_area_layout.addWidget(self.btn_increase_speed)
         time_area_layout.addWidget(self.btn_reset_speed)
 
-        tools_layout.addLayout(control_area_layout)
-        tools_layout.addLayout(time_area_layout)
+        tools_layout.addWidget(control_area)
+        tools_layout.addWidget(time_area)
         tools_layout.addItem(spacer_item)
-        tools_layout.addLayout(files_area_layout)
+        tools_layout.addWidget(files_area)
         tools_layout.setStretch(4, 70)
         self.container_layout.addLayout(tools_layout)
 
@@ -484,6 +479,12 @@ class SimulatorTemplate(object):
             row_layouts[aux].addWidget(chartview)
             if index % 3 == 0:
                 aux += 1
+
+        for row in row_layouts:
+            simulation_chartview_layout.addLayout(row)
+
+        for chart, chartview in zip(self.simulation_charts, self.simulation_chartviews):
+            chartview.setChart(chart)
         results_chartview_layout.addWidget(self.percentage_bars_chartview)
 
         self.container_layout.addLayout(simulation_chartview_layout)

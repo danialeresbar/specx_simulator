@@ -1,68 +1,168 @@
 from datetime import datetime
-# from uuid import uuid4
+from PyQt5 import QtWidgets, QtGui
 
-from qt.simulator_qt_ui import UiSimWindow, QtWidgets, QtGui
-from charts.charts import BarChart, LineChart, SplineChart
-from tools.thread_tools import FileThread, SimulationThread
+from src.charts import cartesian
+from src.model import simulation
+from src.qt.simulator import SimulatorTemplate
+from src.tools import threads
 
 
 # ---- Date formats ----
 DATE_FORMAT = "%m-%d-%Y %H-%M-%S"
 
-
-# ---- GUI default values ----
-DEFAULT_SPEED = 1
+# ---- Components default values ----
+DEFAULT_SPEED_FACTOR = 1
 MAX_SPEED = 64
 MIN_SPEED = 1/MAX_SPEED
+INCREASE_STEP = 2
+DECREASE_STEP = 2
 
-
-# ---- GUI messages ----
+# ---- Messages ----
 SAVE_CHART_MESSAGE = 'Save chart'
 SAVE_CHART_SUCCESS = 'Chart saved successfully'
 
-
 # ---- Paths ----
 PROJECT_PATH = '../'
-ENVIRONMENTS_PATH = f'{PROJECT_PATH}/environments'
+ENVIRONMENTS_PATH = f'{PROJECT_PATH}/environments/'
 SIMULATIONS_PATH = f'{PROJECT_PATH}/simulations/'
 
 
-class SimulationScenario(QtWidgets.QMainWindow, UiSimWindow):
+class Simulation(QtWidgets.QMainWindow, SimulatorTemplate):
     """
-    Class with the components required to simulate a scenario (Previously configured in the Main window)
+    Class used to simulate the use of TVWS according to
+    the settings of the scenario
     """
+
+    results_file_path = f'{SIMULATIONS_PATH}Simulation-{datetime.now().strftime(DATE_FORMAT)}.csv'
 
     def __init__(self, *args, **kwargs):
-        super(SimulationScenario, self).__init__(*args)
-        self.setupUi(self)
-        self.id = kwargs.get('id', None)
-        self.environment = kwargs.get('environment', None)
-        self.output_filepath = f'{SIMULATIONS_PATH}Simulation-{datetime.now().strftime(DATE_FORMAT)}.csv'
-        self.speed_factor = 1
-        self.channel_charts = list()
-        self.build_channel_charts()
-        self._control_manager(play=False, pause=False, stop=False)
-        self.simulation = SimulationThread(
-            channels=self.environment.channels,
-            charts=self.channel_charts,
-            delay=self.check_speed_value,
-            sample_time=self.environment.settings.get('sampling'),
-            threshold=self.environment.settings.get('threshold'),
+        self._environment = kwargs.get('environment', simulation.Environment())
+        self._speed_factor = 1
+
+        super(Simulation, self).__init__(*args)
+        self.setup(self)
+
+        self._simulation_thread = threads.SimulationThread(
+            channels=self._environment.channels,
+            simulation_charts=self.simulation_charts,
+            percentage_chart=self.percentage_chart,
+            delay=self.speed_factor,
+            sample_time=self._environment.settings.get('sampling'),
+            threshold=self._environment.settings.get('threshold'),
         )
 
-        # Simulation control button signals connection
+        self._connect_button_signals()
+        self._control_button_manager(play=False, pause=False, stop=False)
+
+    @property
+    def speed_factor(self):
+        return self._speed_factor
+
+    @speed_factor.setter
+    def speed_factor(self, factor):
+        self._speed_factor *= factor
+
+    @classmethod
+    def open_csvfile(cls):
+        """
+        Open a file instance for show the results of the current simulation
+        """
+
+        try:
+            csvfile = threads.FileThread(filepath=cls.results_file_path)
+            csvfile.setDaemon(True)
+            csvfile.start()
+        except Exception as e:
+            print(f'Error opening CSV file:\n {e}')
+
+    def _setup_simulation_charts(self):
+        """
+
+        """
+
+        pass
+
+    def _connect_button_signals(self):
+        """
+        Button signal connection
+        """
+
         self.btn_start.clicked.connect(self.start)
         self.btn_play.clicked.connect(self.resume)
         self.btn_pause.clicked.connect(self.pause)
         self.btn_stop.clicked.connect(self.stop)
-        self.btn_save_chart.clicked.connect(self.save_chart)
-        self.btn_show_csvfile.clicked.connect(self.show_csvfile)
+        self.btn_save_chart.clicked.connect(self.save_results)
+        self.btn_open_csvfile.clicked.connect(self.open_csvfile)
+        self.btn_increase_speed.clicked.connect(self._increase_speed)
+        self.btn_decrease_speed.clicked.connect(self._decrease_speed)
+        self.btn_reset_speed.clicked.connect(self._reset_speed)
 
-        # Simulation speed button signals connection
-        self.btn_increase_speed.clicked.connect(self.increase_speed)
-        self.btn_decrease_speed.clicked.connect(self.decrease_speed)
-        self.btn_max_speed.clicked.connect(self.max_speed)
-        self.btn_reset_speed.clicked.connect(self.reset_speed)
+    def _control_button_manager(self, start=True, play=True, pause=True, stop=True):
+        """
+        It allows you to control the interaction between the action
+        buttons of the simulation in progress
+        :param start:
+        :param play:
+        :param pause:
+        :param stop:
+        """
+
+        self.btn_start.setEnabled(start)
+        self.btn_play.setEnabled(play)
+        self.btn_pause.setEnabled(pause)
+        self.btn_stop.setEnabled(stop)
+
+    def _speed_button_manager(self, increase=True, decrease=True, reset=True):
+        """
+        It allows you to control the interaction between the buttons to
+        control the speed of the simulation in progress
+        :param increase:
+        :param decrease:
+        :param reset:
+        :return:
+        """
+
+        self.btn_increase_speed.setEnabled(increase)
+        self.btn_decrease_speed.setEnabled(decrease)
+        self.btn_reset_speed.setEnabled(reset)
+
+    def _formatted_speed_label(self):
+        """
+        Formats the speed factor value for human understanding
+        :return: Formatted speed factor value
+        """
+
+        if self._speed_factor >= 1:
+            return f'X{int(self.speed_factor)}'
+        else:
+            return f'X1/{int(1/self.speed_factor)}'
+
+    def _increase_speed(self):
+        """
+
+        """
+
+        self._speed_factor *= INCREASE_STEP
+        self.speed_label.setText(self._formatted_speed_label())
+        self._speed_button_manager(increase=self._speed_factor != MAX_SPEED)
+
+    def _decrease_speed(self):
+        """
+
+        """
+
+        self._speed_factor /= DECREASE_STEP
+        self.speed_label.setText(self._formatted_speed_label())
+        self._speed_button_manager(decrease=self._speed_factor != MIN_SPEED)
+
+    def _reset_speed(self):
+        """
+
+        """
+
+        self._speed_factor = DEFAULT_SPEED_FACTOR
+        self.speed_label.setText(self._formatted_speed_label())
+        self._speed_button_manager()
 
     def closeEvent(self, event):
         """
@@ -81,39 +181,9 @@ class SimulationScenario(QtWidgets.QMainWindow, UiSimWindow):
         #     event.ignore()
         event.accept()
 
-    def check_speed_value(self):
-        return self.speed_factor
-
-    def build_channel_charts(self):
+    def save_results(self):
         """
-        Build and initialize the graphs of each channel taking into account whether the assigned distribution
-        is continuous or discrete simulation
-        """
-        for index, channel in enumerate(self.environment.channels):
-            if channel.distribution.category == 'Discrete':
-                channel_chart = LineChart(
-                    title=f'{channel.frequency} Channel'
-                )
-            else:
-                channel_chart = SplineChart(
-                    title=f'{channel.frequency} Channel'
-                )
-
-            self.channel_charts.append(channel_chart)
-            self.chartviews[index].setChart(channel_chart)
-
-        barchart = BarChart(
-            title='Usage percentage for TV channels',
-            categories=[channel.frequency for channel in self.environment.channels],
-            bars=[20, 10, 30, 50, 40, 70, 90, 40, 80]
-        )
-
-        self.channel_charts.append(barchart)
-        self.chartviews[9].setChart(barchart)
-
-    def save_chart(self):
-        """
-        Save the selected chart in one of the available formats
+        Save the results chart in one of the available formats
         """
         filepath, _ = QtWidgets.QFileDialog.getSaveFileName(
             self,
@@ -124,7 +194,7 @@ class SimulationScenario(QtWidgets.QMainWindow, UiSimWindow):
         )
 
         if filepath:
-            output = QtGui.QPixmap(self.chartviews[9].grab())
+            output = QtGui.QPixmap(self.percentage_bars_chartview.grab())
             output.save(filepath, quality=100)
             if output:
                 QtWidgets.QMessageBox.information(
@@ -141,55 +211,37 @@ class SimulationScenario(QtWidgets.QMainWindow, UiSimWindow):
                     QtWidgets.QMessageBox.Ok
                 )
 
-    def show_csvfile(self):
-        """
-        Opens a file instance for show the results of the current simulation scenario
-        """
-        try:
-            csvfile = FileThread(
-                kwargs={
-                    'filepath': self.output_filepath
-                }
-            )
-            csvfile.setDaemon(True)
-            csvfile.start()
-        except Exception as e:
-            print(f'Error opening CSV file:\n {e}')
-
-    def reset_settings(self):
-        self.reset_speed()
-        self.btn_start.setText('START')
-
     def start(self):
         """
         Start the simulation process
         """
+
         try:
-            self.simulation.setDaemon(True)
-            self.simulation.start()
-            self._control_manager(start=False, play=False)
+            self._simulation_thread.setDaemon(True)
+            self._simulation_thread.start()
+            self._control_button_manager(start=False, play=False)
         except Exception as e:
             print(f'Error in starting Simulation:\n {e}')
 
     def resume(self):
         """
         Resume the simulation process
-        :return:
         """
+
         try:
-            self.simulation.resume()
-            self._control_manager(start=False, play=False)
+            self._simulation_thread.resume()
+            self._control_button_manager(start=False, play=False)
         except Exception as e:
             print(f'Error in resuming Simulation:\n {e}')
 
     def pause(self):
         """
         Pause the simulation process
-        :return:
         """
+
         try:
-            self.simulation.pause()
-            self._control_manager(start=False, pause=False)
+            self._simulation_thread.pause()
+            self._control_button_manager(start=False, pause=False)
         except Exception as e:
             print(f'Error in pausing Simulation:\n {e}')
 
@@ -197,59 +249,12 @@ class SimulationScenario(QtWidgets.QMainWindow, UiSimWindow):
         """
         Stop the simulation process
         """
-        if self.simulation.is_alive():
-            if self.simulation.paused():
+
+        if self._simulation_thread.is_alive():
+            if self._simulation_thread.paused():
                 self.resume()
             try:
-                self.simulation.stop()
-                self._control_manager(play=False, pause=False, stop=False)
+                self._simulation_thread.stop()
+                self._control_button_manager(play=False, pause=False, stop=False)
             except Exception as e:
                 print(f'Error in stopping Simulation:\n {e}')
-
-    def _control_manager(self, start=True, play=True, pause=True, stop=True):
-        self.btn_start.setEnabled(start)
-        self.btn_play.setEnabled(play)
-        self.btn_pause.setEnabled(pause)
-        self.btn_stop.setEnabled(stop)
-
-    def _speed_manager(self, increase=True, decrease=True, max=True, reset=True):
-        self.btn_increase_speed.setEnabled(increase)
-        self.btn_decrease_speed.setEnabled(decrease)
-        self.btn_max_speed.setEnabled(max)
-        self.btn_reset_speed.setEnabled(reset)
-
-    def increase_speed(self):
-        increase = max = True
-        self.speed_factor *= 2
-        self.speed_label.setText(self._speed_formatter())
-        if self.speed_factor == MAX_SPEED:
-            increase = max = False
-        self._speed_manager(increase=increase, max=max)
-
-    #
-    def decrease_speed(self):
-        decrease = True
-        self.speed_factor /= 2
-        self.speed_label.setText(self._speed_formatter())
-        if self.speed_factor == MIN_SPEED:
-            decrease = False
-        self._speed_manager(decrease=decrease)
-
-    def max_speed(self):
-        self.speed_factor = MAX_SPEED
-        self.speed_label.setText(self._speed_formatter())
-        self._speed_manager(increase=False, max=False)
-
-    def reset_speed(self):
-        self.speed_factor = DEFAULT_SPEED
-        self.speed_label.setText(self._speed_formatter())
-        self._speed_manager()
-
-    def _speed_formatter(self):
-        if self.speed_factor >= 1:
-            return f'X{int(self.speed_factor)}'
-        else:
-            return f'X1/{int(1/self.speed_factor)}'
-
-    def _finished(self):
-        self.reset_settings()

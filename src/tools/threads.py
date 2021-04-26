@@ -2,23 +2,22 @@ import threading
 import time
 
 from datetime import datetime, timedelta
-
-
-# ---- CONSTANTS ----
-# The simulation time is given in minutes and every two seconds a random variable is generated
-RANDOM_VARIABLES_GENERATED = 60/2  # 60s for each minute
+from src.model import simulation
 
 
 class SimulationThread(threading.Thread):
     """
-    Class that inherits that from Thread to override the 'run' method in order to simulate the system behavior
+    Class used for the implementation of a thread that
+    will run the simulation of random variables
     """
 
     def __init__(self, *args, **kwargs):
         super(SimulationThread, self).__init__(*args)
-        # Simulation scenario attributes
+
+        # Simulation environment attributes
         self.channels = kwargs.get('channels', list())
-        self.charts = kwargs.get('charts', list())
+        self.simulation_charts = kwargs.get('simulation_charts', list())
+        self.percentage_chart = kwargs.get('percentage_chart', None)
         self.delay = kwargs.get('delay', None)
         self.energy_threshold = kwargs.get('threshold', 0.33)  # 0.33 Is the default value
         self.sample_time = kwargs.get('sample_time', 0)
@@ -35,20 +34,18 @@ class SimulationThread(threading.Thread):
         Generation of Random Variables and updating of the charts
         :return:
         """
-        global RANDOM_VARIABLES_GENERATED
 
         delta = datetime.now()
+        limit = simulation.RANDOM_VARIABLES_LIMIT
         for index, channel in enumerate(self.channels):
             var_count = 0
 
-            while var_count < RANDOM_VARIABLES_GENERATED*self.sample_time and not self.stopped:
+            while var_count < limit*self.sample_time and not self.stopped:
                 var = channel.distribution.generate_random_variable()
                 var_count += 1
-                self.charts[index].update_series(var_count*2, var)
+                self.simulation_charts[index].update_series(var_count*2, var)
                 time.sleep(2/self.delay())  # Time interval between the generation of random variables
                 delta += timedelta(seconds=2)
-        #         if var >= self.parameters.get(c.THRESHOLD):
-        #             usage_percent += 1
                 with self.pause_cond:
                     while self.paused:
                         self.pause_cond.wait()
@@ -60,23 +57,29 @@ class SimulationThread(threading.Thread):
 
     def pause(self):
         """
-        Pause the execution of the thread by setting the lock state of the paused condition to closed (locked)
+        Pause the execution of the thread by setting the lock state
+        of the paused condition to closed (locked)
         """
+
         self.paused = True
         self.pause_cond.acquire()  # Lock acquired
 
     def resume(self):
         """
-        Resume the execution of the thread by setting the lock state of the paused condition to open (unlocked)
+        Resume the execution of the thread by setting the lock state
+        of the paused condition to open (unlocked)
         """
+
         self.paused = False
         self.pause_cond.notify()
         self.pause_cond.release()  # Lock released
 
     def stop(self):
         """
-        Stop the execution of the thread by setting the lock state of the stopped condition to closed (locked)
+        Stop the execution of the thread by setting the lock state
+        of the stopped condition to closed (locked)
         """
+
         self.stopped = True
 
     # def __update_chart(self, serie, x, y):
@@ -105,18 +108,19 @@ class SimulationThread(threading.Thread):
 
 class FileThread(threading.Thread):
     """
-    Class that inherits from Thread to override the 'run' method in order to save the
-    simulation results to file
+    Class that inherits from Thread to override the 'run' method
+    in order to save the simulation results to file
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, *args, **kwargs):
         self.filepath = kwargs.get('filepath')
-        super(FileThread, self).__init__(**kwargs)
+        super(FileThread, self).__init__(*args)
 
     def run(self):
         """
-        Open an instance of the simulation results file by subprocess runtime
+        Open an instance of the simulation results file by subprocess
         """
+
         import os
         import subprocess
         path = f'{os.getcwd()}{os.path.sep}{self.filepath}'

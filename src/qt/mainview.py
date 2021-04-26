@@ -324,39 +324,12 @@ class MainViewTemplate:
                                      "    padding-right: 5px;\n"
                                      "    padding-top: 4px;\n"
                                      "}")
+        self.container_layout = QtWidgets.QGridLayout(self.container)
 
         # TODO: Check this layout
-        self.container_layout = QtWidgets.QGridLayout(self.container)
         self.config_layout = QtWidgets.QVBoxLayout()
         self.config_layout.setContentsMargins(10, 40, 10, 40)
         self.config_layout.setSpacing(60)
-
-        # Settings components
-        self.settings_box = QtWidgets.QGroupBox(self.container)
-        self.sample_time_label = QtWidgets.QLabel(self.settings_box)
-        self.threshold_label = QtWidgets.QLabel(self.settings_box)
-        self.sample_time = QtWidgets.QSpinBox(self.settings_box)
-        self.threshold = QtWidgets.QDoubleSpinBox(self.settings_box)
-        self.energy_flag = QtWidgets.QCheckBox(self.settings_box)
-        self.usage_flag = QtWidgets.QCheckBox(self.settings_box)
-        self._build_settings_box()
-
-        # Action components
-        self.btn_simulator = QtWidgets.QPushButton(self.container)
-        self.btn_clean = QtWidgets.QPushButton(self.container)
-        self._build_button_box()
-
-        self.config_layout.addWidget(self.settings_box)
-        # self.config_layout.addLayout(self.buttons_layout)
-        self.config_layout.setStretch(0, 50)
-        self.config_layout.setStretch(1, 50)
-
-        self.container_layout.addLayout(self.config_layout, 0, 1, 1, 1)
-
-        # TODO: Check this layout
-        self.freq_layout = QtWidgets.QGridLayout()
-        self.freq_layout.setContentsMargins(5, 5, 5, 5)
-        self.freq_layout.setSpacing(5)
 
         # Channel section
         self.channel_box = QtWidgets.QGroupBox(self.container)
@@ -366,12 +339,20 @@ class MainViewTemplate:
         self.btn_load_settings = QtWidgets.QPushButton(self.channel_box)
         self._build_channel_box()
 
-        self.freq_layout.addWidget(self.channel_box, 0, 0, 1, 1)
+        # Settings components
+        self.settings_box = QtWidgets.QGroupBox(self.container)
+        self.sample_time_label = QtWidgets.QLabel(self.settings_box)
+        self.threshold_label = QtWidgets.QLabel(self.settings_box)
+        self.sample_time = QtWidgets.QSpinBox(self.settings_box)
+        self.threshold = QtWidgets.QDoubleSpinBox(self.settings_box)
+        self.energy_flag = QtWidgets.QCheckBox(self.settings_box)
+        self.usage_flag = QtWidgets.QCheckBox(self.settings_box)
+        self.btn_simulator = QtWidgets.QPushButton(self.container)
+        self.btn_clean = QtWidgets.QPushButton(self.container)
+        self._build_settings_box()
 
-        self.container_layout.addLayout(self.freq_layout, 0, 0, 1, 1)
         self.container_layout.setColumnStretch(0, 50)
         self.container_layout.setColumnStretch(1, 50)
-
         mainview.setCentralWidget(self.container)
 
         # Menu bar
@@ -420,10 +401,21 @@ class MainViewTemplate:
         settings_box_size_policy.setHorizontalStretch(0)
         settings_box_size_policy.setVerticalStretch(0)
         settings_box_size_policy.setHeightForWidth(self.settings_box.sizePolicy().hasHeightForWidth())
+        btn_simulate_size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        btn_simulate_size_policy.setHorizontalStretch(0)
+        btn_simulate_size_policy.setVerticalStretch(0)
+        btn_simulate_size_policy.setHeightForWidth(self.btn_simulator.sizePolicy().hasHeightForWidth())
+        btn_clean_size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        btn_clean_size_policy.setHorizontalStretch(0)
+        btn_clean_size_policy.setVerticalStretch(0)
+        btn_clean_size_policy.setHeightForWidth(self.btn_clean.sizePolicy().hasHeightForWidth())
+
         self.settings_box.setSizePolicy(settings_box_size_policy)
         self.settings_box.setFont(BOX_LABEL_FONT)
 
         # Layouts
+        settings_layout = QtWidgets.QVBoxLayout()
+        settings_layout.setSpacing(10)
         settings_box_layout = QtWidgets.QVBoxLayout(self.settings_box)
         settings_box_layout.setContentsMargins(10, 10, 10, 10)
         settings_box_layout.setSpacing(5)
@@ -450,6 +442,7 @@ class MainViewTemplate:
         self.threshold.setSingleStep(0.05)
         self.threshold.setValue(THRESHOLD_DEFAULT_VALUE)
 
+        # Check boxes
         optional_parameter_layout.addWidget(self.energy_flag)
         optional_parameter_layout.addWidget(self.usage_flag)
         sample_parameter_layout.addWidget(self.sample_time_label)
@@ -461,9 +454,43 @@ class MainViewTemplate:
         threshold_parameter_layout.setStretch(0, 60)
         threshold_parameter_layout.setStretch(1, 40)
 
+        # Buttons
+        self.btn_simulator.setSizePolicy(btn_simulate_size_policy)
+        btn_simulator_icon = QtGui.QIcon()
+        btn_simulator_icon.addPixmap(
+            QtGui.QPixmap("../icons/run.svg"),
+            QtGui.QIcon.Normal,
+            QtGui.QIcon.Off
+        )
+        self.btn_simulator.setIcon(btn_simulator_icon)
+        self.btn_simulator.setIconSize(QtCore.QSize(110, 110))
+        self.btn_simulator.setFlat(True)
+        self.btn_simulator.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.btn_simulator.setStyleSheet("QPushButton{\n"
+                                         "    border: none;\n"
+                                         "}")
+        self.btn_clean.setSizePolicy(btn_clean_size_policy)
+        btn_clean_icon = QtGui.QIcon()
+        btn_clean_icon.addPixmap(
+            QtGui.QPixmap("../icons/clean.svg"),
+            QtGui.QIcon.Normal,
+            QtGui.QIcon.Off
+        )
+        self.btn_clean.setIcon(btn_clean_icon)
+        self.btn_clean.setIconSize(QtCore.QSize(110, 110))
+        self.btn_clean.setFlat(True)
+        self.btn_clean.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.btn_clean.setStyleSheet("QPushButton{\n"
+                                     "    border: none;\n"
+                                     "}")
+
         settings_box_layout.addLayout(sample_parameter_layout)
         settings_box_layout.addLayout(threshold_parameter_layout)
         settings_box_layout.addLayout(optional_parameter_layout)
+        settings_layout.addWidget(self.settings_box)
+        settings_layout.addWidget(self.btn_simulator)
+        settings_layout.addWidget(self.btn_clean)
+        self.container_layout.addLayout(settings_layout, 0, 1)
 
     def _build_channel_box(self):
         """
@@ -522,61 +549,7 @@ class MainViewTemplate:
         button_layout.setStretch(0, 50)
         button_layout.setStretch(1, 50)
         channel_box_layout.addLayout(button_layout)
-
-    def _build_button_box(self):
-        """
-
-        """
-
-        # Size policies
-        btn_simulate_size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        btn_simulate_size_policy.setHorizontalStretch(0)
-        btn_simulate_size_policy.setVerticalStretch(0)
-        btn_simulate_size_policy.setHeightForWidth(self.btn_simulator.sizePolicy().hasHeightForWidth())
-        self.btn_simulator.setSizePolicy(btn_simulate_size_policy)
-        btn_clean_size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        btn_clean_size_policy.setHorizontalStretch(0)
-        btn_clean_size_policy.setVerticalStretch(0)
-        btn_clean_size_policy.setHeightForWidth(self.btn_clean.sizePolicy().hasHeightForWidth())
-        self.btn_clean.setSizePolicy(btn_clean_size_policy)
-
-        # Layouts
-        button_box_layout = QtWidgets.QHBoxLayout()
-        button_box_layout.setSpacing(5)
-        button_box_layout.setContentsMargins(20, -1, 20, -1)
-
-        # Buttons
-        btn_simulate_icon = QtGui.QIcon()
-        btn_simulate_icon.addPixmap(
-            QtGui.QPixmap("../icons/run.svg"),
-            QtGui.QIcon.Normal,
-            QtGui.QIcon.Off
-        )
-
-        self.btn_simulator.setIcon(btn_simulate_icon)
-        self.btn_simulator.setIconSize(QtCore.QSize(110, 110))
-        self.btn_simulator.setFlat(True)
-        self.btn_simulator.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.btn_simulator.setEnabled(False)
-        self.btn_simulator.setStyleSheet("QPushButton{\n"
-                                         "    border: none;\n"
-                                         "}")
-        btn_clean_icon = QtGui.QIcon()
-        btn_clean_icon.addPixmap(
-            QtGui.QPixmap("../icons/clean.svg"),
-            QtGui.QIcon.Normal,
-            QtGui.QIcon.Off
-        )
-        self.btn_clean.setIcon(btn_clean_icon)
-        self.btn_clean.setIconSize(QtCore.QSize(110, 110))
-        self.btn_clean.setFlat(True)
-        self.btn_clean.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.btn_clean.setStyleSheet("QPushButton{\n"
-                                     "    border: none;\n"
-                                     "}")
-
-        button_box_layout.addWidget(self.btn_simulator)
-        button_box_layout.addWidget(self.btn_clean)
+        self.container_layout.addWidget(self.channel_box, 0, 0)
 
     def translate(self, mainview):
         _translate = QtCore.QCoreApplication.translate

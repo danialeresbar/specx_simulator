@@ -483,8 +483,6 @@ class SimulatorTemplate(object):
         for row in row_layouts:
             simulation_chartview_layout.addLayout(row)
 
-        for chart, chartview in zip(self.simulation_charts, self.simulation_chartviews):
-            chartview.setChart(chart)
         results_chartview_layout.addWidget(self.percentage_bars_chartview)
 
         self.container_layout.addLayout(simulation_chartview_layout)

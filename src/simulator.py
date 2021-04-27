@@ -53,6 +53,7 @@ class Simulation(QtWidgets.QMainWindow, SimulatorTemplate):
 
         self._connect_button_signals()
         self._control_button_manager(play=False, pause=False, stop=False)
+        self._setup_simulation_charts()
 
     @property
     def speed_factor(self):
@@ -80,7 +81,14 @@ class Simulation(QtWidgets.QMainWindow, SimulatorTemplate):
 
         """
 
-        pass
+        for chart, view in zip(self.simulation_charts, self.simulation_chartviews):
+            chart = cartesian.CurvedChart(title='Test chart')
+            chart.plot_series([0, 1, 2], [0, 1, 4])
+            view.setChart(chart)
+
+        self.percentage_chart = cartesian.LinearChart(title='Bar chart')
+        self.percentage_chart.plot_series([0, 1, 2], [0, 1, 4])
+        self.percentage_bars_chartview.setChart(self.percentage_chart)
 
     def _connect_button_signals(self):
         """
@@ -188,7 +196,7 @@ class Simulation(QtWidgets.QMainWindow, SimulatorTemplate):
         filepath, _ = QtWidgets.QFileDialog.getSaveFileName(
             self,
             SAVE_CHART_MESSAGE,
-            f'{self.environment.id}-{self.environment.timestamp}-chart',
+            f'{self._environment.id}-{self._environment.timestamp}-chart',
             "JPG (*.jpg);;PNG (*.png)",
             options=QtWidgets.QFileDialog.Options()
         )

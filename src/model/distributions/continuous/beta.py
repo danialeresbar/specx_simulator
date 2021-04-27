@@ -21,13 +21,13 @@ class Beta(base.Distribution):
     def __init__(self, **kwargs):
         self.__alpha_shape = base.Parameter(
             name=ALPHA_SHAPE,
-            inf=0.5,
+            inf=0.45,
             sup=math.inf,
             value=kwargs.get('alpha', DEFAULT_ALPHA)
         )
         self.__beta_shape = base.Parameter(
             name=BETA_SHAPE,
-            inf=0.5,
+            inf=0.45,
             sup=math.inf,
             value=kwargs.get('beta', DEFAULT_BETA)
         )

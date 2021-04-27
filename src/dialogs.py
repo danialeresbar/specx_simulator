@@ -1,7 +1,10 @@
+import math
 from PyQt5 import QtWidgets
 
 from src.qt.dialog import DialogTemplate
 # from src.charts import stats
+
+PARAMETER_THRESHOLD = 0.05
 
 
 class ParametrizationDialog(QtWidgets.QDialog, DialogTemplate):
@@ -15,13 +18,13 @@ class ParametrizationDialog(QtWidgets.QDialog, DialogTemplate):
         super(ParametrizationDialog, self).__init__(*args)
         self.setup(self)                                        # Build the GUI designed with Qt designer assistant
 
-        # Signals
-        self._connect_button_signals()
-        self._connect_spinner_signals()
-
         # Components
         self._setup_parameters()
         self._update_chart_preview()
+
+        # Signals
+        self._connect_button_signals()
+        self._connect_spinner_signals()
 
     def _connect_button_signals(self):
         """
@@ -51,8 +54,14 @@ class ParametrizationDialog(QtWidgets.QDialog, DialogTemplate):
         for index, parameter in enumerate(self.distribution.parameters):
             self.parameter_labels[index].setText(f'{parameter.name} \nparameter:')
             self.parameter_labels[index].setVisible(True)
-            # self.parameter_spinners[index].setMinimum(parameter.range[0])
-            # self.parameter_spinners[index].setMaximum(parameter.range[1])
+            if parameter.interval[0] == -math.inf:
+                self.parameter_spinners[index].setMinimum(-9999)
+            else:
+                self.parameter_spinners[index].setMinimum(parameter.interval[0]+PARAMETER_THRESHOLD)
+            if parameter.interval[1] == math.inf:
+                self.parameter_spinners[index].setMaximum(9999)
+            else:
+                self.parameter_spinners[index].setMaximum(parameter.interval[1])
             self.parameter_spinners[index].setValue(parameter.value)
             self.parameter_spinners[index].setVisible(True)
 
@@ -62,9 +71,7 @@ class ParametrizationDialog(QtWidgets.QDialog, DialogTemplate):
         """
 
         self._update_parameter_values()
-        chart = self.distribution.pdf_chart(
-
-        )
+        chart = self.distribution.pdf_chart()
         self.chart_preview.setChart(chart)
 
     def _update_parameter_values(self):

@@ -85,7 +85,7 @@ class BaseBarChart(QChart):
 
         # X axis customization
         self.x_axis = QBarCategoryAxis()
-        self.x_axis.setCategories(self.x_categories)
+        self.x_axis.setCategories(self.__x_categories)
         self.x_axis.setLabelsFont(CHART_DEFAULT_LABEL_FONT)
         self.addAxis(self.x_axis, Qt.AlignBottom)
 
@@ -120,7 +120,7 @@ class BaseBarChart(QChart):
             bar.setLabelFont(BARCHART_DEFAULT_LABEL_FONT)
             bar.append(height)
 
-            # Insertion of the bar in the series of bars
+            # Insertion of the bar in the bar series
             bar_series.append(bar)
             bar_series.setLabelsFormat(BARCHART_LABEL_FORMAT)
             bar_series.setLabelsVisible(True)

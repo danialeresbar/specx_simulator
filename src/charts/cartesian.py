@@ -12,13 +12,13 @@ Y_LOWER_LIMIT = 0
 Y_UPPER_LIMIT = 0.8
 
 
-class CurveChart(base.BaseChart):
+class CurvedChart(base.BaseChart):
     """
 
     """
 
     def __init__(self, **kwargs):
-        super(CurveChart, self).__init__(
+        super(CurvedChart, self).__init__(
             title=kwargs.get('title')
         )
 
@@ -41,13 +41,13 @@ class CurveChart(base.BaseChart):
         self.y_axis.setTickCount(DEFAULT_Y_TICKCOUNT)
 
 
-class LineChart(base.BaseChart):
+class LinearChart(base.BaseChart):
     """
 
     """
 
     def __init__(self, **kwargs):
-        super(LineChart, self).__init__(
+        super(LinearChart, self).__init__(
             title=kwargs.get('title')
         )
 

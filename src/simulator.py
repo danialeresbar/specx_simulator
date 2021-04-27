@@ -86,8 +86,11 @@ class Simulation(QtWidgets.QMainWindow, SimulatorTemplate):
             chart.plot_series([0, 1, 2], [0, 1, 4])
             view.setChart(chart)
 
-        self.percentage_chart = cartesian.LinearChart(title='Bar chart')
-        self.percentage_chart.plot_series([0, 1, 2], [0, 1, 4])
+        self.percentage_chart = cartesian.PercentageBarChart(
+            title='Usage %',
+            categories=[frequency for frequency in simulation.FREQUENCIES],
+            bars=[(i+1)*5 for i in range(9)]
+        )
         self.percentage_bars_chartview.setChart(self.percentage_chart)
 
     def _connect_button_signals(self):

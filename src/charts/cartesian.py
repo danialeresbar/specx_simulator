@@ -12,6 +12,19 @@ Y_LOWER_LIMIT = 0
 Y_UPPER_LIMIT = 0.8
 
 
+class PercentageBarChart(base.BaseBarChart):
+    """
+
+    """
+
+    def __init__(self, **kwargs):
+        super(PercentageBarChart, self).__init__(
+            title=kwargs.get('title'),
+            x_categories=kwargs.get('categories'),
+            bars=kwargs.get('bars')
+        )
+
+
 class CurvedChart(base.BaseChart):
     """
 

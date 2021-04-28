@@ -32,7 +32,7 @@ class SimulatorTemplate(object):
         simulator.setMinimumSize(QtCore.QSize(DEFAULT_WIDTH, DEFAULT_HEIGHT))
         simulator.setMaximumSize(QtCore.QSize(DEFAULT_WIDTH, DEFAULT_HEIGHT))
         simulator_icon = QtGui.QIcon()
-        simulator_icon.addPixmap(QtGui.QPixmap("../icons/icon.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        simulator_icon.addPixmap(QtGui.QPixmap("../icons/simulator.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         simulator.setWindowIcon(simulator_icon)
         simulator.setStyleSheet("* {\n"
                                  "    background: #26282b;\n"
@@ -287,10 +287,6 @@ class SimulatorTemplate(object):
                                  "    background: #353535;\n"
                                  "}\n"
                                  "\n"
-                                 "QLabel {\n"
-                                 "    border: none;\n"
-                                 "}\n"
-                                 "\n"
                                  "QProgressBar {\n"
                                  "    text-align: center;\n"
                                  "}\n"
@@ -306,7 +302,7 @@ class SimulatorTemplate(object):
 
         self.container = QtWidgets.QWidget(simulator)
         self.container_layout = QtWidgets.QVBoxLayout(self.container)
-        self.container_layout.setContentsMargins(10, 10, 10, 10)
+        self.container_layout.setContentsMargins(5, 5, 5, 5)
         self.container_layout.setSpacing(5)
 
         # Tools section
@@ -369,10 +365,13 @@ class SimulatorTemplate(object):
         # Layouts
         control_area_layout = QtWidgets.QHBoxLayout(control_area)
         control_area_layout.setSpacing(5)
+        control_area_layout.setContentsMargins(5, 5, 5, 5)
         files_area_layout = QtWidgets.QHBoxLayout(files_area)
         files_area_layout.setSpacing(0)
+        files_area_layout.setContentsMargins(5, 5, 5, 5)
         time_area_layout = QtWidgets.QHBoxLayout(time_area)
         time_area_layout.setSpacing(5)
+        time_area_layout.setContentsMargins(5, 5, 5, 5)
         tools_layout = QtWidgets.QHBoxLayout()
         tools_layout.setSpacing(5)
 
@@ -391,53 +390,50 @@ class SimulatorTemplate(object):
         btn_play_icon = QtGui.QIcon()
         btn_play_icon.addPixmap(QtGui.QPixmap("../icons/play.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.btn_play.setIcon(btn_play_icon)
-        self.btn_play.setIconSize(QtCore.QSize(16, 16))
+        self.btn_play.setIconSize(QtCore.QSize(24, 24))
         self.btn_play.setFlat(True)
         self.btn_pause.setSizePolicy(btn_pause_size_policy)
         self.btn_pause.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         btn_pause_icon = QtGui.QIcon()
         btn_pause_icon.addPixmap(QtGui.QPixmap("../icons/pause.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.btn_pause.setIcon(btn_pause_icon)
-        self.btn_pause.setIconSize(QtCore.QSize(16, 16))
+        self.btn_pause.setIconSize(QtCore.QSize(24, 24))
         self.btn_stop.setSizePolicy(btn_stop_size_policy)
         self.btn_stop.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         btn_stop_icon = QtGui.QIcon()
         btn_stop_icon.addPixmap(QtGui.QPixmap("../icons/stop.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.btn_stop.setIcon(btn_stop_icon)
-        self.btn_stop.setIconSize(QtCore.QSize(16, 16))
+        self.btn_stop.setIconSize(QtCore.QSize(24, 24))
         self.btn_reset_speed.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         btn_reset_speed_icon = QtGui.QIcon()
         btn_reset_speed_icon.addPixmap(QtGui.QPixmap("../icons/reset.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.btn_reset_speed.setIcon(btn_reset_speed_icon)
-        self.btn_reset_speed.setIconSize(QtCore.QSize(16, 16))
+        self.btn_reset_speed.setIconSize(QtCore.QSize(24, 24))
         self.btn_decrease_speed.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         btn_decrease_speed_icon = QtGui.QIcon()
         btn_decrease_speed_icon.addPixmap(QtGui.QPixmap("../icons/decrease.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.btn_decrease_speed.setIcon(btn_decrease_speed_icon)
-        self.btn_decrease_speed.setIconSize(QtCore.QSize(16, 16))
+        self.btn_decrease_speed.setIconSize(QtCore.QSize(24, 24))
         self.btn_increase_speed.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         btn_increase_speed_icon = QtGui.QIcon()
         btn_increase_speed_icon.addPixmap(QtGui.QPixmap("../icons/increase.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.btn_increase_speed.setIcon(btn_increase_speed_icon)
-        self.btn_increase_speed.setIconSize(QtCore.QSize(16, 16))
+        self.btn_increase_speed.setIconSize(QtCore.QSize(24, 24))
         self.btn_save_chart.setFont(BUTTON_LABEL_FONT)
         self.btn_save_chart.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         btn_save_chart_icon = QtGui.QIcon()
         btn_save_chart_icon.addPixmap(QtGui.QPixmap("../icons/chart.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.btn_save_chart.setIcon(btn_save_chart_icon)
-        self.btn_save_chart.setIconSize(QtCore.QSize(16, 16))
+        self.btn_save_chart.setIconSize(QtCore.QSize(24, 24))
         self.btn_save_chart.setFlat(True)
         self.btn_open_csvfile.setFont(BUTTON_LABEL_FONT)
         self.btn_open_csvfile.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         btn_open_csvfile_icon = QtGui.QIcon()
         btn_open_csvfile_icon.addPixmap(QtGui.QPixmap("../icons/filepath.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.btn_open_csvfile.setIcon(btn_open_csvfile_icon)
-        self.btn_open_csvfile.setIconSize(QtCore.QSize(16, 16))
+        self.btn_open_csvfile.setIconSize(QtCore.QSize(24, 24))
         self.btn_open_csvfile.setFlat(True)
         self.btn_open_csvfile.setEnabled(False)
-
-        # Spaces
-        spacer_item = QtWidgets.QSpacerItem(int(DEFAULT_WIDTH/2), 10, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
 
         control_area_layout.addWidget(self.btn_start)
         control_area_layout.addWidget(self.btn_play)
@@ -452,9 +448,12 @@ class SimulatorTemplate(object):
 
         tools_layout.addWidget(control_area)
         tools_layout.addWidget(time_area)
-        tools_layout.addItem(spacer_item)
+        tools_layout.addStretch()
         tools_layout.addWidget(files_area)
-        tools_layout.setStretch(4, 70)
+        tools_layout.setStretch(0, 15)
+        tools_layout.setStretch(1, 18)
+        tools_layout.setStretch(2, 60)
+        tools_layout.setStretch(3, 7)
         self.container_layout.addLayout(tools_layout)
 
     def _build_chartview_box(self):
@@ -491,4 +490,3 @@ class SimulatorTemplate(object):
     def retranslateUi(self, simulator):
         _translate = QtCore.QCoreApplication.translate
         simulator.setWindowTitle(_translate("simulator", "Simulation"))
-        # self.toolBar.setWindowTitle(_translate("simulator", "toolBar"))

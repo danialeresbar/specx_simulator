@@ -41,7 +41,7 @@ class MainViewTemplate:
         mainview.setSizePolicy(mainview_size_policy)
         mainview_icon = QtGui.QIcon()
         mainview_icon.addPixmap(
-            QtGui.QPixmap("../icons/icon.svg"),
+            QtGui.QPixmap("../icons/simulator.svg"),
             QtGui.QIcon.Normal,
             QtGui.QIcon.Off
         )

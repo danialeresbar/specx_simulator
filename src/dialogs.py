@@ -33,9 +33,6 @@ class ParametrizationDialog(QtWidgets.QDialog, DialogTemplate):
 
         self.btn_submit.clicked.connect(self.accept)
         self.btn_reject.clicked.connect(self.close)
-        # self.radiobtn_1.toggled.connect(self.__radiobtn_checked)
-        # self.radiobtn_2.toggled.connect(self.__radiobtn_checked)
-        # self.radiobtn_3.toggled.connect(self.__radiobtn_checked)
 
     def _connect_spinner_signals(self):
         """

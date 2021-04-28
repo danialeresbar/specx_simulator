@@ -7,6 +7,9 @@ from PyQt5.QtGui import QColor, QColorConstants, QFont
 BARCHART_DEFAULT_TILE = 'THIS IS A BAR CHART'
 BARCHART_DEFAULT_LABEL_FONT = QFont()
 BARCHART_DEFAULT_LABEL_FONT.setPointSizeF(8)
+BARCHART_DEFAULT_LEGEND_FONT = QFont()
+BARCHART_DEFAULT_LEGEND_FONT.setPointSizeF(10)
+BARCHART_DEFAULT_LEGEND_FONT.setBold(True)
 BARCHART_DEFAULT_TITLE_FONT = QFont()
 BARCHART_DEFAULT_TITLE_FONT.setPointSizeF(12)
 BARCHART_LABEL_FORMAT = "@value %"
@@ -98,6 +101,7 @@ class BaseBarChart(QChart):
         # Customize the base appearance of the chart in this section
         self.layout().setContentsMargins(0, 0, 0, 0)        # Layout margins
         self.legend().setAlignment(Qt.AlignBottom)          # Legends position
+        self.legend().setFont(BARCHART_DEFAULT_LEGEND_FONT)
         self.legend().setVisible(True)                      # Legends visibility
         self.setAnimationOptions(QChart.SeriesAnimations)   # Chart Animations
         self.setBackgroundRoundness(0)                      # Chart roundness

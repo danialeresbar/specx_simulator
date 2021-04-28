@@ -12,10 +12,10 @@ SIZE_POLICY_PREFERRED = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, Q
 
 # ---- Labels ----
 DEFAULT_PARAMETER_LABELS = (
-    ('1P', 'Parámetro 1:'),
-    ('2P', 'Parámetro 2:'),
-    ('3P', 'Parámetro 3:'),
-    ('4P', 'Parámetro 4:')
+    'Parámetro 1:',
+    'Parámetro 2:',
+    'Parámetro 3:',
+    'Parámetro 4:'
 )
 
 # ---- Fonts ----
@@ -25,6 +25,9 @@ MAIN_LABEL_FONT = QtGui.QFont()
 MAIN_LABEL_FONT.setPointSizeF(10)
 RADIO_LABEL_FONT = QtGui.QFont()
 RADIO_LABEL_FONT.setPointSizeF(10)
+
+# ---- Fonts ----
+DEFAULT_SINGLE_STEP = 0.5
 
 
 class DialogTemplate(object):
@@ -40,7 +43,7 @@ class DialogTemplate(object):
         dialog.setMaximumSize(QtCore.QSize(MINIMUM_WIDTH, MINIMUM_HEIGHT))
         dialog_icon = QtGui.QIcon()
         dialog_icon.addPixmap(
-            QtGui.QPixmap("../icons/icon.svg"),
+            QtGui.QPixmap("../icons/simulator.svg"),
             QtGui.QIcon.Normal,
             QtGui.QIcon.Off
         )
@@ -279,30 +282,7 @@ class DialogTemplate(object):
         self.parameter_spinners = [QtWidgets.QDoubleSpinBox(self.parameter_box) for _ in range(len(DEFAULT_PARAMETER_LABELS))]
         self._build_parameter_box()
 
-        # self.row_1 = QtWidgets.QHBoxLayout()
-        # self.row_1.setContentsMargins(40, -1, 10, -1)
-        # self.row_1.setSpacing(5)
-        #
-        # self.radiobtn_1 = QtWidgets.QRadioButton(self.parameters_box)
-        # self.radiobtn_1.setEnabled(True)
-        # self.radiobtn_1.setFont(RADIO_LABEL_FONT)
-        # self.row_1.addWidget(self.radiobtn_1)
-        #
-        # self.radiobtn_2 = QtWidgets.QRadioButton(self.parameters_box)
-        # self.radiobtn_2.setEnabled(True)
-        # self.radiobtn_2.setFont(RADIO_LABEL_FONT)
-        # self.row_1.addWidget(self.radiobtn_2)
-        #
-        # self.radiobtn_3 = QtWidgets.QRadioButton(self.parameters_box)
-        # self.radiobtn_3.setFont(RADIO_LABEL_FONT)
-        # self.row_1.addWidget(self.radiobtn_3)
-
-        # self.radios = [self.radiobtn_1, self.radiobtn_2, self.radiobtn_3]
-
-        # self.btn_layout_outer = QtWidgets.QVBoxLayout()
-        # self.btn_layout_outer.setContentsMargins(0, 0, 0, 0)
-        # self.btn_layout_outer.setSpacing(10)
-
+        # Button section
         self.btn_submit = QtWidgets.QPushButton(dialog)
         self.btn_reject = QtWidgets.QPushButton(dialog)
         self._build_button_box()
@@ -382,21 +362,19 @@ class DialogTemplate(object):
         # Labels
         for label, text in zip(self.parameter_labels, DEFAULT_PARAMETER_LABELS):
             label.setFont(MAIN_LABEL_FONT)
-            label.setText(text[1])  # This position contain the parameter label
+            label.setText(text)
 
         # Spinners
         for spin in self.parameter_spinners:
-            spin.setEnabled(True)
             spin.setFont(MAIN_LABEL_FONT)
             spin.setDecimals(10)
-            spin.setSingleStep(0.1)
-            spin.setValue(1)
+            spin.setSingleStep(DEFAULT_SINGLE_STEP)
 
         for index, row_layout in enumerate(row_layouts):
             row_layout.addWidget(self.parameter_labels[index])
             row_layout.addWidget(self.parameter_spinners[index])
             row_layout.setStretch(0, 40)
-            row_layout.setStretch(0, 60)
+            row_layout.setStretch(1, 60)
             parameter_box_layout.addLayout(row_layout)
 
         self.control_layout.addWidget(self.parameter_box)

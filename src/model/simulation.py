@@ -60,11 +60,14 @@ class Environment(object):
         self.timestamp = kwargs.get('timestamp', datetime.now().strftime(DATE_FORMAT))
         self.channels = list()
         self.settings = {
-            'threshold': DEFAULT_THRESHOLD_VALUE,
             'sample_interval': DEFAULT_SAMPLE_INTERVAL_VALUE,
+            'threshold': DEFAULT_THRESHOLD_VALUE,
             'energy': DEFAULT_ENERGY_FLAG_VALUE,
             'usage': DEFAULT_USAGE_FLAG_VALUE
         }
+
+    def __str__(self):
+        return f'Simulation Environment: {self.id}, at the: {self.timestamp}'
 
     def add_or_update_channel(self, new_channel):
         """
@@ -82,6 +85,15 @@ class Environment(object):
         self.channels.append(new_channel)
         return 'Add'
 
+    def update_settings(self, settings):
+        """
+        Update simulation environment settings
+        :param settings: New setting values
+        """
+
+        for key, value in zip(self.settings.keys(), settings):
+            self.settings.update({key: value})
+
     def to_json(self):
         return {
             'id': self.id,
@@ -89,47 +101,3 @@ class Environment(object):
             'settings': self.settings,
             'channels': [channel.to_json() for channel in self.channels]
         }
-
-    def __str__(self):
-        return f'Simulation Environment: {self.id}, at the: {self.timestamp}'
-
-    # def save_as_json(self, filepath):
-    #     data = {
-    #         'id': self.id,
-    #         'timestamp': self.timestamp,
-    #         'channels': [channel.channel_as_dict() for channel in self.channels],
-    #         'settings': self.settings,
-    #     }
-    #     json_tools.save(filepath, data)
-
-    # def load_data(self, filepath):
-    #     data = json_tools.load(filepath)
-    #     try:
-    #         self.set_id(data.get('id', None))
-    #         self.set_timestamp(data.get('timestamp', datetime.now().strftime("%m-%d-%Y-%H:%M:%S")))
-    #         self.set_settings(data.get('settings', dict()))
-    #         self.build_channels(data.get('channels', list()))
-    #         return True
-    #     except Exception as e:
-    #         print(e)
-    #         return False
-
-    # def build_channels(self, channels):
-    #     for channel in channels:
-    #         distribution_data = channel.get('distribution')
-    #         new_channel = Channel(
-    #             id=channel.get('id'),
-    #             frequency=channel.get('frequency'),
-    #             distribution=self.build_distribution(
-    #                 distribution_data.get('name'),
-    #                 distribution_data.get('parameters')
-    #             )
-    #         )
-    #         self.add_or_update_channel(new_channel)
-
-    # @staticmethod
-    # def build_distribution(name, parameters):
-    #     distribution = distribution_selector(name)
-    #     for parameter, value in zip(distribution.parameters, parameters.values()):
-    #         parameter.set_value(value)
-    #     return distribution

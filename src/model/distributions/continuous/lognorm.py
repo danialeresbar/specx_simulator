@@ -38,7 +38,7 @@ class Lognorm(base.Distribution):
         :return: Random variable following a Lognorm distribution
         """
 
-        var = st.lognorm.rvs(self.__alpha_shape, self.__location, math.exp(self.__scale))
+        var = st.lognorm.rvs(self.__alpha_shape.value, self.__location.value, math.exp(self.__scale.value))
         return base.clean_random_variable(var)
 
     def pdf_chart(self):

@@ -28,7 +28,7 @@ class Laplace(base.Distribution):
         :return: Random variable following a Laplace distribution
         """
 
-        var = st.laplace.rvs(self.__location, self.__scale)
+        var = st.laplace.rvs(self.__location.value, self.__scale.value)
         return base.clean_random_variable(var)
 
     def pdf_chart(self):

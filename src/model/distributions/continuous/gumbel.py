@@ -28,7 +28,7 @@ class Gumbel(base.Distribution):
         :return: Random variable following a Gumbel distribution
         """
 
-        var = np.random.gumbel(self.__location, self.__scale)
+        var = np.random.gumbel(self.__location.value, self.__scale.value)
         return base.clean_random_variable(var)
 
     def pdf_chart(self):

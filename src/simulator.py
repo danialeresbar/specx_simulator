@@ -8,7 +8,7 @@ from src.tools import threads
 
 
 # ---- Date formats ----
-DATE_FORMAT = "%m-%d-%Y %H-%M-%S"
+DATE_FORMAT = "%m-%d-%Y-%H-%M"
 
 # ---- Components default values ----
 DEFAULT_SPEED_FACTOR = 1
@@ -23,8 +23,8 @@ SAVE_CHART_SUCCESS = 'Chart saved successfully'
 
 # ---- Paths ----
 PROJECT_PATH = '../'
-ENVIRONMENTS_PATH = f'{PROJECT_PATH}/environments/'
-SIMULATIONS_PATH = f'{PROJECT_PATH}/simulations/'
+ENVIRONMENTS_PATH = f'{PROJECT_PATH}environments/'
+SIMULATIONS_PATH = f'{PROJECT_PATH}tests/'
 
 
 class Simulation(QtWidgets.QMainWindow, SimulatorTemplate):
@@ -42,26 +42,10 @@ class Simulation(QtWidgets.QMainWindow, SimulatorTemplate):
         super(Simulation, self).__init__(*args)
         self.setup(self)
 
-        self._simulation_thread = threads.SimulationThread(
-            channels=self._environment.channels,
-            simulation_charts=self.simulation_charts,
-            percentage_chart=self.percentage_chart,
-            delay=self.speed_factor,
-            sample_time=self._environment.settings.get('sampling'),
-            threshold=self._environment.settings.get('threshold'),
-        )
-
+        self._setup_simulation_charts()
+        self._simulation_thread = self._setup_simulation_thread()
         self._connect_button_signals()
         self._control_button_manager(play=False, pause=False, stop=False)
-        self._setup_simulation_charts()
-
-    @property
-    def speed_factor(self):
-        return self._speed_factor
-
-    @speed_factor.setter
-    def speed_factor(self, factor):
-        self._speed_factor *= factor
 
     @classmethod
     def open_csvfile(cls):
@@ -81,10 +65,10 @@ class Simulation(QtWidgets.QMainWindow, SimulatorTemplate):
 
         """
 
-        for chart, view in zip(self.simulation_charts, self.simulation_chartviews):
-            chart = cartesian.CurvedChart(title='Test chart')
-            chart.plot_series([0, 1, 2], [0, 1, 4])
-            view.setChart(chart)
+        for index, view in enumerate(self.simulation_chartviews):
+            self.simulation_charts[index] = cartesian.CurvedChart(title='Test chart')
+            # chart.plot_series([0, 1, 2], [0, 1, 4])
+            view.setChart(self.simulation_charts[index])
 
         self.percentage_chart = cartesian.PercentageBarChart(
             title='Usage %',
@@ -92,6 +76,22 @@ class Simulation(QtWidgets.QMainWindow, SimulatorTemplate):
             bars=[(i+1)*5 for i in range(9)]
         )
         self.percentage_bars_chartview.setChart(self.percentage_chart)
+
+    def _setup_simulation_thread(self):
+        """
+
+        :return: The simulation thread instance set
+        """
+
+        return threads.SimulationThread(
+            channels=self._environment.channels,
+            simulation_charts=self.simulation_charts,
+            percentage_chart=self.percentage_chart,
+            delay=self.delay_factor,
+            sample_time=self._environment.settings.get('sample_interval'),
+            threshold=self._environment.settings.get('threshold'),
+            filepath = self.results_file_path
+        )
 
     def _connect_button_signals(self):
         """
@@ -130,7 +130,6 @@ class Simulation(QtWidgets.QMainWindow, SimulatorTemplate):
         :param increase:
         :param decrease:
         :param reset:
-        :return:
         """
 
         self.btn_increase_speed.setEnabled(increase)
@@ -144,9 +143,9 @@ class Simulation(QtWidgets.QMainWindow, SimulatorTemplate):
         """
 
         if self._speed_factor >= 1:
-            return f'X{int(self.speed_factor)}'
+            return f'X{int(self._speed_factor)}'
         else:
-            return f'X1/{int(1/self.speed_factor)}'
+            return f'X1/{int(1/self._speed_factor)}'
 
     def _increase_speed(self):
         """
@@ -175,6 +174,14 @@ class Simulation(QtWidgets.QMainWindow, SimulatorTemplate):
         self.speed_label.setText(self._formatted_speed_label())
         self._speed_button_manager()
 
+    def delay_factor(self):
+        """
+
+        :return:
+        """
+
+        return self._speed_factor
+
     def closeEvent(self, event):
         """
         Override of the closeEvent method to close the window
@@ -196,6 +203,7 @@ class Simulation(QtWidgets.QMainWindow, SimulatorTemplate):
         """
         Save the results chart in one of the available formats
         """
+
         filepath, _ = QtWidgets.QFileDialog.getSaveFileName(
             self,
             SAVE_CHART_MESSAGE,

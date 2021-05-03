@@ -1,134 +1,210 @@
 {
-    "id": "test",
-    "timestamp": "02-10-2021-17:15:20",
-    "channels": [
-        {
-            "id": 0,
-            "frequency": "473 MHz",
-            "distribution": {
-                "name": "Beta",
-                "kind": "Continuous",
-                "parameters": {
-                    "Alpha shape": 14.087,
-                    "Beta shape": 4.9149,
-                    "Location": 0.05,
-                    "Scale": 0.75
-                }
-            }
-        },
-        {
-            "id": 1,
-            "frequency": "479 MHz",
-            "distribution": {
-                "name": "Gamma",
-                "kind": "Continuous",
-                "parameters": {
-                    "Alpha shape": 7.0259,
-                    "Location": 0.0,
-                    "Scale": 0.02008
-                }
-            }
-        },
-        {
-            "id": 2,
-            "frequency": "485 MHz",
-            "distribution": {
-                "name": "Beta",
-                "kind": "Continuous",
-                "parameters": {
-                    "Alpha shape": 14.087,
-                    "Beta shape": 4.9149,
-                    "Location": 0.05,
-                    "Scale": 0.75
-                }
-            }
-        },
-        {
-            "id": 3,
-            "frequency": "491 MHz",
-            "distribution": {
-                "name": "Gamma",
-                "kind": "Continuous",
-                "parameters": {
-                    "Alpha shape": 7.0259,
-                    "Location": 0.0,
-                    "Scale": 0.02008
-                }
-            }
-        },
-        {
-            "id": 4,
-            "frequency": "497 MHz",
-            "distribution": {
-                "name": "Beta",
-                "kind": "Continuous",
-                "parameters": {
-                    "Alpha shape": 14.087,
-                    "Beta shape": 4.9149,
-                    "Location": 0.05,
-                    "Scale": 0.75
-                }
-            }
-        },
-        {
-            "id": 5,
-            "frequency": "503 MHz",
-            "distribution": {
-                "name": "Gamma",
-                "kind": "Continuous",
-                "parameters": {
-                    "Alpha shape": 7.0259,
-                    "Location": 0.0,
-                    "Scale": 0.02008
-                }
-            }
-        },
-        {
-            "id": 6,
-            "frequency": "509 MHz",
-            "distribution": {
-                "name": "Beta",
-                "kind": "Continuous",
-                "parameters": {
-                    "Alpha shape": 14.087,
-                    "Beta shape": 4.9149,
-                    "Location": 0.05,
-                    "Scale": 0.75
-                }
-            }
-        },
-        {
-            "id": 7,
-            "frequency": "551 MHz",
-            "distribution": {
-                "name": "Gamma",
-                "kind": "Continuous",
-                "parameters": {
-                    "Alpha shape": 7.0259,
-                    "Location": 0.0,
-                    "Scale": 0.02008
-                }
-            }
-        },
-        {
-            "id": 8,
-            "frequency": "557 MHz",
-            "distribution": {
-                "name": "Beta",
-                "kind": "Continuous",
-                "parameters": {
-                    "Alpha shape": 14.087,
-                    "Beta shape": 4.9149,
-                    "Location": 0.05,
-                    "Scale": 0.75
-                }
-            }
-        }
-    ],
+    "id": "uJ96^YJtgTbkLHxA",
+    "timestamp": "04-28-2021-22:50:24",
     "settings": {
-        "sampling": 5,
+        "sample_interval": 5,
         "threshold": 0.33,
         "energy": false,
         "usage": false
-    }
+    },
+    "channels": [
+        {
+            "number": 0,
+            "frequency": "473",
+            "distribution": {
+                "name": "Beta",
+                "category": 1,
+                "parameters": [
+                    {
+                        "name": "Alpha shape",
+                        "vale": 14.087
+                    },
+                    {
+                        "name": "Beta shape",
+                        "vale": 4.9149
+                    },
+                    {
+                        "name": "Location",
+                        "vale": 0.05
+                    },
+                    {
+                        "name": "Scale",
+                        "vale": 0.75
+                    }
+                ]
+            }
+        },
+        {
+            "number": 1,
+            "frequency": "479",
+            "distribution": {
+                "name": "Gumbel",
+                "category": 1,
+                "parameters": [
+                    {
+                        "name": "Location",
+                        "vale": 0.59583
+                    },
+                    {
+                        "name": "Scale",
+                        "vale": 0.05
+                    }
+                ]
+            }
+        },
+        {
+            "number": 2,
+            "frequency": "485",
+            "distribution": {
+                "name": "Gamma",
+                "category": 1,
+                "parameters": [
+                    {
+                        "name": "Alpha shape",
+                        "vale": 7.0259
+                    },
+                    {
+                        "name": "Location",
+                        "vale": 0.0
+                    },
+                    {
+                        "name": "Scale",
+                        "vale": 0.05
+                    }
+                ]
+            }
+        },
+        {
+            "number": 3,
+            "frequency": "491",
+            "distribution": {
+                "name": "Beta",
+                "category": 1,
+                "parameters": [
+                    {
+                        "name": "Alpha shape",
+                        "vale": 14.087
+                    },
+                    {
+                        "name": "Beta shape",
+                        "vale": 4.9149
+                    },
+                    {
+                        "name": "Location",
+                        "vale": 0.05
+                    },
+                    {
+                        "name": "Scale",
+                        "vale": 0.75
+                    }
+                ]
+            }
+        },
+        {
+            "number": 4,
+            "frequency": "497",
+            "distribution": {
+                "name": "Gamma",
+                "category": 1,
+                "parameters": [
+                    {
+                        "name": "Alpha shape",
+                        "vale": 7.0259
+                    },
+                    {
+                        "name": "Location",
+                        "vale": 0.0
+                    },
+                    {
+                        "name": "Scale",
+                        "vale": 0.05
+                    }
+                ]
+            }
+        },
+        {
+            "number": 5,
+            "frequency": "503",
+            "distribution": {
+                "name": "Gumbel",
+                "category": 1,
+                "parameters": [
+                    {
+                        "name": "Location",
+                        "vale": 0.59583
+                    },
+                    {
+                        "name": "Scale",
+                        "vale": 0.05
+                    }
+                ]
+            }
+        },
+        {
+            "number": 6,
+            "frequency": "509",
+            "distribution": {
+                "name": "Beta",
+                "category": 1,
+                "parameters": [
+                    {
+                        "name": "Alpha shape",
+                        "vale": 14.087
+                    },
+                    {
+                        "name": "Beta shape",
+                        "vale": 4.9149
+                    },
+                    {
+                        "name": "Location",
+                        "vale": 0.05
+                    },
+                    {
+                        "name": "Scale",
+                        "vale": 0.75
+                    }
+                ]
+            }
+        },
+        {
+            "number": 7,
+            "frequency": "551",
+            "distribution": {
+                "name": "Gamma",
+                "category": 1,
+                "parameters": [
+                    {
+                        "name": "Alpha shape",
+                        "vale": 7.0259
+                    },
+                    {
+                        "name": "Location",
+                        "vale": 0.0
+                    },
+                    {
+                        "name": "Scale",
+                        "vale": 0.05
+                    }
+                ]
+            }
+        },
+        {
+            "number": 8,
+            "frequency": "557",
+            "distribution": {
+                "name": "Gumbel",
+                "category": 1,
+                "parameters": [
+                    {
+                        "name": "Location",
+                        "vale": 0.59583
+                    },
+                    {
+                        "name": "Scale",
+                        "vale": 0.05
+                    }
+                ]
+            }
+        }
+    ]
 }

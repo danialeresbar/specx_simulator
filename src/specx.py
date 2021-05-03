@@ -1,21 +1,17 @@
 from PyQt5 import QtWidgets
 
-# from simulator import SimulationScenario
-from src.model import  simulation
+from src.model import simulation
 from src.model.distributions import continuous, discreet
 from src.dialogs import ParametrizationDialog
 from src.qt.mainview import MainViewTemplate
 from src.simulator import Simulation
+from src.tools import json_exporter, json_importer
 
 
-# ---- GUI labels ----
-ENERGY_LABEL = 'energy'
-SAMPLING_LABEL = 'sampling'
-THRESHOLD_LABEL = 'threshold'
-USAGE_LABEL = 'usage'
+# ---- Paths ----
+ENVIRONMENTS_PATH = '../environments'
 
-
-# ---- GUI messages ----
+# ---- Messages ----
 EXIT_MESSAGE = '¿Are you sure you want to quit?'
 ENVIRONMENT_LOADED_MESSAGE = 'Simulation environment settings has been loaded successfully'
 ENVIRONMENT_SAVED_MESSAGE = 'Simulation environment settings has been saved successfully'
@@ -30,9 +26,9 @@ class SpecxMainWindow(QtWidgets.QMainWindow, MainViewTemplate):
     """
 
     def __init__(self):
-        self.environment = simulation.Environment(id='uJ96^YJtgTbkLHxA')  # Random ID
+        self.environment = simulation.Environment(id='uJ96^YJtgTbkLHxA')
         super(SpecxMainWindow, self).__init__()
-        self.setup(self)                                                    # Build the GUI designed with Qt designer
+        self.setup(self)
 
         # Signals
         self._connect_button_signals()
@@ -76,6 +72,25 @@ class SpecxMainWindow(QtWidgets.QMainWindow, MainViewTemplate):
         self.threshold.setValue(simulation.DEFAULT_THRESHOLD_VALUE)
         for drop in self.channel_drops:
             drop.setCurrentIndex(-1)
+
+    def _setup_from_simulation_environment(self, data):
+        """
+
+        :param data:
+        :return:
+        """
+        try:
+            channels = data.get('channels')
+            settings = data.get('settings')
+            self.sample_time.setValue(settings.get('sample_interval'))
+            self.threshold.setValue(settings.get('threshold'))
+            self.energy_flag.setChecked(settings.get('energy'))
+            self.usage_flag.setChecked(settings.get('usage'))
+            for drop, channel in zip(self.channel_drops, channels):
+                distribution = channel.get('distribution')
+                drop.setCurrentText(distribution.get('name'))
+        except Exception as e:
+            print(f'Error: {e}')
 
     def about(self):
         """
@@ -121,7 +136,8 @@ class SpecxMainWindow(QtWidgets.QMainWindow, MainViewTemplate):
 
     def show_parametrization_modal(self):
         """
-        Shows a modal window to parameterize a selected distribution
+        Shows a modal window to parameterize the selected distribution
+        on the drop down
         """
 
         # Sender attributes
@@ -141,6 +157,7 @@ class SpecxMainWindow(QtWidgets.QMainWindow, MainViewTemplate):
         if modal.result() == 1:
             self.environment.add_or_update_channel(new_channel)
             self.btn_simulator.setEnabled(len(self.environment.channels) == len(self.channel_drops))
+            self.btn_save_settings.setEnabled(len(self.environment.channels) == len(self.channel_drops))
         else:
             self.sender().setCurrentIndex(-1)
 
@@ -148,36 +165,39 @@ class SpecxMainWindow(QtWidgets.QMainWindow, MainViewTemplate):
         """
         Shows a window with the simulation options and channel's chart
         """
-
-        simulator = Simulation(self, id='test', environment=self.environment)
-        simulator.show()
-        # try:
-        #     simulation_scenario = SimulationScenario(self, id='test', environment=self.environment)
-        #     simulation_scenario.show()
-        #     self.simulation_scenarios.append(simulation_scenario)
-        # except Exception as e:
-        #     print(f'Simulation scenario could not be initialized: \n{e}')
+        simulation_settings = [
+            self.sample_time.value(),
+            self.threshold.value(),
+            self.energy_flag.isChecked(),
+            self.usage_flag.isChecked()
+        ]
+        self.environment.update_settings(simulation_settings)
+        try:
+            simulator = Simulation(self, id='test', environment=self.environment)
+            simulator.show()
+        except Exception as e:
+            print(f'The Simulation could not be initialized: \n{e}')
 
     def save_environment(self):
         """
-        Save the parametrized channels distribution (discreet or continuous)
-        to a JSON file
+        Save the simulation environment settings to a JSON file
         """
 
         filepath, _ = QtWidgets.QFileDialog.getSaveFileName(
             self,
             SAVE_ENVIRONMENT_MESSAGE,
-            '../config',
+            ENVIRONMENTS_PATH,
             'JSON Files (*.json)'
         )
         if filepath:
-            # self.environment.set_settings({
-            #     SAMPLING_LABEL: self.sample_time.value(),
-            #     THRESHOLD_LABEL: self.threshold.value(),
-            #     ENERGY_LABEL: self.energy_flag.isChecked(),
-            #     USAGE_LABEL: self.usage_flag.isChecked(),
-            # })
-            # self.environment.save_as_json(filepath)
+            simulation_settings = [
+                self.sample_time.value(),
+                self.threshold.value(),
+                self.energy_flag.isChecked(),
+                self.usage_flag.isChecked()
+            ]
+            self.environment.update_settings(simulation_settings)
+            json_exporter.save(filepath, self.environment.to_json())
             QtWidgets.QMessageBox.information(
                 self,
                 ENVIRONMENT_SAVED_MESSAGE,
@@ -188,29 +208,24 @@ class SpecxMainWindow(QtWidgets.QMainWindow, MainViewTemplate):
 
     def load_environment(self):
         """
-        Load the parametrized channels distribution (discreet or continuous)
-        from a JSON file
+        Load the simulation environment settings from a JSON file
         """
 
         filepath, _ = QtWidgets.QFileDialog.getOpenFileName(
             self,
             LOAD_ENVIRONMENT_MESSAGE,
-            '../config',
+            ENVIRONMENTS_PATH,
             'JSON Files (*.json)'
         )
         if filepath:
-            # self.environment = simulation.Environment()
-            # success = self.environment.load_data(filepath)
-            # if success:
-            #     self.setup_gui_components()
-            #     QtWidgets.QMessageBox.information(
-            #         self,
-            #         'Information',
-            #         ENVIRONMENT_LOADED_MESSAGE,
-            #         QtWidgets.QMessageBox.Ok,
-            #         QtWidgets.QMessageBox.Ok
-            #     )
-            self.btn_simulator.setEnabled(True)
+            self._setup_from_simulation_environment(json_importer.load(filepath))
+            QtWidgets.QMessageBox.information(
+                self,
+                'Information',
+                ENVIRONMENT_LOADED_MESSAGE,
+                QtWidgets.QMessageBox.Ok,
+                QtWidgets.QMessageBox.Ok
+            )
 
 
 # App launcher block code

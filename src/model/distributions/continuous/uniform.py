@@ -29,7 +29,7 @@ class Uniform(base.Distribution):
         """
 
         u = base.gcc_mixed_congruential_generator()
-        var = self.__minimum + (self.__maximum-self.__minimum)*u
+        var = self.__minimum.value + (self.__maximum.value-self.__minimum.value)*u
         return base.clean_random_variable(var)
 
     def pdf_chart(self):

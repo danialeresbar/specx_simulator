@@ -46,7 +46,7 @@ class Beta(base.Distribution):
         :return: Random variable following a Beta distribution
         """
 
-        var = st.beta.rvs(self.__alpha_shape, self.__beta_shape, self.__location, self.__scale)
+        var = st.beta.rvs(self.__alpha_shape.value, self.__beta_shape.value, self.__location.value, self.__scale.value)
         return base.clean_random_variable(var)
 
     def pdf_chart(self):

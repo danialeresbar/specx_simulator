@@ -134,10 +134,9 @@ class BaseBarChart(QChart):
             bar_series.setLabelsPosition(QAbstractBarSeries.LabelsCenter)
             self.addSeries(bar_series)
 
-    def update_bar_series(self, values):
+    def update_bar_series(self, index_series, height):
         """
-        Update the bar heights
+        Updates the height of the series indicated by received index
         """
 
-        for index, height in enumerate(values):
-            self.bars[index].replace(0, height)
+        self.bars[index_series].replace(0, height)

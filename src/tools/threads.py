@@ -38,11 +38,12 @@ class SimulationThread(threading.Thread):
         """
 
         delta = datetime.now()
-        limit = simulation.RANDOM_VARIABLES_LIMIT
+        limit = simulation.RANDOM_VARIABLES_LIMIT*self.sample_time
         for channel, chart in zip(self.channels, self.simulation_charts):
             var_count = 0
+            occupation = 0
 
-            while var_count < limit*self.sample_time and not self.stopped:
+            while var_count < limit and not self.stopped:
                 var = channel.distribution.generate_rv()
                 var_count += 1
                 chart.update_series(var_count*2, var)
@@ -55,9 +56,13 @@ class SimulationThread(threading.Thread):
                     channel.distribution.name,
                     var
                 )
+                if var >= self.energy_threshold:
+                    occupation += 1
                 with self.pause_cond:
                     while self.paused:
                         self.pause_cond.wait()
+
+            self.percentage_chart.update_bar_series(self.channels.index(channel) ,(occupation/limit)*100)
             with self.stop_cond:
                 if self.stopped:
                     self.finished = False

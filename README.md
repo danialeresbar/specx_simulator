@@ -1,6 +1,6 @@
 # Specx simulator
 
-Python3 + Qt
+![PyQt](https://upload.wikimedia.org/wikipedia/commons/e/e6/Python_and_Qt.svg)
 
 ## Description ##
 
@@ -39,31 +39,49 @@ The main goal of *Specx* is to reinforce the information on television blanks
 contained in databases such as those used by the [PAWS protocol (https://tools.ietf.org/html/rfc7545).
 Information that provides great opportunities for efficient use of the spectrum.
 
+## Scope 🚀 ##
+
+Specx is designed to simulate the level of occupation of channels in the
+television band (UHF). These are the following frequencies that the simulator
+analyzes:
+
+| Frequency | Channel | Operator |
+| :--- | :--- | :--- |
+| `473 MHz` | 14 | Caracol |
+| `479 MHz` | 15 | RCN |
+| `485 MHz` | 16| RTVC |
+| `491 MHz` | 17| Government, ICT Ministry and Mayor's Office of Bogotá |
+| `497 MHz` | -- | -- |
+| `503 MHz` | -- | -- |
+| `509 MHz` | -- | -- |
+| `551 MHz` | 27 | ETCE |
+| `557 MHz` | 28 | Government, ICT Ministry and Mayor's Office of Bogotá | 
+
 ### Directory Tree ###
 
 ## Autores ✒️
 
-El equipo de trabajo que llevó a cabo el estudio de simulación y el desarrollo de *webspecx* está formado 
-por las siguientes personas:
+The work team that carried out the simulation study and the development of *Specx*
+is made up of the following people:
 
-* **Héctor Iván Reyes Moncayo** - *Formulación del problema y consideraciones al modelo* - [Director]()
-* **Ángel Alfonso Cruz Roa** - *Modelo del sistema* - [Codirector]()
-* **Daniel Alejandro Restrepo Barbosa** - *Proceso de muestreo y determinación de distribuciones de probabilidad, 
-  diseño y construcción de interfaces gráficas de usuario.* - [Analista]()
-* **Siervo Francisco Rodríguez Castellanos** - *Codificación de algoritmos de simulación y optimización 
-  de rutinas* - [Desarrollador]()
+* **Héctor Iván Reyes Moncayo** - *Formulation of the problem and considerations to the model* - [Director]()
+* **Ángel Alfonso Cruz Roa** - *System model* - [Co-director]()
+* **Daniel Alejandro Restrepo Barbosa** - *Sampling process and determination of probability distributions, 
+  design and construction of graphical user interfaces* - [Developer and Analyst]()
+* **Siervo Francisco Rodríguez Castellanos** - *Coding of simulation algorithms and routine
+  optimization* - [Developer]()
   
 ## Expresiones de Gratitud 🎁
 
-- A los directores de este proyecto. El doctor Ángel Cruz por sus aportes tan valiosos al modelo del 
-  sistema, sin el cual Specx no podría operar correctamente; además de la dedicación a la revisión de 
-  cada funcionalidad del software. El doctor Héctor Reyes por sus conocimientos en el área de 
-  telecomunicaciones y radiotransmisiones, ya que su idea de un radio tvws fue la que llevó al desarrollo 
-  de *webspecx*.
+- To the directors of this project. Dr. Ángel Cruz for his valuable contributions to the model of the
+   system, without which Specx could not operate properly; in addition to dedication to reviewing
+   each software functionality. Dr. Héctor Reyes for his knowledge in the area of
+   telecommunications and radio transmissions, since his idea of a tvws radio was the one that led to the
+  *Specx* development
 
-- A Francisco Rodríguez por sus habilidades en el desarrollo, que permitieron la construcción de varios 
-  generadores de variables aleaotorias, así como la optimización en el uso de recursos por parte de la 
-  aplicación.
+- To Francisco Rodríguez for his development skills, which allowed the construction of several
+   generators of random variables, as well as optimization in the use of resources by the
+   app.
 
-- A la universidad de los llanos por brindar sus espacios y material bibliográfico para el estudio de 
-  simulación realizado.
+- To the University of Los Llanos for providing its spaces and bibliographic material for the study of
+   simulation performed.

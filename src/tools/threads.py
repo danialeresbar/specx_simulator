@@ -3,12 +3,13 @@ import time
 
 from datetime import datetime, timedelta
 from src.model import simulation
+from src.tools import csvhandler
 
 
 class SimulationThread(threading.Thread):
     """
     Class used for the implementation of a thread that
-    will run the simulation of random variables
+    will run the simulation process of random variables
     """
 
     def __init__(self, *args, **kwargs):
@@ -21,6 +22,7 @@ class SimulationThread(threading.Thread):
         self.delay = kwargs.get('delay', None)
         self.energy_threshold = kwargs.get('threshold', 0.33)  # 0.33 Is the default value
         self.sample_time = kwargs.get('sample_time', 0)
+        self.simulation_path = kwargs.get('filepath')
 
         # Thread manager attributes
         self.pause_cond = threading.Condition(threading.Lock())
@@ -37,15 +39,22 @@ class SimulationThread(threading.Thread):
 
         delta = datetime.now()
         limit = simulation.RANDOM_VARIABLES_LIMIT
-        for index, channel in enumerate(self.channels):
+        for channel, chart in zip(self.channels, self.simulation_charts):
             var_count = 0
 
             while var_count < limit*self.sample_time and not self.stopped:
-                var = channel.distribution.generate_random_variable()
+                var = channel.distribution.generate_rv()
                 var_count += 1
-                self.simulation_charts[index].update_series(var_count*2, var)
+                chart.update_series(var_count*2, var)
                 time.sleep(2/self.delay())  # Time interval between the generation of random variables
                 delta += timedelta(seconds=2)
+                csvhandler.write_csv(
+                    self.simulation_path,
+                    delta,
+                    channel.frequency,
+                    channel.distribution.name,
+                    var
+                )
                 with self.pause_cond:
                     while self.paused:
                         self.pause_cond.wait()
@@ -53,7 +62,6 @@ class SimulationThread(threading.Thread):
                 if self.stopped:
                     self.finished = False
                     break
-        #     self.__update_bars(bars[index], (usage_percent/var_count)*100)
 
     def pause(self):
         """
@@ -81,29 +89,6 @@ class SimulationThread(threading.Thread):
         """
 
         self.stopped = True
-
-    # def __update_chart(self, serie, x, y):
-    #     serie.append(x, y)
-    #     if x >= 12:
-    #         dx = serie.chart().plotArea().width() / \
-    #             serie.chart().axes(Qt.Horizontal, serie)[0].tickCount()
-    #         serie.chart().scroll(dx, 0)
-    #
-    # def __update_bars(self, bar, usage_percent):
-    #     bar.barSets()[0].replace(0, usage_percent)
-    #     if usage_percent > 20:
-    #         bar.setLabelsPosition(0)
-
-    @staticmethod
-    def update_csvfile(filepath, timestamp, frequency, distribution, value):
-        line = "{};{};{};{}".format(
-            timestamp.strftime("%m-%d-%Y %H:%M:%S"),
-            frequency,
-            distribution,
-            value
-        )
-        with open(filepath, 'a') as csvfile:
-            csvfile.write(line + '\n')
 
 
 class FileThread(threading.Thread):

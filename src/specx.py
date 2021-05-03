@@ -165,7 +165,13 @@ class SpecxMainWindow(QtWidgets.QMainWindow, MainViewTemplate):
         """
         Shows a window with the simulation options and channel's chart
         """
-
+        simulation_settings = [
+            self.sample_time.value(),
+            self.threshold.value(),
+            self.energy_flag.isChecked(),
+            self.usage_flag.isChecked()
+        ]
+        self.environment.update_settings(simulation_settings)
         try:
             simulator = Simulation(self, id='test', environment=self.environment)
             simulator.show()
@@ -184,13 +190,13 @@ class SpecxMainWindow(QtWidgets.QMainWindow, MainViewTemplate):
             'JSON Files (*.json)'
         )
         if filepath:
-            settings = [
+            simulation_settings = [
                 self.sample_time.value(),
                 self.threshold.value(),
                 self.energy_flag.isChecked(),
                 self.usage_flag.isChecked()
             ]
-            self.environment.update_settings(settings)
+            self.environment.update_settings(simulation_settings)
             json_exporter.save(filepath, self.environment.to_json())
             QtWidgets.QMessageBox.information(
                 self,

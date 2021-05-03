@@ -59,7 +59,7 @@ analyzes:
 
 ### Directory Tree ###
 
-## Autores ✒️
+## Authors ✒️
 
 The work team that carried out the simulation study and the development of *Specx*
 is made up of the following people:
@@ -71,7 +71,7 @@ is made up of the following people:
 * **Siervo Francisco Rodríguez Castellanos** - *Coding of simulation algorithms and routine
   optimization* - [Developer]()
   
-## Expresiones de Gratitud 🎁
+## Expressions of gratitude 🎁
 
 - To the directors of this project. Dr. Ángel Cruz for his valuable contributions to the model of the
    system, without which Specx could not operate properly; in addition to dedication to reviewing

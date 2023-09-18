@@ -1,0 +1,67 @@
+{
+    "473 MHz": {
+        "distribution": 2,
+        "values": [
+            3.9285,
+            4.5943,
+            0.04399,
+            0.75
+        ]
+    },
+    "479 MHz": {
+        "distribution": 1,
+        "values": [
+            0.5
+        ]
+    },
+    "485 MHz": {
+        "distribution": 13,
+        "values": [
+            4.2694,
+            0.38947,
+            -0.12532
+        ]
+    },
+    "491 MHz": {
+        "distribution": 9,
+        "values": [
+            0.18119,
+            0.09331
+        ]
+    },
+    "497 MHz": {
+        "distribution": 11,
+        "values": [
+            0.11641,
+            0.05
+        ]
+    },
+    "503 MHz": {
+        "distribution": 10,
+        "values": [
+            0.15109
+        ]
+    },
+    "551 MHz": {
+        "distribution": 2,
+        "values": [
+            3.9285,
+            4.5943,
+            0.04399,
+            0.75
+        ]
+    },
+    "509 MHz": {
+        "distribution": 3,
+        "values": [
+            5.1768
+        ]
+    },
+    "557 MHz": {
+        "distribution": 5,
+        "values": [
+            0.08743,
+            0.35709
+        ]
+    }
+}

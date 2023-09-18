@@ -1,0 +1,155 @@
+{
+  "distributions": [
+    {
+        "id": 1,
+        "name": "Bernoulli",
+        "image_description": "./icons/bern.png",
+        "parameters": [
+            1
+        ]
+    },
+    {
+        "id": 2,
+        "name": "Beta",
+        "image_description": "./icons/beta.png",
+        "parameters": [
+            2, 3, 4, 5
+        ]
+    },
+    {
+        "id": 3,
+        "name": "Gamma",
+        "image_description": "./icons/gamma.png",
+        "parameters": [
+            2, 13
+        ]
+    },
+    {
+        "id": 4,
+        "name": "Gumbel",
+        "image_description": "./icons/gumbel.png",
+        "parameters": [
+            7, 5
+        ]
+    },
+    {
+        "id": 5,
+        "name": "Laplace",
+        "image_description": "./icons/laplace.png",
+        "parameters": [
+            7, 5
+        ]
+    },
+    {
+        "id": 6,
+        "name": "Lognormal",
+        "image_description": "./icons/lognorm.png",
+        "parameters": [
+            7, 8
+        ]
+    },
+    {
+        "id": 7,
+        "name": "Lognormal(3p)",
+        "image_description": "./icons/lognorm_3.png",
+        "parameters": [
+            7, 8, 9
+        ]
+    },
+    {
+        "id": 8,
+        "name": "Normal",
+        "image_description": "./icons/normal.png",
+        "parameters": [
+            7, 8
+        ]
+    },
+    {
+        "id": 9,
+        "name": "Rayleigh",
+        "image_description": "./icons/rayleigh.png",
+        "parameters": [
+            8
+        ]
+    },
+    {
+        "id": 10,
+        "name": "Rayleigh(2p)",
+        "image_description": "./icons/rayleigh_2.png",
+        "parameters": [
+            8, 9
+        ]
+    },
+    {
+        "id": 11,
+        "name": "Uniform",
+        "image_description": "./icons/uniform.png",
+        "parameters": [
+            10, 11
+        ]
+    },
+    {
+        "id": 12,
+        "name": "Weibull",
+        "image_description": "./icons/weibull.png",
+        "parameters": [
+            12, 13, 9
+        ]
+    }
+  ],
+
+  "parameters": [
+    {
+        "id": 1,
+        "name": "Success_prob"
+    },
+    {
+        "id": 2,
+        "name": "Alpha_shape"
+    },
+    {
+        "id": 3,
+        "name": "Beta_shape"
+    },
+    {
+        "id": 4,
+        "name": "Location"
+    },
+    {
+        "id": 5,
+        "name": "Scale"
+    },
+    {
+        "id": 6,
+        "name": "Beta_rate"
+    },
+    {
+        "id": 7,
+        "name": "Mean"
+    },
+    {
+        "id": 8,
+        "name": "S_deviation"
+    },
+    {
+        "id": 9,
+        "name": "Threshold"
+    },
+    {
+        "id": 10,
+        "name": "Lower bound"
+    },
+    {
+        "": 11,
+        "name": "Upper bound"
+    },
+    {
+        "": 12,
+        "name": "K_shape"
+    },
+    {
+        "": 13,
+        "name": "Lambda_scale"
+    }
+  ]
+}

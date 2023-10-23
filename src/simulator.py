@@ -1,10 +1,10 @@
 from datetime import datetime
-from PyQt5 import QtWidgets, QtGui
+from PySide6 import QtWidgets, QtGui
 
-from src.charts import cartesian
-from src.model import simulation
-from src.qt.simulator import SimulatorTemplate
-from src.tools import threads
+from charts import cartesian
+from model import simulation
+from qt.simulator import SimulatorTemplate
+from utils import threads
 
 
 # ---- Date formats ----

@@ -1,6 +1,23 @@
+[tool.poetry]
+name = "Specx"
+version = "0.1.0"
+description = "A Python package for spectral line fitting and analysis."
+authors = ["Daniel Restrepo <daniel.restrepo@unillanos.edu.co>", "Siervo Rodríguez <siervo.rodriguez@unillanos.edu.co>", "Hector Reyes <hreyes@unillanos.edu.co>", "Angel Cruz <aacruz@unillanos.edu.co>"]
+license = "GNU GPLv3"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11, <3.12"
+scipy = "^1.10.0"
+PySide6 = "^6.5.0"
+pyqtdarktheme = "^2.1.0"
+qtawesome = "^1.2.3"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.9.0"
+mypy = "^1.5.1"
+ruff = "^0.0.290"
+
 [build-system]
-requires = [
-    "setuptools>=42",
-    "wheel"
-]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

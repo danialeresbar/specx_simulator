@@ -8,8 +8,9 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11, <3.12"
+pydantic = "~2.1.0"
 scipy = "^1.10.0"
-PySide6 = "^6.5.0"
+PySide6 = "~6.5.0"
 pyqtdarktheme = "^2.1.0"
 qtawesome = "^1.2.3"
 
@@ -17,6 +18,11 @@ qtawesome = "^1.2.3"
 black = "^23.9.0"
 mypy = "^1.5.1"
 ruff = "^0.0.290"
+
+[tool.poetry.group.test.dependencies]
+coverage = "~7.3.4"
+factory-boy = "^3.2.0"
+Faker = "^22.1.0"
 
 [build-system]
 requires = ["poetry-core"]

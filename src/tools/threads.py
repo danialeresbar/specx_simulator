@@ -2,8 +2,7 @@ import threading
 import time
 
 from datetime import datetime, timedelta
-from src.model import simulation
-from src.tools import csvhandler
+from model import simulation
 
 
 class SimulationThread(threading.Thread):
@@ -48,13 +47,13 @@ class SimulationThread(threading.Thread):
                 chart.update_series(var_count*2, var)
                 time.sleep(2/self.delay())  # Time interval between the generation of random variables
                 delta += timedelta(seconds=2)
-                csvhandler.write_csv(
-                    self.simulation_path,
-                    delta,
-                    channel.frequency,
-                    channel.distribution.name,
-                    var
-                )
+                # csvhandler.write_csv(
+                #     self.simulation_path,
+                #     delta,
+                #     channel.frequency,
+                #     channel.distribution.name,
+                #     var
+                # )
                 with self.pause_cond:
                     while self.paused:
                         self.pause_cond.wait()

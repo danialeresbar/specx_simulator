@@ -1,9 +1,8 @@
-import uuid
-
 from datetime import datetime
 from enum import Enum
 from pydantic import BaseModel, Field, model_validator
-from typing import List, Self
+from typing import List, Optional, Self
+from uuid import uuid4
 
 from constants.simulation import (
     CH_14_FREQUENCY,
@@ -15,8 +14,10 @@ from constants.simulation import (
     CH_20_FREQUENCY,
     CH_27_FREQUENCY,
     CH_28_FREQUENCY,
-    SAMPLE_INTERVAL_MINUTES_MIN,
-    SAMPLE_INTERVAL_MINUTES_MAX
+    FIRST_CHANNEL,
+    LAST_CHANNEL,
+    SAMPLE_INTERVAL_MIN,
+    SAMPLE_INTERVAL_MAX
 )
 
 
@@ -33,13 +34,12 @@ class ChannelFrequency(Enum):
 
 
 class TVChannel(BaseModel):
-    number: int
+    number: int = Field(..., ge=FIRST_CHANNEL, le=LAST_CHANNEL)
     frequency: ChannelFrequency
-    # TODO: Add PDF reference
 
 
 class SimulationSettings(BaseModel):
-    sample_interval_minutes: int = Field(..., ge=SAMPLE_INTERVAL_MINUTES_MIN, le=SAMPLE_INTERVAL_MINUTES_MAX)
+    sample_interval: int = Field(..., ge=SAMPLE_INTERVAL_MIN, le=SAMPLE_INTERVAL_MAX)
     energy_threshold: float = Field(..., ge=0.0)
     energy_measurement: bool
     occupancy_measurement: bool
@@ -59,7 +59,7 @@ class SimulationSettings(BaseModel):
 
 
 class SimulationEnvironment(BaseModel):
-    id: uuid.UUID = Field(default_factory=uuid.uuid4)
+    id: str = Field(default_factory=lambda: uuid4().hex)
     timestamp: datetime = Field(default_factory=datetime.now)
-    settings: SimulationSettings = None
-    channels: List[TVChannel] = []
+    settings: SimulationSettings
+    channels: Optional[List[TVChannel]] = None

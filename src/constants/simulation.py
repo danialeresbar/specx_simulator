@@ -1,7 +1,8 @@
 from typing import Final
 
-SAMPLE_INTERVAL_MINUTES_MIN: Final[int] = 1
-SAMPLE_INTERVAL_MINUTES_MAX: Final[int] = 10
+SAMPLE_INTERVAL_MIN: Final[int] = 1
+SAMPLE_INTERVAL_MAX: Final[int] = 10
+CHANNEL_COUNT_DEFAULT: Final[int] = 9  # TODO: Do it from UI
 
 ##################### #
 # CHANNEL FREQUENCIES #
@@ -15,3 +16,9 @@ CH_19_FREQUENCY: Final[str] = "503 MHz"
 CH_20_FREQUENCY: Final[str] = "509 MHz"
 CH_27_FREQUENCY: Final[str] = "551 MHz"
 CH_28_FREQUENCY: Final[str] = "557 MHz"
+
+########## #
+# CHANNELS #
+########## #
+FIRST_CHANNEL: Final[int] = 14
+LAST_CHANNEL: Final[int] = 28

@@ -1,4 +1,4 @@
-from typing import Final, Set
+from typing import Final, Set, Tuple
 
 PDF_LONG: Final[str] = 'Probability Density Function'
 PDF_SHORT: Final[str] = 'PDF'
@@ -19,6 +19,10 @@ WEIBULL: Final[str] = 'Weibull'
 AVAILABLE_PROBABILITY_DISTRIBUTIONS: Final[Set[str]] = {
     BERNOULLI, BETA, GAMMA, GUMBEL, LAPLACE, LOGNORMAL, NORMAL, RAYLEIGH, UNIFORM, WEIBULL
 }
+CONTINUOUS_PROBABILITY_DISTRIBUTIONS: Final[Tuple[str, ...]] = (
+    BETA, GAMMA, GUMBEL, LAPLACE, LOGNORMAL, NORMAL, RAYLEIGH, UNIFORM, WEIBULL
+)
+DISCRETE_PROBABILITY_DISTRIBUTIONS: Final[Tuple[str]] = (BERNOULLI,)
 
 ######################### #
 # DISTRIBUTION ATTRIBUTES #

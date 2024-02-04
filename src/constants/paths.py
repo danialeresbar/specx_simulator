@@ -6,5 +6,3 @@ SIMULATION_DATA_PATH: Final[str] = f'{BASE_DIR}/data'
 ENVIRONMENT_COLLECTION_PATH: Final[str] = f'{BASE_DIR}/environments'
 SOURCE_PATH: Final[str] = f'{BASE_DIR}/src'
 UI_PATH: Final[str] = f'{BASE_DIR}/ui'
-
-DISTRIBUTION_DESCRIPTION_PATH: Final[str] = f'{UI_PATH}/distribution/'

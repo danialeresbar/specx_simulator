@@ -37,6 +37,9 @@ class TVChannel(BaseModel):
     number: int = Field(..., ge=FIRST_CHANNEL, le=LAST_CHANNEL)
     frequency: ChannelFrequency
 
+    class Config:
+        use_enum_values = True
+
 
 class SimulationSettings(BaseModel):
     sample_interval: int = Field(..., ge=SAMPLE_INTERVAL_MIN, le=SAMPLE_INTERVAL_MAX)

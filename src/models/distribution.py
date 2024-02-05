@@ -1,6 +1,6 @@
 from enum import Enum
 from pydantic import BaseModel, Field, field_validator, model_validator
-from typing import List, Self, Tuple
+from typing import List, Optional, Self, Tuple
 
 from constants.distributions import (
     DISTRIBUTION_PARAMETER_NAME_MAX_LENGTH,
@@ -11,7 +11,7 @@ from constants.field_names import CONTINUOUS_STR, DISCRETE_STR
 ############## #
 # CUSTOM TYPES #
 ############## #
-ParameterInterval = Tuple[float, float]
+ParameterInterval = Tuple[Optional[float], Optional[float]]
 
 
 class ProbabilityDistributionCategory(Enum):
@@ -42,18 +42,37 @@ class DistributionParameter(BaseModel):
     @field_validator('interval')
     @classmethod
     def check_interval(cls, interval: ParameterInterval) -> ParameterInterval:
-        if interval[0] > interval[1]:
+        lower, upper = interval
+        non_infinite = lower is not None and upper is not None
+        if non_infinite and lower >= upper:
             raise ValueError('The lower bound of the interval must be less than the upper bound.')
 
         return interval
 
     @model_validator(mode='after')
     def check_value_in_interval(self) -> Self:
+        if self.is_boundless:
+            return self
+
         lower, upper = self.interval
-        if not lower <= self.value <= upper:
-            raise ValueError('The value of the parameter must be within the interval.')
+        if lower is not None and upper is None:
+            if self.value < lower:
+                raise ValueError('The value of the parameter must be greater than the lower bound.')
+
+        if lower is None and upper is not None:
+            if self.value > upper:
+                raise ValueError('The value of the parameter must be less than the upper bound.')
+
+        if lower is not None and upper is not None:
+            if not lower <= self.value <= upper:
+                raise ValueError('The value of the parameter must be within the interval.')
 
         return self
+
+    @property
+    def is_boundless(self) -> bool:
+        lower, upper = self.interval
+        return lower is None and upper is None
 
 
 class ProbabilityDistribution(BaseModel):

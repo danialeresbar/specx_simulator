@@ -1,9 +1,10 @@
 from datetime import datetime
 from enum import Enum
-from pydantic import BaseModel, Field, model_validator
-from typing import List, Optional, Self
+from pydantic import BaseModel, Field
+from typing import List, Optional
 from uuid import uuid4
 
+from constants.field_names import ENERGY_STR, OCCUPANCY_STR
 from constants.simulation import (
     CH_14_FREQUENCY,
     CH_15_FREQUENCY,
@@ -41,24 +42,19 @@ class TVChannel(BaseModel):
         use_enum_values = True
 
 
+class SimulationMeasurement(Enum):
+    ENERGY = ENERGY_STR
+    OCCUPANCY = OCCUPANCY_STR
+
+
 class SimulationSettings(BaseModel):
     sample_interval: int = Field(..., ge=SAMPLE_INTERVAL_MIN, le=SAMPLE_INTERVAL_MAX)
     energy_threshold: float = Field(..., ge=0.0)
-    energy_measurement: bool
-    occupancy_measurement: bool
+    measurement: SimulationMeasurement
 
     class Config:
         validate_assignment = True
-
-    @model_validator(mode='after')
-    def check_measurement_select(self) -> Self:
-        if not self.occupancy_measurement and not self.energy_measurement:
-            raise ValueError('At least one measurement must be enabled.')
-
-        if self.occupancy_measurement and self.energy_measurement:
-            raise ValueError('Only one measurement can be enabled.')
-
-        return self
+        use_enum_values = True
 
 
 class SimulationEnvironment(BaseModel):

@@ -3,8 +3,9 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 from typing import List, Optional, Self, Tuple
 
 from constants.distributions import (
+    DISTRIBUTION_DESCRIPTION_DEFAULT,
     DISTRIBUTION_PARAMETER_NAME_MAX_LENGTH,
-    DISTRIBUTION_PARAMETER_NAME_MIN_LENGTH
+    DISTRIBUTION_PARAMETER_NAME_MIN_LENGTH,
 )
 from constants.field_names import CONTINUOUS_STR, DISCRETE_STR
 
@@ -79,7 +80,7 @@ class ProbabilityDistribution(BaseModel):
     name: str
     category: ProbabilityDistributionCategory
     parameters: List[DistributionParameter] = Field(default_factory=list)
-    description: str = None
+    description: str = DISTRIBUTION_DESCRIPTION_DEFAULT
 
     class Config:
         frozen = True
@@ -87,4 +88,4 @@ class ProbabilityDistribution(BaseModel):
 
     @property
     def is_continuous(self) -> bool:
-        return self.category == ProbabilityDistributionCategory.CONTINUOUS
+        return self.category == ProbabilityDistributionCategory.CONTINUOUS.value

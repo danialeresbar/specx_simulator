@@ -3,7 +3,13 @@ import unittest
 from datetime import datetime
 from faker import Faker
 
-from src.models.simulation import ChannelFrequency, SimulationSettings, SimulationEnvironment, TVChannel
+from src.models.simulation import (
+    ChannelFrequency,
+    SimulationEnvironment,
+    SimulationMeasurement,
+    SimulationSettings,
+    TVChannel
+)
 from constants.simulation import (
     SAMPLE_INTERVAL_MIN,
     SAMPLE_INTERVAL_MAX
@@ -18,8 +24,7 @@ class TestSimulationEnvironmentModel(unittest.TestCase):
         self.valid_settings = SimulationSettings(
             sample_interval=fake.pyint(min_value=SAMPLE_INTERVAL_MIN, max_value=SAMPLE_INTERVAL_MAX),
             energy_threshold=fake.pyfloat(positive=True),
-            energy_measurement=True,
-            occupancy_measurement=False
+            measurement=SimulationMeasurement.ENERGY
         )
 
     def test_create_simulation_environment(self):

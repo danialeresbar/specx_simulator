@@ -1,5 +1,11 @@
+install-dependencies:
+	poetry install
+
 shell:
 	poetry shell
+
+run:
+	poetry run python -m app
 
 coverage-tests:
 	poetry run coverage run -m unittest discover tests --failfast

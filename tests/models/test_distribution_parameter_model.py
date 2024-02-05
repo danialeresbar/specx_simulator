@@ -69,8 +69,4 @@ class TestDistributionParameterModel(unittest.TestCase):
     def test_create_distribution_parameter_with_invalid_interval(self):
         interval = (1, 0)
         with self.assertRaises(ValueError):
-            DistributionParameter(
-                name=self.random_name,
-                interval=interval,
-                value=0
-            )
+            DistributionParameter(name=self.random_name, interval=interval, value=0)

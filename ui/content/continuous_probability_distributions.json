@@ -103,7 +103,7 @@
   {
     "name": "Normal",
     "category": "Continuous",
-    "description": "The LogNormal distribution is a continuous probability distribution of a random variable whose logarithm follows a Normal distribution. It models phenomena whose relative growth rate is independent of size, which is true of most natural phenomena including the size of tissue and blood pressure, income distribution, and even the length of chess games. A log-normal process is the statistical realization of the multiplicative product of many independent random variables, each of which is positive.",
+    "description": "The Normal distribution is a continuous probability distribution for a real-valued random variable. It is also known as the Gaussian distribution. The Normal distribution is used in various fields including finance, physics, and engineering. It is also used in the natural and social sciences to represent real-valued random variables whose distributions are not known.",
     "parameters": [
       {
         "name": "mean",

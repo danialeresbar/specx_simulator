@@ -2,7 +2,7 @@ import unittest
 
 from faker import Faker
 
-from src.models.distributions import ProbabilityDistribution, ProbabilityDistributionCategory
+from src.models.distribution import ProbabilityDistribution, ProbabilityDistributionCategory
 from src.constants.distributions import AVAILABLE_PROBABILITY_DISTRIBUTIONS, DISTRIBUTION_DESCRIPTION_DEFAULT
 
 fake = Faker()

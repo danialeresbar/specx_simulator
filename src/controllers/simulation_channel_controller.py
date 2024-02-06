@@ -16,7 +16,7 @@ from tools.imports import import_class_from_module
 class ChannelConfigController(ChannelConfigView):
 
     def __init__(self, *args, **kwargs):
-        super(ChannelConfigController, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.function_selector_box.currentIndexChanged.connect(self.update_config_components)
         self.selected_function = None
         # TODO: Connect the spin box signals
@@ -46,10 +46,7 @@ class ChannelConfigController(ChannelConfigView):
 
         selected: ProbabilityDistribution = self.function_selector_box.currentData()
         distribution_parameters: list[DistributionParameter] = selected.parameters
-        desired_class: str = '{distribution}{suffix}'.format(
-            distribution=selected.name,
-            suffix=PDF_STR if selected.is_continuous else PMF_STR
-        )
+        desired_class: str = f'{selected.name}{PDF_STR if selected.is_continuous else PMF_STR}'
         imported_class: type = import_class_from_module(
             module_name=PROBABILITY_DISTRIBUTIONS_MODULE,
             package_name=STATISTICS_PACKAGE,

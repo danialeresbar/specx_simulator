@@ -13,16 +13,14 @@ from views.resources import icons_rc
 
 
 class PDFChartView(QChartView):
-
     def __init__(self, *args, **kwargs):
-        super(PDFChartView, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.setRenderHint(QPainter.Antialiasing)
 
 
 class ParameterConfigWidget(QWidget):
-
     def __init__(self, *args, **kwargs):
-        super(ParameterConfigWidget, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         main_layout = QHBoxLayout(self)
         main_layout.setObjectName(u'horizontal_Layout')
         main_layout.setSpacing(2)
@@ -63,9 +61,8 @@ class ChannelConfigView(QWidget):
     """
     This class is responsible for displaying the channel config components.
     """
-
     def __init__(self, *args, **kwargs):
-        super(ChannelConfigView, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         main_layout = QVBoxLayout(self)
         main_layout.setObjectName(u'vertical_Layout')
         main_layout.setSpacing(0)

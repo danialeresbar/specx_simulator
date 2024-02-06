@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "Specx"
+name = "specx"
 version = "0.1.0"
 description = "A Python package for spectral line fitting and analysis."
 authors = ["Daniel Restrepo <daniel.restrepo@unillanos.edu.co>", "Siervo Rodríguez <siervo.rodriguez@unillanos.edu.co>", "Hector Reyes <hreyes@unillanos.edu.co>", "Angel Cruz <aacruz@unillanos.edu.co>"]

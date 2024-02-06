@@ -3,7 +3,7 @@ import unittest
 from faker import Faker
 
 from src.models.simulation import SimulationMeasurement, SimulationSettings
-from constants.simulation import (
+from src.constants.simulation import (
     SAMPLE_INTERVAL_MIN,
     SAMPLE_INTERVAL_MAX
 )

@@ -10,7 +10,7 @@ from src.models.simulation import (
     SimulationSettings,
     TVChannel
 )
-from constants.simulation import (
+from src.constants.simulation import (
     SAMPLE_INTERVAL_MIN,
     SAMPLE_INTERVAL_MAX
 )

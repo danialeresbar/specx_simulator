@@ -1,5 +1,8 @@
 from typing import Final
 
+COPYRIGHT: Final[str] = '© Copyright Unillanos'
+CURRENT_VERSION: Final[str] = '0.1.0'
+
 ###################### #
 # FILE DIALOG MESSAGES #
 ###################### #

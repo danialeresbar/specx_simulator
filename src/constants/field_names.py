@@ -2,6 +2,8 @@ from typing import Final
 
 CONTINUOUS_STR: Final[str] = 'Continuous'
 DISCRETE_STR: Final[str] = 'Discrete'
+OCCUPANCY_STR: Final[str] = 'Occupancy'
+ENERGY_STR: Final[str] = 'Energy'
 
 ######################### #
 # DISTRIBUTION PARAMETERS #

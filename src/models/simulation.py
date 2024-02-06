@@ -1,7 +1,6 @@
 from datetime import datetime
 from enum import Enum
 from pydantic import BaseModel, Field
-from typing import List, Optional
 from uuid import uuid4
 
 from constants.field_names import ENERGY_STR, OCCUPANCY_STR
@@ -15,11 +14,13 @@ from constants.simulation import (
     CH_20_FREQUENCY,
     CH_27_FREQUENCY,
     CH_28_FREQUENCY,
+    ENERGY_THRESHOLD_DEFAULT,
     FIRST_CHANNEL,
     LAST_CHANNEL,
     SAMPLE_INTERVAL_MIN,
-    SAMPLE_INTERVAL_MAX
+    SAMPLE_INTERVAL_MAX,
 )
+from models.distribution import ProbabilityDistribution
 
 
 class ChannelFrequency(Enum):
@@ -37,6 +38,7 @@ class ChannelFrequency(Enum):
 class TVChannel(BaseModel):
     number: int = Field(..., ge=FIRST_CHANNEL, le=LAST_CHANNEL)
     frequency: ChannelFrequency
+    associated_distribution: ProbabilityDistribution | None = None
 
     class Config:
         use_enum_values = True
@@ -49,7 +51,7 @@ class SimulationMeasurement(Enum):
 
 class SimulationSettings(BaseModel):
     sample_interval: int = Field(..., ge=SAMPLE_INTERVAL_MIN, le=SAMPLE_INTERVAL_MAX)
-    energy_threshold: float = Field(..., ge=0.0)
+    energy_threshold: float = Field(..., ge=ENERGY_THRESHOLD_DEFAULT)
     measurement: SimulationMeasurement
 
     class Config:
@@ -61,4 +63,4 @@ class SimulationEnvironment(BaseModel):
     id: str = Field(default_factory=lambda: uuid4().hex)
     timestamp: datetime = Field(default_factory=datetime.now)
     settings: SimulationSettings
-    channels: Optional[List[TVChannel]] = None
+    channels: list[TVChannel] | None = None

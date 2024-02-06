@@ -12,7 +12,8 @@ from src.models.simulation import (
 )
 from src.constants.simulation import (
     SAMPLE_INTERVAL_MIN,
-    SAMPLE_INTERVAL_MAX
+    SAMPLE_INTERVAL_MAX,
+    ENERGY_THRESHOLD_DEFAULT
 )
 
 fake = Faker()
@@ -23,7 +24,7 @@ class TestSimulationEnvironmentModel(unittest.TestCase):
     def setUp(self):
         self.valid_settings = SimulationSettings(
             sample_interval=fake.pyint(min_value=SAMPLE_INTERVAL_MIN, max_value=SAMPLE_INTERVAL_MAX),
-            energy_threshold=fake.pyfloat(positive=True),
+            energy_threshold=ENERGY_THRESHOLD_DEFAULT,
             measurement=SimulationMeasurement.ENERGY
         )
 

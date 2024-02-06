@@ -1,6 +1,8 @@
 import time
 
-from typing import Iterator
+from collections.abc import Iterator
+
+__all__ = ['gcc_random_number', 'posix_random_number']
 
 # System time in seconds (s)
 SEED_1 = time.time()

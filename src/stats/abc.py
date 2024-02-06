@@ -1,13 +1,19 @@
 from abc import ABC, abstractmethod
 from numpy import ndarray
 
-from typing import Tuple
+__all__ = [
+    'RandomVariableGenerator',
+    'PDF',
+    'PMF',
+    'PMFValueSet',
+    'PDFVectorPoints'
+]
 
 ############## #
 # CUSTOM TYPES #
 ############## #
-PMFValueSet = Tuple[ndarray, ndarray]
-PDFVectorPoints = Tuple[ndarray, ndarray]
+PMFValueSet = tuple[ndarray, ndarray]
+PDFVectorPoints = tuple[ndarray, ndarray]
 
 
 class RandomVariableGenerator(ABC):

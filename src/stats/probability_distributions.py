@@ -5,8 +5,21 @@ from numpy import ndarray
 from scipy import stats as st
 
 from constants.distributions import PDF_SAMPLE_SIZE, PPF_LOWER_BOUND, PPF_UPPER_BOUND
-from statistics import generators
-from statistics.abstract.base import PMF, PMFValueSet, PDF, PDFVectorPoints
+from stats import generators
+from stats.abc import PMF, PMFValueSet, PDF, PDFVectorPoints
+
+__all__ = [
+    'BernoulliPMF',
+    'BetaPDF',
+    'GammaPDF',
+    'GumbelPDF',
+    'LaplacePDF',
+    'LogNormalPDF',
+    'NormalPDF',
+    'RayleighPDF',
+    'UniformPDF',
+    'WeibullPDF'
+]
 
 
 class BernoulliPMF(PMF):
@@ -119,18 +132,18 @@ class LogNormalPDF(PDF):
 class NormalPDF(PDF):
     def __init__(self, mean: float, std: float):
         self.mean = mean
-        self.standard_deviation = std
+        self.std = std
 
     def rvs(self, size: int) -> ndarray:
-        return st.norm.rvs(loc=self.mean, scale=self.standard_deviation, size=size)
+        return st.norm.rvs(loc=self.mean, scale=self.std, size=size)
 
     def get_vector_points(self) -> PDFVectorPoints:
         x: ndarray = np.linspace(
-            st.norm.ppf(PPF_LOWER_BOUND, loc=self.mean, scale=self.standard_deviation),
-            st.norm.ppf(PPF_UPPER_BOUND, loc=self.mean, scale=self.standard_deviation),
+            st.norm.ppf(PPF_LOWER_BOUND, loc=self.mean, scale=self.std),
+            st.norm.ppf(PPF_UPPER_BOUND, loc=self.mean, scale=self.std),
             PDF_SAMPLE_SIZE
         )
-        y: ndarray = st.norm.pdf(x, loc=self.mean, scale=self.standard_deviation)
+        y: ndarray = st.norm.pdf(x, loc=self.mean, scale=self.std)
         return x, y
 
 

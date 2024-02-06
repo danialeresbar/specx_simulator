@@ -2,7 +2,10 @@ from typing import Final
 
 SAMPLE_INTERVAL_MIN: Final[int] = 1
 SAMPLE_INTERVAL_MAX: Final[int] = 10
+THRESHOLD_MIN: Final[float] = 0.01
 CHANNEL_COUNT_DEFAULT: Final[int] = 9  # TODO: Do it from UI
+ENERGY_THRESHOLD_DEFAULT: Final[float] = 0.33
+SAMPLE_INTERVAL_DEFAULT: Final[int] = 1
 
 ##################### #
 # CHANNEL FREQUENCIES #
@@ -22,3 +25,9 @@ CH_28_FREQUENCY: Final[str] = "557 MHz"
 ########## #
 FIRST_CHANNEL: Final[int] = 14
 LAST_CHANNEL: Final[int] = 28
+
+#################### #
+# MODULES & PACKAGES #
+#################### #
+PROBABILITY_DISTRIBUTIONS_MODULE: Final[str] = "probability_distributions"
+STATISTICS_PACKAGE: Final[str] = "stats"

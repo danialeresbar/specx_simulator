@@ -2,6 +2,8 @@ from typing import Final
 
 CONTINUOUS_STR: Final[str] = 'Continuous'
 DISCRETE_STR: Final[str] = 'Discrete'
+OCCUPANCY_STR: Final[str] = 'Occupancy'
+ENERGY_STR: Final[str] = 'Energy'
 
 ######################### #
 # DISTRIBUTION PARAMETERS #
@@ -14,3 +16,6 @@ MEAN_STR: Final[str] = 'mean'
 SCALE_STR: Final[str] = 'scale'
 SHAPE_STR: Final[str] = 'shape'
 SIGMA_STR: Final[str] = 'sigma'
+
+PDF_STR: Final[str] = 'PDF'
+PMF_STR: Final[str] = 'PMF'

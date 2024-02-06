@@ -1,6 +1,6 @@
 from enum import Enum
 from pydantic import BaseModel, Field, field_validator, model_validator
-from typing import List, Optional, Self, Tuple
+from typing import Self
 
 from constants.distributions import (
     DISTRIBUTION_DESCRIPTION_DEFAULT,
@@ -12,7 +12,7 @@ from constants.field_names import CONTINUOUS_STR, DISCRETE_STR
 ############## #
 # CUSTOM TYPES #
 ############## #
-ParameterInterval = Tuple[Optional[float], Optional[float]]
+ParameterInterval = tuple[float | None, float | None]
 
 
 class ProbabilityDistributionCategory(Enum):
@@ -79,7 +79,7 @@ class DistributionParameter(BaseModel):
 class ProbabilityDistribution(BaseModel):
     name: str
     category: ProbabilityDistributionCategory
-    parameters: List[DistributionParameter] = Field(default_factory=list)
+    parameters: list[DistributionParameter] = Field(default_factory=list)
     description: str = DISTRIBUTION_DESCRIPTION_DEFAULT
 
     class Config:

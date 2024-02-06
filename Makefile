@@ -5,7 +5,7 @@ shell:
 	poetry shell
 
 run:
-	poetry run python -m app
+	poetry run python -m main
 
 coverage-tests:
 	poetry run coverage run -m unittest discover tests --failfast

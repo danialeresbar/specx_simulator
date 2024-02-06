@@ -30,4 +30,4 @@ LAST_CHANNEL: Final[int] = 28
 # MODULES & PACKAGES #
 #################### #
 PROBABILITY_DISTRIBUTIONS_MODULE: Final[str] = "probability_distributions"
-STATISTICS_PACKAGE: Final[str] = "statistics"
+STATISTICS_PACKAGE: Final[str] = "stats"

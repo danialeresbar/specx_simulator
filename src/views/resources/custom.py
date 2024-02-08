@@ -44,7 +44,7 @@ class ChartPreviewFrame(QFrame):
 class DefaultChannelConfigView(QWidget):
 
     def __init__(self, *args, **kwargs):
-        super(DefaultChannelConfigView, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         main_layout = QVBoxLayout(self)
         main_layout.setSpacing(0)
         main_layout.setContentsMargins(0, 0, 0, 0)

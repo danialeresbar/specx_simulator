@@ -7,13 +7,13 @@
       {
         "name": "alpha",
         "interval": [0, null],
-        "value": 0.5,
+        "value": 2.0,
         "alias": "α"
       },
       {
         "name": "beta",
         "interval": [0, null],
-        "value": 0.5,
+        "value": 2.0,
         "alias": "β"
       }
     ]
@@ -51,13 +51,13 @@
       {
         "name": "location",
         "interval": [null, null],
-        "value": 0,
+        "value": 1.5,
         "alias": "μ"
       },
       {
         "name": "scale",
         "interval": [0, null],
-        "value": 1,
+        "value": 3,
         "alias": "β"
       }
     ]
@@ -68,13 +68,13 @@
     "description": "The Laplace distribution, also known as the double exponential distribution, is a continuous probability distribution named after Pierre-Simon Laplace. It is used to model the difference of two independent, identically distributed exponential variables. The Laplace distribution is used in various fields including machine learning, finance, and economics. It is also used in the field of statistics where it arises naturally in contexts where data are derived from processes described by differential equations.",
     "parameters": [
       {
-        "name": "location",
+        "name": "mean",
         "interval": [null, null],
         "value": 0,
         "alias": "μ"
       },
       {
-        "name": "scale",
+        "name": "diversity",
         "interval": [0, null],
         "value": 1,
         "alias": "b"
@@ -114,7 +114,7 @@
       {
         "name": "std",
         "interval": [null, null],
-        "value": 1,
+        "value": 0.5,
         "alias": "σ"
       }
     ]
@@ -125,15 +125,9 @@
     "description": "The Rayleigh distribution is a continuous probability distribution for nonnegative-valued random variables. The Rayleigh distribution is used in various fields including communications theory, physical sciences, engineering, and medical imaging science. It is often observed when the overall magnitude of a vector in the plane is related to its directional components. For example, it is used to model wind speed, wave heights, sound/light radiation, and noise variance in magnetic resonance imaging.",
     "parameters": [
       {
-        "name": "location",
-        "interval": [0, null],
-        "value": 0,
-        "alias": "γ"
-      },
-      {
         "name": "scale",
         "interval": [0, null],
-        "value": 1,
+        "value": 3,
         "alias": "σ"
       }
     ]

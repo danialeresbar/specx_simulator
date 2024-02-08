@@ -2,7 +2,7 @@ import threading
 import time
 
 from datetime import datetime, timedelta
-from model import simulation
+from models import simulation
 
 
 class SimulationThread(threading.Thread):

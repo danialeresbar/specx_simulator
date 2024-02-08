@@ -40,11 +40,11 @@ class BetaPDF(PDF):
     def __init__(self, alpha: float, beta: float, loc: float = 0.05, scale: float = 1.0):
         self.alpha = alpha
         self.beta = beta
-        self.loc = loc
+        self.location = loc
         self.scale = scale
 
     def rvs(self, size: int) -> ndarray:
-        return st.beta.rvs(self.alpha, self.beta, loc=self.loc, scale=self.scale, size=size)
+        return st.beta.rvs(self.alpha, self.beta, loc=self.location, scale=self.scale, size=size)
 
     def get_vector_points(self) -> PDFVectorPoints:
         x: ndarray = np.linspace(
@@ -59,37 +59,37 @@ class BetaPDF(PDF):
 class GammaPDF(PDF):
     def __init__(self, shape: float, loc: float, scale: float):
         self.shape = shape
-        self.loc = loc
+        self.location = loc
         self.scale = scale
 
     def rvs(self, size: int) -> ndarray:
-        return st.gamma.rvs(self.shape, loc=self.loc, scale=self.scale, size=size)
+        return st.gamma.rvs(self.shape, loc=self.location, scale=self.scale, size=size)
 
     def get_vector_points(self) -> PDFVectorPoints:
         x: ndarray = np.linspace(
-            st.gamma.ppf(PPF_LOWER_BOUND, self.shape, loc=self.loc, scale=self.scale),
-            st.gamma.ppf(PPF_UPPER_BOUND, self.shape, loc=self.loc, scale=self.scale),
+            st.gamma.ppf(PPF_LOWER_BOUND, self.shape, loc=self.location, scale=self.scale),
+            st.gamma.ppf(PPF_UPPER_BOUND, self.shape, loc=self.location, scale=self.scale),
             PDF_SAMPLE_SIZE
         )
-        y: ndarray = st.gamma.pdf(x, self.shape, loc=self.loc, scale=self.scale)
+        y: ndarray = st.gamma.pdf(x, self.shape, loc=self.location, scale=self.scale)
         return x, y
 
 
 class GumbelPDF(PDF):
     def __init__(self, loc: float, scale: float):
-        self.loc = loc
+        self.location = loc
         self.scale = scale
 
     def rvs(self, size: int) -> ndarray:
-        return st.gumbel_r.rvs(loc=self.loc, scale=self.scale, size=size)
+        return st.gumbel_r.rvs(loc=self.location, scale=self.scale, size=size)
 
     def get_vector_points(self) -> PDFVectorPoints:
         x: ndarray = np.linspace(
-            st.gumbel_r.ppf(PPF_LOWER_BOUND, loc=self.loc, scale=self.scale),
-            st.gumbel_r.ppf(PPF_UPPER_BOUND, loc=self.loc, scale=self.scale),
+            st.gumbel_r.ppf(PPF_LOWER_BOUND, loc=self.location, scale=self.scale),
+            st.gumbel_r.ppf(PPF_UPPER_BOUND, loc=self.location, scale=self.scale),
             PDF_SAMPLE_SIZE
         )
-        y: ndarray = st.gumbel_r.pdf(x, loc=self.loc, scale=self.scale)
+        y: ndarray = st.gumbel_r.pdf(x, loc=self.location, scale=self.scale)
         return x, y
 
 
@@ -148,20 +148,19 @@ class NormalPDF(PDF):
 
 
 class RayleighPDF(PDF):
-    def __init__(self, loc: float, scale: float):
-        self.loc = loc
+    def __init__(self, scale: float):
         self.scale = scale
 
     def rvs(self, size: int) -> ndarray:
-        return st.rayleigh.rvs(loc=self.loc, scale=self.scale, size=size)
+        return st.rayleigh.rvs(scale=self.scale, size=size)
 
     def get_vector_points(self) -> PDFVectorPoints:
         x: ndarray = np.linspace(
-            st.rayleigh.ppf(PPF_LOWER_BOUND, loc=self.loc, scale=self.scale),
-            st.rayleigh.ppf(PPF_UPPER_BOUND, loc=self.loc, scale=self.scale),
+            st.rayleigh.ppf(PPF_LOWER_BOUND, scale=self.scale),
+            st.rayleigh.ppf(PPF_UPPER_BOUND, scale=self.scale),
             PDF_SAMPLE_SIZE
         )
-        y: ndarray = st.rayleigh.pdf(x, loc=self.loc, scale=self.scale)
+        y: ndarray = st.rayleigh.pdf(x, scale=self.scale)
         return x, y
 
 
@@ -183,17 +182,17 @@ class UniformPDF(PDF):
 class WeibullPDF(PDF):
     def __init__(self, shape: float, loc: float, scale: float):
         self.shape = shape
-        self.loc = loc
+        self.location = loc
         self.scale = scale
 
     def rvs(self, size: int) -> ndarray:
-        return st.weibull_min.rvs(self.shape, loc=self.loc, scale=self.scale, size=size)
+        return st.weibull_min.rvs(self.shape, loc=self.location, scale=self.scale, size=size)
 
     def get_vector_points(self) -> PDFVectorPoints:
         x: ndarray = np.linspace(
-            st.weibull_min.ppf(PPF_LOWER_BOUND, self.shape, loc=self.loc, scale=self.scale),
-            st.weibull_min.ppf(PPF_UPPER_BOUND, self.shape, loc=self.loc, scale=self.scale),
+            st.weibull_min.ppf(PPF_LOWER_BOUND, self.shape, loc=self.location, scale=self.scale),
+            st.weibull_min.ppf(PPF_UPPER_BOUND, self.shape, loc=self.location, scale=self.scale),
             PDF_SAMPLE_SIZE
         )
-        y: ndarray = st.weibull_min.pdf(x, self.shape, loc=self.loc, scale=self.scale)
+        y: ndarray = st.weibull_min.pdf(x, self.shape, loc=self.location, scale=self.scale)
         return x, y

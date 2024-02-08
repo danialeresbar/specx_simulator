@@ -57,21 +57,20 @@ class BetaPDF(PDF):
 
 
 class GammaPDF(PDF):
-    def __init__(self, shape: float, loc: float, scale: float):
+    def __init__(self, shape: float, scale: float):
         self.shape = shape
-        self.location = loc
         self.scale = scale
 
     def rvs(self, size: int) -> ndarray:
-        return st.gamma.rvs(self.shape, loc=self.location, scale=self.scale, size=size)
+        return st.gamma.rvs(self.shape, scale=self.scale, size=size)
 
     def get_vector_points(self) -> PDFVectorPoints:
         x: ndarray = np.linspace(
-            st.gamma.ppf(PPF_LOWER_BOUND, self.shape, loc=self.location, scale=self.scale),
-            st.gamma.ppf(PPF_UPPER_BOUND, self.shape, loc=self.location, scale=self.scale),
+            st.gamma.ppf(PPF_LOWER_BOUND, self.shape, scale=self.scale),
+            st.gamma.ppf(PPF_UPPER_BOUND, self.shape, scale=self.scale),
             PDF_SAMPLE_SIZE
         )
-        y: ndarray = st.gamma.pdf(x, self.shape, loc=self.location, scale=self.scale)
+        y: ndarray = st.gamma.pdf(x, self.shape, scale=self.scale)
         return x, y
 
 

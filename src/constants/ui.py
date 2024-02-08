@@ -16,7 +16,14 @@ SAVE_SIMULATION_ENVIRONMENT_SUCCESS_TEXT: Final[str] = 'Simulation environment s
 ########################## #
 # FUNCTION DIALOG SETTINGS #
 ########################## #
+PARAMETER_LABEL_DEFAULT: Final[str] = 'Parameter:'
 SPINBOX_DECIMAL_PLACES: Final[int] = 6
 SPINBOX_MINIMUM_DEFAULT: Final[float] = 0.0
 SPINBOX_MAXIMUM_DEFAULT: Final[float] = 1e6
 SPINBOX_STEP_DEFAULT: Final[float] = 0.1
+
+################ #
+# STATIC CONTENT #
+################ #
+CONFIG_LOADER_SVG_DEFAULT: Final[str] = 'bouncing-circles.svg'
+CHART_LOADER_SVG_DEFAULT: Final[str] = 'loading-chart.svg'

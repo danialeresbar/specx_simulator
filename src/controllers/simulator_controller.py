@@ -14,7 +14,6 @@ from constants.ui import (
     SAVE_SIMULATION_ENVIRONMENT_SUCCESS_TEXT
 )
 from controllers.simulation_channel_controller import ChannelConfigController
-from models.decorators.handlers import timer
 from models.distribution import ProbabilityDistribution
 from models.simulation import SimulationExperiment, SimulationMeasurement
 from tools.files import export_json, load_json
@@ -83,7 +82,6 @@ class Simulator(QtWidgets.QMainWindow, SimulatorView):
             channel_config.refresh_selector_options(options=distributions)
             channel_config.function_chart_frame.set_default_content()
 
-    @timer
     def enable_experiment_settings(self, checked: bool) -> None:
         """
         Enable the experiment settings when the energy or occupancy button is

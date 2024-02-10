@@ -3,7 +3,7 @@ import sys
 from PySide6.QtWidgets import QApplication
 
 from controllers.simulator_controller import Simulator
-from specx.app import simulation
+from specx.app import experiment
 
 
 def main():
@@ -13,7 +13,7 @@ def main():
     and starts the event loop.
     """
     app = QApplication(sys.argv)
-    simulator = Simulator(simulation=simulation)
+    simulator = Simulator(experiment=experiment)
     simulator.show()
     sys.exit(app.exec())
 

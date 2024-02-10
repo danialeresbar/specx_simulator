@@ -6,13 +6,13 @@
     "parameters": [
       {
         "name": "alpha",
-        "interval": [0, null],
+        "interval": [0.0, null],
         "value": 2.0,
         "alias": "α"
       },
       {
         "name": "beta",
-        "interval": [0, null],
+        "interval": [0.0, null],
         "value": 2.0,
         "alias": "β"
       }
@@ -25,14 +25,14 @@
     "parameters": [
       {
         "name": "shape",
-        "interval": [0, null],
-        "value": 2,
+        "interval": [0.0, null],
+        "value": 1.5,
         "alias": "α"
       },
       {
         "name": "scale",
-        "interval": [0, null],
-        "value": 2,
+        "interval": [0.0, null],
+        "value": 2.0,
         "alias": "θ"
       }
     ]
@@ -50,8 +50,8 @@
       },
       {
         "name": "scale",
-        "interval": [0, null],
-        "value": 3,
+        "interval": [0.0, null],
+        "value": 3.0,
         "alias": "β"
       }
     ]
@@ -64,13 +64,13 @@
       {
         "name": "mean",
         "interval": [null, null],
-        "value": 0,
+        "value": 0.0,
         "alias": "μ"
       },
       {
         "name": "diversity",
-        "interval": [0, null],
-        "value": 2,
+        "interval": [0.0, null],
+        "value": 2.0,
         "alias": "b"
       }
     ]
@@ -83,13 +83,13 @@
       {
         "name": "mean",
         "interval": [null, null],
-        "value": 0,
+        "value": 0.0,
         "alias": "μ"
       },
       {
         "name": "std",
-        "interval": [0, null],
-        "value": 0.5,
+        "interval": [0.0, null],
+        "value": 0.25,
         "alias": "σ"
       }
     ]
@@ -102,7 +102,7 @@
       {
         "name": "mean",
         "interval": [null, null],
-        "value": 0,
+        "value": 0.0,
         "alias": "μ"
       },
       {
@@ -120,8 +120,8 @@
     "parameters": [
       {
         "name": "scale",
-        "interval": [0, null],
-        "value": 3,
+        "interval": [0.0, null],
+        "value": 3.0,
         "alias": "σ"
       }
     ]
@@ -134,13 +134,13 @@
       {
         "name": "min",
         "interval": [null, null],
-        "value": 0,
+        "value": 0.0,
         "alias": "a"
       },
       {
         "name": "max",
         "interval": [null, null],
-        "value": 1,
+        "value": 1.0,
         "alias": "b"
       }
     ]
@@ -152,20 +152,20 @@
     "parameters": [
       {
         "name": "shape",
-        "interval": [0, null],
-        "value": 5,
+        "interval": [0.0, null],
+        "value": 5.0,
         "alias": "k"
       },
       {
         "name": "location",
-        "interval": [0, null],
-        "value": 0,
+        "interval": [0.0, null],
+        "value": 0.0,
         "alias": "λ"
       },
       {
         "name": "scale",
-        "interval": [0, null],
-        "value": 1,
+        "interval": [0.0, null],
+        "value": 1.0,
         "alias": "β"
       }
     ]

@@ -1,8 +1,7 @@
 import qdarktheme
 
-from functools import partial
-from typing import Iterable, List
-
+from collections.abc import Iterable
+from functools import cache, partial
 from PySide6 import QtWidgets
 
 from constants.paths import ENVIRONMENT_COLLECTION_PATH, UI_PATH
@@ -15,42 +14,33 @@ from constants.ui import (
     SAVE_SIMULATION_ENVIRONMENT_SUCCESS_TEXT
 )
 from controllers.simulation_channel_controller import ChannelConfigController
-from models.distribution import ProbabilityDistribution, DistributionParameter
-from models.simulation import SimulationEnvironment, SimulationMeasurement
+from models.distribution import ProbabilityDistribution
+from models.simulation import SimulationExperiment, SimulationMeasurement
 from tools.files import export_json, load_json
-from views.simulation_channel_config_view import DefaultChannelConfigView
+from views.resources.custom import DefaultChannelConfigView
 from views.simulator_view import SimulatorView
 
 
-def get_continuous_distributions() -> List[ProbabilityDistribution]:
-    distribution_data = load_json(f'{UI_PATH}/content/continuous_probability_distributions.json')
-    continuous = []
-    for pd in distribution_data:
-        parameters = [DistributionParameter(**param) for param in pd.get('parameters')]
-        continuous.append(
-            ProbabilityDistribution(name=pd.get('name'), category=pd.get('category'), parameters=parameters, description=pd.get('description'))
-        )
-
-    return continuous
+CONTINUOUS_PROBABILITY_DISTRIBUTIONS_FIXTURE = f'{UI_PATH}/content/continuous_probability_distributions.json'
+DISCRETE_PROBABILITY_DISTRIBUTIONS_FIXTURE = f'{UI_PATH}/content/discrete_probability_distributions.json'
 
 
-def get_discrete_distributions() -> List[ProbabilityDistribution]:
-    distribution_data = load_json(f'{UI_PATH}/content/discrete_probability_distributions.json')
-    discrete = []
-    for pd in distribution_data:
-        parameters = [DistributionParameter(**param) for param in pd.get('parameters')]
-        discrete.append(
-            ProbabilityDistribution(name=pd.get('name'), category=pd.get('category'), parameters=parameters, description=pd.get('description'))
-        )
+@cache
+def _load_fixture(fp: str):
+    """
+    Load the fixture file and return its content.
 
-    return discrete
+    :param fp: The fixture file path.
+    :return: The fixture content.
+    """
+    return load_json(filepath=fp)
 
 
 class Simulator(QtWidgets.QMainWindow, SimulatorView):
     """"""
-    def __init__(self, simulation: SimulationEnvironment, *args, **kwargs):
+    def __init__(self, experiment: SimulationExperiment, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.experiment: SimulationEnvironment = simulation
+        self.experiment: SimulationExperiment = experiment
         self.setup_ui(self)
         qdarktheme.setup_theme('dark')
         self.__connect_button_signals()
@@ -61,8 +51,8 @@ class Simulator(QtWidgets.QMainWindow, SimulatorView):
         Connect the header buttons signals
         """
         # Simulation settings
-        self.simulation_energy_selector_btn.clicked.connect(self.enable_simulation_energy_measurement_options)
-        self.simulation_occupancy_selector_btn.clicked.connect(self.enable_simulation_occupancy_measurement_options)
+        self.simulation_energy_selector_btn.toggled.connect(self.enable_experiment_settings)
+        self.simulation_occupancy_selector_btn.toggled.connect(self.enable_experiment_settings)
         self.load_simulation_settings_btn.clicked.connect(self.load_simulation_environment)
         self.save_simulation_settings_btn.clicked.connect(self.save_simulation_environment)
 
@@ -90,36 +80,38 @@ class Simulator(QtWidgets.QMainWindow, SimulatorView):
             channel_config: ChannelConfigController = self.simulation_frequency_setup_area.widget(index)
             ChannelConfigController.clean_parameters_layout(layout=channel_config.function_parameters_frame.layout())
             channel_config.refresh_selector_options(options=distributions)
+            channel_config.function_chart_frame.set_default_content()
 
-    def enable_simulation_energy_measurement_options(self) -> None:
+    def enable_experiment_settings(self, checked: bool) -> None:
         """
-        Enable the energy measurement of the simulation. With this selection,
-        only the probability distributions configured to simulate the energy
-        level for a channel will be available.
+        Enable the experiment settings when the energy or occupancy button is
+        checked.
+
+        :param checked: The state of the button.
         """
-        self.experiment.settings.measurement = SimulationMeasurement.ENERGY
-        # UI components
+        if not checked:
+            return
+
+        sender = self.sender()
+        measurement: SimulationMeasurement = (
+            SimulationMeasurement.ENERGY
+            if sender is self.simulation_energy_selector_btn
+            else SimulationMeasurement.OCCUPANCY
+        )
+        self.experiment.settings.measurement = measurement
         self.simulation_parameters_frame.setEnabled(True)
         self.simulation_settings_buttons_frame.setEnabled(True)
-        self.simulation_threshold_label.setEnabled(True)
-        self.simulation_threshold_box.setEnabled(True)
         self.simulation_channel_frame.setEnabled(True)
-        self._update_simulation_frequency_setup_area(distributions=get_continuous_distributions())
-
-    def enable_simulation_occupancy_measurement_options(self) -> None:
-        """
-        Enable the occupancy measurement of the simulation. With this selection,
-        only probability distributions configured to simulate the use for a
-        channel are enabled.
-        """
-        self.experiment.settings.measurement = SimulationMeasurement.OCCUPANCY
-        # UI components
-        self.simulation_parameters_frame.setEnabled(True)
-        self.simulation_settings_buttons_frame.setEnabled(True)
-        self.simulation_threshold_label.setEnabled(False)
-        self.simulation_threshold_box.setEnabled(False)
-        self.simulation_channel_frame.setEnabled(True)
-        self._update_simulation_frequency_setup_area(distributions=get_discrete_distributions())
+        self.simulation_threshold_label.setEnabled(measurement == SimulationMeasurement.ENERGY)
+        self.simulation_threshold_box.setEnabled(measurement == SimulationMeasurement.ENERGY)
+        fp = (
+            CONTINUOUS_PROBABILITY_DISTRIBUTIONS_FIXTURE
+            if measurement == SimulationMeasurement.ENERGY
+            else DISCRETE_PROBABILITY_DISTRIBUTIONS_FIXTURE
+        )
+        self._update_simulation_frequency_setup_area(
+            distributions=ProbabilityDistribution.from_fixture(fixture=_load_fixture(fp))
+        )
 
     def initialize_components(self) -> None:
         # Frames and Areas
@@ -152,7 +144,7 @@ class Simulator(QtWidgets.QMainWindow, SimulatorView):
         )
         if filepath:
             try:
-                self.experiment: SimulationEnvironment = SimulationEnvironment(**load_json(filepath))
+                self.experiment: SimulationExperiment = SimulationExperiment(**load_json(filepath))
                 self.initialize_components()
             except Exception:
                 QtWidgets.QMessageBox.critical(

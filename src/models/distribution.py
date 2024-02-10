@@ -86,6 +86,17 @@ class ProbabilityDistribution(BaseModel):
         frozen = True
         use_enum_values = True
 
+    @classmethod
+    def from_fixture(cls, fixture: list[dict]) -> list['ProbabilityDistribution']:
+        """
+        Get available probability distributions from a fixture. The
+        fixture file content must be a list of dictionaries.
+
+        :param fixture: The fixture file content.
+        :return: A list of probability distributions.
+        """
+        return [cls(**dumped_object) for dumped_object in fixture]
+
     @property
     def is_continuous(self) -> bool:
         return self.category == ProbabilityDistributionCategory.CONTINUOUS.value

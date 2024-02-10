@@ -1,14 +1,13 @@
 from constants.simulation import ENERGY_THRESHOLD_DEFAULT, SAMPLE_INTERVAL_DEFAULT
 from models.simulation import (
     ChannelFrequency,
-    SimulationEnvironment,
+    SimulationExperiment,
     SimulationMeasurement,
     SimulationSettings,
     TVChannel
 )
 
-
-simulation: SimulationEnvironment = SimulationEnvironment(
+experiment: SimulationExperiment = SimulationExperiment(
     settings=SimulationSettings(
         sample_interval=SAMPLE_INTERVAL_DEFAULT,
         energy_threshold=ENERGY_THRESHOLD_DEFAULT,

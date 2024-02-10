@@ -1,3 +1,6 @@
+qt-designer:
+	poetry run pyside6-designer
+
 install-dependencies:
 	poetry install
 

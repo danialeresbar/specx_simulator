@@ -5,14 +5,15 @@ from faker import Faker
 
 from src.models.simulation import (
     ChannelFrequency,
-    SimulationEnvironment,
+    SimulationExperiment,
     SimulationMeasurement,
     SimulationSettings,
     TVChannel
 )
 from src.constants.simulation import (
     SAMPLE_INTERVAL_MIN,
-    SAMPLE_INTERVAL_MAX
+    SAMPLE_INTERVAL_MAX,
+    ENERGY_THRESHOLD_DEFAULT
 )
 
 fake = Faker()
@@ -23,11 +24,11 @@ class TestSimulationEnvironmentModel(unittest.TestCase):
     def setUp(self):
         self.valid_settings = SimulationSettings(
             sample_interval=fake.pyint(min_value=SAMPLE_INTERVAL_MIN, max_value=SAMPLE_INTERVAL_MAX),
-            energy_threshold=fake.pyfloat(positive=True),
+            energy_threshold=ENERGY_THRESHOLD_DEFAULT,
             measurement=SimulationMeasurement.ENERGY
         )
 
-    def test_create_simulation_environment(self):
+    def test_create_simulation_experiment(self):
         channels = [
             TVChannel(number=14, frequency=ChannelFrequency.CH_14),
             TVChannel(number=15, frequency=ChannelFrequency.CH_15),
@@ -39,15 +40,15 @@ class TestSimulationEnvironmentModel(unittest.TestCase):
             TVChannel(number=27, frequency=ChannelFrequency.CH_27),
             TVChannel(number=28, frequency=ChannelFrequency.CH_28)
         ]
-        environment = SimulationEnvironment(settings=self.valid_settings, channels=channels)
-        self.assertIsInstance(environment.id, str)
-        self.assertIsInstance(environment.timestamp, datetime)
-        self.assertEqual(environment.settings, self.valid_settings)
-        self.assertEqual(environment.channels, channels)
+        experiment = SimulationExperiment(settings=self.valid_settings, channels=channels)
+        self.assertIsInstance(experiment.id, str)
+        self.assertIsInstance(experiment.timestamp, datetime)
+        self.assertEqual(experiment.settings, self.valid_settings)
+        self.assertEqual(experiment.channels, channels)
 
-    def test_create_simulation_environment_with_no_channels(self):
-        environment = SimulationEnvironment(settings=self.valid_settings)
-        self.assertIsInstance(environment.id, str)
-        self.assertIsInstance(environment.timestamp, datetime)
-        self.assertEqual(environment.settings, self.valid_settings)
-        self.assertIsNone(environment.channels)
+    def test_create_simulation_experiment_with_no_channels(self):
+        experiment = SimulationExperiment(settings=self.valid_settings)
+        self.assertIsInstance(experiment.id, str)
+        self.assertIsInstance(experiment.timestamp, datetime)
+        self.assertEqual(experiment.settings, self.valid_settings)
+        self.assertIsNone(experiment.channels)

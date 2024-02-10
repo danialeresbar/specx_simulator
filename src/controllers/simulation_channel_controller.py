@@ -1,16 +1,14 @@
-from PySide6.QtWidgets import QLayout
-from typing import Iterable
+from collections.abc import Iterable
+from PySide6.QtWidgets import QDoubleSpinBox, QLayout
 
-from constants.field_names import PDF_STR, PMF_STR
-from constants.simulation import (
-    PROBABILITY_DISTRIBUTIONS_MODULE,
-    STATISTICS_PACKAGE
-)
+from charts.abc import PlotFunctionChart
+from constants.charts import DECIMAL_PLACES
+from charts.visualization import PDFChart, PMFChart
 from models.distribution import DistributionParameter, ProbabilityDistribution
 from stats.abc import PDF, PMF
+from stats import AVAILABLE_PROBABILITY_DISTRIBUTIONS
+from views.resources.custom import ParameterConfigWidget
 from views.simulation_channel_config_view import ChannelConfigView
-from views.simulation_channel_config_view import ParameterConfigWidget
-from tools.imports import import_class_from_module
 
 
 class ChannelConfigController(ChannelConfigView):
@@ -19,7 +17,24 @@ class ChannelConfigController(ChannelConfigView):
         super().__init__(*args, **kwargs)
         self.function_selector_box.currentIndexChanged.connect(self.update_config_components)
         self.selected_function = None
-        # TODO: Connect the spin box signals
+        for widget in self.function_available_parameters:
+            widget.value_field.valueChanged.connect(self._update_selected_function_attributes)
+
+    def _build_chart_legend(self) -> str:
+        return ', '.join([
+            f'{widget.label.text()[:-1]}={widget.value_field.value():.{DECIMAL_PLACES}f}'
+            for widget in filter(lambda widget: not widget.isHidden(), self.function_available_parameters)
+        ])
+
+    def _update_selected_function_attributes(self) -> None:
+        """
+        Update the attributes of the selected probability distribution. This
+        method is called when the user changes the value of a parameter.
+        """
+        sender: QDoubleSpinBox = self.sender()
+        parent: ParameterConfigWidget = sender.parent()
+        setattr(self.selected_function, parent.label.text()[:-1], sender.value())
+        self.refresh_chart_preview()
 
     @staticmethod
     def clean_parameters_layout(layout: QLayout) -> None:
@@ -27,6 +42,8 @@ class ChannelConfigController(ChannelConfigView):
         Clean the layout of the parameters frame. This method is called when
         the user selects a new probability distribution. It removes all the
         widgets from the layout.
+
+        :param layout: The layout to be cleaned.
         """
         while layout.count():
             child = layout.takeAt(0)
@@ -46,32 +63,47 @@ class ChannelConfigController(ChannelConfigView):
 
         selected: ProbabilityDistribution = self.function_selector_box.currentData()
         distribution_parameters: list[DistributionParameter] = selected.parameters
-        desired_class: str = f'{selected.name}{PDF_STR if selected.is_continuous else PMF_STR}'
-        imported_class: type = import_class_from_module(
-            module_name=PROBABILITY_DISTRIBUTIONS_MODULE,
-            package_name=STATISTICS_PACKAGE,
-            class_name=desired_class
-        )
-        function: PDF | PMF = imported_class(*[parameter.value for parameter in distribution_parameters])
-        self.function_description_area.setPlainText(selected.description)
-        # TODO: Draw the Function chart
+        if (function_class := AVAILABLE_PROBABILITY_DISTRIBUTIONS.get(selected.name)) is not None:
+            self.selected_function: PDF | PMF = function_class(
+                *[parameter.value for parameter in distribution_parameters]
+            )
 
+        self.function_description_area.setPlainText(selected.description)
         if (layout := self.function_parameters_frame.layout()) is not None:
             self.clean_parameters_layout(layout=layout)
             widgets: list[ParameterConfigWidget] = self.function_available_parameters[:len(distribution_parameters)]
             for widget, parameter in zip(widgets, distribution_parameters):
+                widget.setVisible(True)
                 widget.label.setText(f'{parameter.name}:')
                 widget.value_field.setValue(parameter.value)
                 widget.set_value_field_interval(parameter.interval)
-                if widget.isHidden():
-                    widget.setVisible(True)
-
                 layout.addWidget(widget)
+
+        self.refresh_chart_preview()
+
+    def refresh_chart_preview(self) -> None:
+        """
+        Refresh the chart preview with the selected probability distribution. This
+        method is called when the user selects a new probability distribution or
+        changes the parameters of the current one.
+        """
+        is_pdf: bool = isinstance(self.selected_function, PDF)
+        current_chart: PlotFunctionChart | None = self.function_chart_frame.get_current_chart()
+        if current_chart is None:
+            current_chart = PDFChart() if is_pdf else PMFChart()
+            self.function_chart_frame.set_chart(chart=current_chart)
+
+        if is_pdf:
+            x, y = self.selected_function.get_vector_points()
+        else:
+            x, y = self.selected_function.get_value_set()
+
+        current_chart.plot(x, y, self._build_chart_legend())
 
     def refresh_selector_options(self, options: Iterable[ProbabilityDistribution]) -> None:
         """
         Configures the options available for the probability distribution
-        selector (ComboBox) that will be associated to a channel.
+        selector that will be associated to a channel.
 
         :param options: The available probability distributions.
         """

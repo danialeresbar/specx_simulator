@@ -1,60 +1,10 @@
 import qtawesome as qta
 
-from PySide6.QtCharts import QChartView
-from PySide6.QtGui import QFont, QPainter, QPixmap, Qt
-from PySide6.QtWidgets import (
-    QComboBox, QDoubleSpinBox, QFrame, QGraphicsPixmapItem, QHBoxLayout, QLabel, QPlainTextEdit, QSizePolicy,
-    QVBoxLayout, QWidget
-)
+from PySide6.QtGui import QFont, Qt
+from PySide6.QtWidgets import QComboBox, QFrame, QHBoxLayout, QLabel, QPlainTextEdit, QSizePolicy, QVBoxLayout, QWidget
 
-from constants.ui import SPINBOX_DECIMAL_PLACES, SPINBOX_MINIMUM_DEFAULT, SPINBOX_MAXIMUM_DEFAULT, SPINBOX_STEP_DEFAULT
-from models.distribution import ParameterInterval
 from views.resources import icons_rc
-
-
-class PDFChartView(QChartView):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.setRenderHint(QPainter.Antialiasing)
-
-
-class ParameterConfigWidget(QWidget):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        main_layout = QHBoxLayout(self)
-        main_layout.setObjectName(u'horizontal_Layout')
-        main_layout.setSpacing(2)
-        main_layout.setContentsMargins(0, 0, 0, 0)
-
-        self.label = QLabel(self)
-        self.label.setObjectName(u'label')
-        font = QFont()
-        font.setPointSize(14)
-        font.setBold(True)
-        self.label.setFont(font)
-        self.label.setText('Parameter:')
-        main_layout.addWidget(self.label)
-
-        self.value_field = QDoubleSpinBox(self)
-        self.value_field.setObjectName(u'value_field')
-        self.value_field.setFont(font)
-        self.value_field.setMinimum(SPINBOX_MINIMUM_DEFAULT)
-        self.value_field.setMaximum(SPINBOX_MAXIMUM_DEFAULT)
-        self.value_field.setDecimals(SPINBOX_DECIMAL_PLACES)
-        self.value_field.setSingleStep(SPINBOX_STEP_DEFAULT)
-        main_layout.addWidget(self.value_field)
-
-    def set_value_field_interval(self, interval: ParameterInterval) -> None:
-        minimum, maximum = interval
-        if minimum is not None:
-            self.value_field.setMinimum(minimum)
-        else:
-            self.value_field.setMinimum(-1e5)
-
-        if maximum:
-            self.value_field.setMaximum(maximum)
-        else:
-            self.value_field.setMaximum(1e5)
+from views.resources.custom import ChartPreviewFrame, ParameterConfigWidget
 
 
 class ChannelConfigView(QWidget):
@@ -73,19 +23,18 @@ class ChannelConfigView(QWidget):
         self.discrete_function_icon = qta.icon('mdi6.chart-bar')
 
         # Channel PDF ChartView
-        self.default_chart_pixmap = QGraphicsPixmapItem(QPixmap(u":/assets/images/analytics.svg"))
-        self.function_chart_view = PDFChartView(self)
-        self.function_chart_view.setObjectName(u'channel_function_chart_view')
-        main_layout.addWidget(self.function_chart_view)
+        self.function_chart_frame = ChartPreviewFrame(self)
+        self.function_chart_frame.setObjectName(u'channel_function_chart_view')
+        main_layout.addWidget(self.function_chart_frame)
         size_policy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         size_policy.setHorizontalStretch(0)
         size_policy.setVerticalStretch(0)
-        size_policy.setHeightForWidth(self.function_chart_view.sizePolicy().hasHeightForWidth())
-        self.function_chart_view.setSizePolicy(size_policy)
-        self.function_chart_view.setFrameShape(QFrame.NoFrame)
-        self.function_chart_view.setFrameShadow(QFrame.Raised)
+        size_policy.setHeightForWidth(self.function_chart_frame.sizePolicy().hasHeightForWidth())
+        self.function_chart_frame.setSizePolicy(size_policy)
+        self.function_chart_frame.setFrameShape(QFrame.NoFrame)
+        self.function_chart_frame.setFrameShadow(QFrame.Raised)
 
-        main_layout.addWidget(self.function_chart_view)
+        main_layout.addWidget(self.function_chart_frame)
 
         self.function_config_frame = QFrame(self)
         self.function_config_frame.setObjectName(u"function_config_frame")
@@ -162,7 +111,7 @@ class ChannelConfigView(QWidget):
         self.verticalLayout_3.setSpacing(10)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
-        # Hidden PDF parameters
+        # Hidden function parameters
         self.function_available_parameters = []
         for _ in range(3):
             parameter_config = ParameterConfigWidget(self.function_parameters_frame)
@@ -171,29 +120,9 @@ class ChannelConfigView(QWidget):
             self.function_available_parameters.append(parameter_config)
 
         self.horizontalLayout.addWidget(self.function_parameters_frame, 0, Qt.AlignVCenter)
-
         self.horizontalLayout.setStretch(0, 60)
         self.horizontalLayout.setStretch(1, 40)
 
         main_layout.addWidget(self.function_config_frame, 0, Qt.AlignBottom)
-
-        main_layout.setStretch(0, 75)
-        main_layout.setStretch(1, 25)
-
-
-class DefaultChannelConfigView(QWidget):
-
-    def __init__(self, *args, **kwargs):
-        super(DefaultChannelConfigView, self).__init__(*args, **kwargs)
-        main_layout = QVBoxLayout(self)
-        main_layout.setSpacing(0)
-        main_layout.setContentsMargins(0, 0, 0, 0)
-        self.background_label = QLabel(self)
-        self.background_label.setText('Select a channel to configure')
-        self.background_label.setPixmap(QPixmap(u":/assets/images/settings.svg"))
-        self.background_label.setScaledContents(True)
-        main_layout.addWidget(self.background_label, 0, Qt.AlignCenter | Qt.AlignCenter)
-        size_policy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
-        size_policy.setHorizontalStretch(0)
-        size_policy.setVerticalStretch(0)
-        size_policy.setHeightForWidth(self.background_label.sizePolicy().hasHeightForWidth())
+        main_layout.setStretch(0, 65)
+        main_layout.setStretch(1, 35)

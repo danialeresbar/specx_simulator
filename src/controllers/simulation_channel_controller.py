@@ -73,13 +73,13 @@ class ChannelConfigController(ChannelConfigView):
             self.clean_parameters_layout(layout=layout)
             widgets: list[ParameterConfigWidget] = self.function_available_parameters[:len(distribution_parameters)]
             for widget, parameter in zip(widgets, distribution_parameters):
-                if widget.isHidden():
-                    widget.setVisible(True)
-
+                widget.setVisible(True)
                 widget.label.setText(f'{parameter.name}:')
                 widget.value_field.setValue(parameter.value)
                 widget.set_value_field_interval(parameter.interval)
                 layout.addWidget(widget)
+
+        self.refresh_chart_preview()
 
     def refresh_chart_preview(self) -> None:
         """
@@ -103,7 +103,7 @@ class ChannelConfigController(ChannelConfigView):
     def refresh_selector_options(self, options: Iterable[ProbabilityDistribution]) -> None:
         """
         Configures the options available for the probability distribution
-        selector (ComboBox) that will be associated to a channel.
+        selector that will be associated to a channel.
 
         :param options: The available probability distributions.
         """

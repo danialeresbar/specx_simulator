@@ -23,7 +23,7 @@ which is causing the error.
 from numpy import ndarray
 from PySide6.QtCharts import QChart
 
-from exceptions.charts import AbstractQChartInstantiationError, AbstractQChartMethodNotImplemented
+from src.charts.exceptions import AbstractQChartInstantiationError, AbstractQChartMethodNotImplemented
 
 __all__ = ['AbstractQChart', 'DownloadableChart', 'PlotFunctionChart']
 
@@ -31,7 +31,7 @@ __all__ = ['AbstractQChart', 'DownloadableChart', 'PlotFunctionChart']
 class AbstractQChart(QChart):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if type(self) is AbstractQChart:
+        if type(self) in AbstractQChart.__subclasses__():
             raise AbstractQChartInstantiationError(class_name=self.__class__.__name__)
 
 

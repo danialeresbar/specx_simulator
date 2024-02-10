@@ -59,7 +59,7 @@ class SimulationSettings(BaseModel):
         use_enum_values = True
 
 
-class SimulationEnvironment(BaseModel):
+class SimulationExperiment(BaseModel):
     id: str = Field(default_factory=lambda: uuid4().hex)
     timestamp: datetime = Field(default_factory=datetime.now)
     settings: SimulationSettings

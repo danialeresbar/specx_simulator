@@ -3,14 +3,14 @@ class SimulationError(Exception):
     pass
 
 
-class SimulationEnvironmentExportError(SimulationError):
+class SimulationExperimentExportError(SimulationError):
     """
-    Exception raised for errors in the SimulationEnvironment export.
+    Exception raised for errors in the SimulationExperiment export.
     """
 
 
-class SimulationEnvironmentImportError(SimulationError):
+class SimulationExperimentImportError(SimulationError):
     """
-    Exception raised for errors in the SimulationEnvironment import.
+    Exception raised for errors in the SimulationExperiment import.
     """
 

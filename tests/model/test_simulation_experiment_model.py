@@ -5,7 +5,7 @@ from faker import Faker
 
 from src.models.simulation import (
     ChannelFrequency,
-    SimulationEnvironment,
+    SimulationExperiment,
     SimulationMeasurement,
     SimulationSettings,
     TVChannel
@@ -28,7 +28,7 @@ class TestSimulationEnvironmentModel(unittest.TestCase):
             measurement=SimulationMeasurement.ENERGY
         )
 
-    def test_create_simulation_environment(self):
+    def test_create_simulation_experiment(self):
         channels = [
             TVChannel(number=14, frequency=ChannelFrequency.CH_14),
             TVChannel(number=15, frequency=ChannelFrequency.CH_15),
@@ -40,15 +40,15 @@ class TestSimulationEnvironmentModel(unittest.TestCase):
             TVChannel(number=27, frequency=ChannelFrequency.CH_27),
             TVChannel(number=28, frequency=ChannelFrequency.CH_28)
         ]
-        environment = SimulationEnvironment(settings=self.valid_settings, channels=channels)
-        self.assertIsInstance(environment.id, str)
-        self.assertIsInstance(environment.timestamp, datetime)
-        self.assertEqual(environment.settings, self.valid_settings)
-        self.assertEqual(environment.channels, channels)
+        experiment = SimulationExperiment(settings=self.valid_settings, channels=channels)
+        self.assertIsInstance(experiment.id, str)
+        self.assertIsInstance(experiment.timestamp, datetime)
+        self.assertEqual(experiment.settings, self.valid_settings)
+        self.assertEqual(experiment.channels, channels)
 
-    def test_create_simulation_environment_with_no_channels(self):
-        environment = SimulationEnvironment(settings=self.valid_settings)
-        self.assertIsInstance(environment.id, str)
-        self.assertIsInstance(environment.timestamp, datetime)
-        self.assertEqual(environment.settings, self.valid_settings)
-        self.assertIsNone(environment.channels)
+    def test_create_simulation_experiment_with_no_channels(self):
+        experiment = SimulationExperiment(settings=self.valid_settings)
+        self.assertIsInstance(experiment.id, str)
+        self.assertIsInstance(experiment.timestamp, datetime)
+        self.assertEqual(experiment.settings, self.valid_settings)
+        self.assertIsNone(experiment.channels)

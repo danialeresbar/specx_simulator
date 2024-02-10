@@ -1,0 +1,173 @@
+[
+  {
+    "name": "Beta",
+    "category": "Continuous",
+    "description": "The Beta distribution is often used to model the behavior of random variables limited to intervals of finite length in a wide variety of disciplines. It is particularly useful in scenarios where the variable of interest is a probability or proportion and also used in Bayesian Analysis to define the initial knowledge about the probability of success.",
+    "parameters": [
+      {
+        "name": "alpha",
+        "interval": [0, null],
+        "value": 2.0,
+        "alias": "α"
+      },
+      {
+        "name": "beta",
+        "interval": [0, null],
+        "value": 2.0,
+        "alias": "β"
+      }
+    ]
+  },
+  {
+    "name": "Gamma",
+    "category": "Continuous",
+    "description": "The Gamma distribution is a continuous probability distribution that models right-skewed data. It is a two-parameter family of distributions that has some special cases, such as the Exponential distribution, Erlang distribution, and chi-square distribution. The Gamma distribution is used in various fields including predicting rainfall, the reliability of mechanical tools and machines, or any applications that only have positive results.",
+    "parameters": [
+      {
+        "name": "shape",
+        "interval": [0, null],
+        "value": 2,
+        "alias": "α"
+      },
+      {
+        "name": "scale",
+        "interval": [0, null],
+        "value": 2,
+        "alias": "θ"
+      }
+    ]
+  },
+  {
+    "name": "Gumbel",
+    "category": "Continuous",
+    "description": "The Gumbel distribution is used to model the distribution of the maximum (or the minimum) of a number of samples of various distributions. It is particularly useful in predicting the chance that an extreme event, such as an earthquake, flood, or other natural disaster, will occur. The Gumbel distribution is also known as the log-Weibull distribution and the double exponential distribution. It is a particular case of the generalized extreme value distribution (also known as the Fisher–Tippett distribution). It is well-suited for modeling extreme events because it has long tails, meaning that it assigns a higher probability to rare events than other symmetric distributions.",
+    "parameters": [
+      {
+        "name": "location",
+        "interval": [null, null],
+        "value": 1.5,
+        "alias": "μ"
+      },
+      {
+        "name": "scale",
+        "interval": [0, null],
+        "value": 3,
+        "alias": "β"
+      }
+    ]
+  },
+  {
+    "name": "Laplace",
+    "category": "Continuous",
+    "description": "The Laplace distribution, also known as the double exponential distribution, is a continuous probability distribution named after Pierre-Simon Laplace. It is used to model the difference of two independent, identically distributed exponential variables. The Laplace distribution is used in various fields including machine learning, finance, and economics. It is also used in the field of statistics where it arises naturally in contexts where data are derived from processes described by differential equations.",
+    "parameters": [
+      {
+        "name": "mean",
+        "interval": [null, null],
+        "value": 0,
+        "alias": "μ"
+      },
+      {
+        "name": "diversity",
+        "interval": [0, null],
+        "value": 2,
+        "alias": "b"
+      }
+    ]
+  },
+  {
+    "name": "LogNormal",
+    "category": "Continuous",
+    "description": "The LogNormal distribution is a continuous probability distribution of a random variable whose logarithm is normally distributed. It is used to model the distribution of a variable that is positive and skewed to the right. The LogNormal distribution is used in various fields including finance, economics, and biology.",
+    "parameters": [
+      {
+        "name": "mean",
+        "interval": [null, null],
+        "value": 0,
+        "alias": "μ"
+      },
+      {
+        "name": "std",
+        "interval": [0, null],
+        "value": 0.5,
+        "alias": "σ"
+      }
+    ]
+  },
+  {
+    "name": "Normal",
+    "category": "Continuous",
+    "description": "The Normal distribution is a continuous probability distribution for a real-valued random variable. It is also known as the Gaussian distribution. The Normal distribution is used in various fields including finance, physics, and engineering. It is also used in the natural and social sciences to represent real-valued random variables whose distributions are not known.",
+    "parameters": [
+      {
+        "name": "mean",
+        "interval": [null, null],
+        "value": 0,
+        "alias": "μ"
+      },
+      {
+        "name": "std",
+        "interval": [null, null],
+        "value": 0.5,
+        "alias": "σ"
+      }
+    ]
+  },
+  {
+    "name": "Rayleigh",
+    "category": "Continuous",
+    "description": "The Rayleigh distribution is a continuous probability distribution for nonnegative-valued random variables. The Rayleigh distribution is used in various fields including communications theory, physical sciences, engineering, and medical imaging science. It is often observed when the overall magnitude of a vector in the plane is related to its directional components. For example, it is used to model wind speed, wave heights, sound/light radiation, and noise variance in magnetic resonance imaging.",
+    "parameters": [
+      {
+        "name": "scale",
+        "interval": [0, null],
+        "value": 3,
+        "alias": "σ"
+      }
+    ]
+  },
+  {
+    "name": "Uniform",
+    "category": "Continuous",
+    "description": "The continuous Uniform distribution or rectangular distribution is a family of symmetric probability distributions such that for each member of the family, all intervals of the same length on the distribution's support are equally probable. The Uniform distribution is a symmetric probability distribution where all outcomes have an equal likelihood of occurring. All values in the distribution have a constant probability, making them uniformly distributed.",
+    "parameters": [
+      {
+        "name": "min",
+        "interval": [null, null],
+        "value": 0,
+        "alias": "a"
+      },
+      {
+        "name": "max",
+        "interval": [null, null],
+        "value": 1,
+        "alias": "b"
+      }
+    ]
+  },
+  {
+    "name": "Weibull",
+    "category": "Continuous",
+    "description": "The Weibull distribution is a continuous probability distribution that models a broad range of random variables, largely in the nature of a time to failure or time between events. Weibull distribution is one of the most widely used lifetime distributions in reliability engineering.",
+    "parameters": [
+      {
+        "name": "shape",
+        "interval": [0, null],
+        "value": 5,
+        "alias": "k"
+      },
+      {
+        "name": "location",
+        "interval": [0, null],
+        "value": 0,
+        "alias": "λ"
+      },
+      {
+        "name": "scale",
+        "interval": [0, null],
+        "value": 1,
+        "alias": "β"
+      }
+    ]
+  }
+]

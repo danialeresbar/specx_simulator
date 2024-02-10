@@ -1,7 +1,7 @@
-from functools import cached_property
 from numpy import ndarray
 from PySide6.QtCharts import (
     QAbstractSeries,
+    QAbstractBarSeries,
     QBarCategoryAxis,
     QBarSeries,
     QBarSet,
@@ -15,6 +15,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor
 
 from charts.abc import PlotFunctionChart
+from src.charts.exceptions import SeriesAdditionError
 from constants.charts import (
     CHART_SERIES_COLOR_HEX,
     CHART_SERIES_LINE_WIDTH,
@@ -24,9 +25,10 @@ from constants.charts import (
     CHART_X_AXIS_LABEL_DEFAULT,
     CHART_Y_AXIS_LABEL_DEFAULT
 )
-from exceptions.charts import SeriesAdditionError
 
 SERIES_COLOR = QColor(CHART_SERIES_COLOR_HEX)
+
+__all__ = ['PDFChart', 'PMFChart', 'SingleSeriesChart']
 
 
 class SingleSeriesChart(QChart):
@@ -41,7 +43,7 @@ class SingleSeriesChart(QChart):
         self.setAnimationOptions(QChart.SeriesAnimations)
         self.setContentsMargins(0, 0, 0, 0)
 
-    def addSeries(self, series):
+    def addSeries(self, series: QAbstractSeries) -> None:
         """
         Add a series to the chart. This overrides the default method to ensure
         that only one series is added to the chart. If a series is already
@@ -49,7 +51,7 @@ class SingleSeriesChart(QChart):
 
         :param series: The series to add to the chart.
         """
-        if self.series():
+        if self.current_series is not None:
             raise SeriesAdditionError()
 
         super().addSeries(series)
@@ -64,21 +66,24 @@ class SingleSeriesChart(QChart):
         for axis in self.axes():
             self.removeAxis(axis)
 
-    @cached_property
-    def current_series(self) -> QAbstractSeries | QXYSeries | QAbstractSeries:
+    @property
+    def current_series(self) -> QAbstractSeries | QAbstractBarSeries | QXYSeries | None:
         """
-        Return the current series of the chart. This method is cached to avoid
-        the need of accessing the series list every time it is called.
+        Return the current series of the chart. If there is no series in the
+        chart, None is returned.
 
-        :return: The current series of the chart.
+        :return: The current series of the chart or None if there is no series.
         """
-        return self.series()[0]
+        if self.series():
+            return self.series()[0]
+
+        return None
 
 
 class PDFChart(SingleSeriesChart, PlotFunctionChart):
     """
     QChart subclass for plotting a probability density function for a given
-    continuous probability distribution.
+    continuous probability distribution. This chart has default axes attached.
     """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -115,7 +120,8 @@ class PDFChart(SingleSeriesChart, PlotFunctionChart):
 class PMFChart(SingleSeriesChart, PlotFunctionChart):
     """
     QChart subclass for plotting a probability mass function for a given
-    discrete probability distribution.
+    discrete probability distribution. This chart does not have default axes
+    attached.
     """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

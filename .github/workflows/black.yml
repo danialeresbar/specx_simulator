@@ -1,0 +1,17 @@
+name: Black Format
+on: pull_request
+jobs:
+  black:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check files using the black formatter
+        uses: psf/black@stable
+        with:
+          options: "--verbose --skip-string-normalization --skip-magic-trailing-comma -l 120"
+          src: "./src"
+          version: "24.1.0"
+      - name: Annotate diff changes
+        uses: reviewdog/action-suggester@v1
+        with:
+          tool_name: blackfmt

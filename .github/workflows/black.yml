@@ -1,4 +1,4 @@
-name: Black Format
+name: Black-formatter
 on: pull_request
 jobs:
   black:

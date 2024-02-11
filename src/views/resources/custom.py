@@ -87,7 +87,10 @@ class ParameterConfigWidget(QWidget):
     def set_value_field_interval(self, interval: ParameterInterval) -> None:
         minimum, maximum = interval
         if minimum is not None:
-            self.value_field.setMinimum(minimum)
+            if minimum == 0:
+                self.value_field.setMinimum(1e-3)
+            else:
+                self.value_field.setMinimum(minimum)
         else:
             self.value_field.setMinimum(-1e5)
 

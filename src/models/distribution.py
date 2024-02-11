@@ -1,6 +1,6 @@
 from enum import Enum
 from pydantic import BaseModel, Field, field_validator, model_validator
-from typing import Self
+from typing_extensions import Self
 
 from constants.distributions import (
     DISTRIBUTION_DESCRIPTION_DEFAULT,

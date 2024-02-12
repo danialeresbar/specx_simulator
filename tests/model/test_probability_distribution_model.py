@@ -20,6 +20,10 @@ fake = Faker()
 class TestProbabilityDistributionModel(unittest.TestCase):
 
     def test_create_probability_distribution(self):
+        """
+        Test that a probability distribution can be created with valid name and
+        category and the default values.
+        """
         name = fake.random_element(AVAILABLE_PROBABILITY_DISTRIBUTIONS)
         category = fake.enum(ProbabilityDistributionCategory)
         distribution = ProbabilityDistribution(name=name, category=category)
@@ -28,14 +32,25 @@ class TestProbabilityDistributionModel(unittest.TestCase):
         self.assertEqual(distribution.description, DISTRIBUTION_DESCRIPTION_DEFAULT)
 
     def test_create_continuous_probability_distribution(self):
+        """
+        Test that a probability distribution can be created with the category
+        set to continuous.
+        """
         distribution = ProbabilityDistribution(name=NORMAL, category=ProbabilityDistributionCategory.CONTINUOUS)
         self.assertTrue(distribution.is_continuous)
 
     def test_create_discrete_probability_distribution(self):
+        """
+        Test that a probability distribution can be created with the category
+        set to discrete.
+        """
         distribution = ProbabilityDistribution(name=BERNOULLI, category=ProbabilityDistributionCategory.DISCRETE)
         self.assertFalse(distribution.is_continuous)
 
     def test_probability_distribution_immutability(self):
+        """
+        Test that the probability distribution attributes are immutable.
+        """
         name = fake.random_element(AVAILABLE_PROBABILITY_DISTRIBUTIONS)
         category = fake.enum(ProbabilityDistributionCategory)
         distribution = ProbabilityDistribution(name=name, category=category)
@@ -57,6 +72,9 @@ class TestProbabilityDistributionModel(unittest.TestCase):
         self.assertEqual(distribution.parameters, [])
 
     def test_dump_probability_distribution_to_json(self):
+        """
+        Test that a probability distribution can be dumped to a JSON object.
+        """
         name = fake.random_element(AVAILABLE_PROBABILITY_DISTRIBUTIONS)
         category = fake.enum(ProbabilityDistributionCategory)
         distribution = ProbabilityDistribution(name=name, category=category)
@@ -66,6 +84,9 @@ class TestProbabilityDistributionModel(unittest.TestCase):
         delete_tmp_file(str(filepath))
 
     def test_load_probability_distributions_from_json_file(self):
+        """
+        Test that probability distributions can be loaded from a JSON file.
+        """
         json_data = load_json(f'{TESTS_PATH}/fixtures/probability_distributions.json')
         distributions = [ProbabilityDistribution(**dumped_object) for dumped_object in json_data]
         self.assertTrue(all(isinstance(distribution, ProbabilityDistribution) for distribution in distributions))

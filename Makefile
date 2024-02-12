@@ -11,7 +11,7 @@ run:
 	poetry run python -m main
 
 coverage-tests:
-	poetry run coverage run -m unittest discover tests --failfast
+	poetry run coverage run -m unittest discover tests --verbose --failfast
 
 coverage-pattern:
 	poetry run coverage run -m unittest discover tests -p "test_*$(pattern).py" --failfast

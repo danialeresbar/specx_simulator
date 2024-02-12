@@ -107,7 +107,7 @@
       },
       {
         "name": "std",
-        "interval": [null, null],
+        "interval": [0, null],
         "value": 0.5,
         "alias": "σ"
       }

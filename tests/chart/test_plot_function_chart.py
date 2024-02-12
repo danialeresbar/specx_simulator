@@ -11,9 +11,7 @@ fake = Faker()
 
 
 class TestPlotFunctionChart(QtApplicationTest):
-    """
-    Test the PlotFunctionChart subclasses.
-    """
+
     def setUp(self):
         self.probability_density_function = NormalPDF(mean=fake.pyfloat(), std=fake.pyfloat(positive=True))
         self.probability_mass_function = BernoulliPMF(p=fake.pyfloat(min_value=0, max_value=1))

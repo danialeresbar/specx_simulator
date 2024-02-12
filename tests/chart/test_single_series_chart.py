@@ -10,9 +10,7 @@ fake = Faker()
 
 
 class TestSingleSeriesChart(QtApplicationTest):
-    """
-    Test the SingleSeriesChart class.
-    """
+
     def test_create_single_series_chart(self):
         """
         Test that a SingleSeriesChart can be created with the default values.

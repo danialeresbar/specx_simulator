@@ -19,6 +19,10 @@ class TestSimulationSettingsModel(unittest.TestCase):
         self.default_measurement = SimulationMeasurement.ENERGY
 
     def test_create_simulation_settings(self):
+        """
+        Test that a simulation settings can be created with valid sample
+        interval, energy threshold, and measurement.
+        """
         settings = SimulationSettings(
             sample_interval=self.default_sample_interval,
             energy_threshold=self.default_energy_threshold,
@@ -29,6 +33,10 @@ class TestSimulationSettingsModel(unittest.TestCase):
         self.assertEqual(settings.measurement, self.default_measurement.value)
 
     def test_create_simulation_settings_with_invalid_sample_interval(self):
+        """
+        Test that a simulation settings cannot be created with an invalid
+        sample interval.
+        """
         with self.assertRaises(ValueError):
             SimulationSettings(
                 sample_interval_minutes=fake.pyint(min_value=SAMPLE_INTERVAL_MAX + 1),
@@ -44,6 +52,10 @@ class TestSimulationSettingsModel(unittest.TestCase):
             )
 
     def test_create_simulation_settings_with_invalid_energy_threshold(self):
+        """
+        Test that a simulation settings cannot be created with an invalid
+        energy threshold.
+        """
         with self.assertRaises(ValueError):
             SimulationSettings(
                 sample_interval_minutes=self.default_sample_interval,

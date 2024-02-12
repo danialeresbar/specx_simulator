@@ -29,6 +29,10 @@ class TestSimulationEnvironmentModel(unittest.TestCase):
         )
 
     def test_create_simulation_experiment(self):
+        """
+        Test that a simulation experiment can be created with valid settings
+        and channels.
+        """
         channels = [
             TVChannel(number=14, frequency=ChannelFrequency.CH_14),
             TVChannel(number=15, frequency=ChannelFrequency.CH_15),
@@ -47,6 +51,9 @@ class TestSimulationEnvironmentModel(unittest.TestCase):
         self.assertEqual(experiment.channels, channels)
 
     def test_create_simulation_experiment_with_no_channels(self):
+        """
+        Test that a simulation experiment can be created without channels.
+        """
         experiment = SimulationExperiment(settings=self.valid_settings)
         self.assertIsInstance(experiment.id, str)
         self.assertIsInstance(experiment.timestamp, datetime)

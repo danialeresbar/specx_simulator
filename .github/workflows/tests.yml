@@ -23,6 +23,8 @@ jobs:
       max-parallel: 1
       matrix:
         python-version: [ "3.10", "3.11" ]
+    env:
+      QT_QPA_PLATFORM: offscreen
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
@@ -84,4 +86,5 @@ jobs:
 
       # And finally run tests. This is the actual command you'd run locally to run your tests.
       - run: poetry run coverage run -m unittest discover tests -p "test_*_model.py" --failfast
+      - run: poetry run coverage run -m unittest discover tests -p "test_*_chart.py" --failfast
       - run: poetry run coverage report

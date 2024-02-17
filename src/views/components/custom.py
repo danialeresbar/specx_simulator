@@ -4,9 +4,9 @@ from PySide6.QtGui import QFont, QPixmap, QPainter
 from PySide6.QtWidgets import QDoubleSpinBox, QFrame, QHBoxLayout, QLabel, QSizePolicy, QVBoxLayout, QWidget
 
 from constants.paths import UI_ASSETS_PATH
+from constants.simulation import DECIMAL_PLACES
 from constants.ui import (
     PARAMETER_LABEL_DEFAULT,
-    SPINBOX_DECIMAL_PLACES,
     SPINBOX_MINIMUM_DEFAULT,
     SPINBOX_MAXIMUM_DEFAULT,
     SPINBOX_STEP_DEFAULT
@@ -80,7 +80,7 @@ class ParameterConfigWidget(QWidget):
         self.value_field.setFont(font)
         self.value_field.setMinimum(SPINBOX_MINIMUM_DEFAULT)
         self.value_field.setMaximum(SPINBOX_MAXIMUM_DEFAULT)
-        self.value_field.setDecimals(SPINBOX_DECIMAL_PLACES)
+        self.value_field.setDecimals(DECIMAL_PLACES)
         self.value_field.setSingleStep(SPINBOX_STEP_DEFAULT)
         main_layout.addWidget(self.value_field)
 

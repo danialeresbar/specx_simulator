@@ -6,12 +6,12 @@ from PySide6 import QtWidgets
 
 from constants.paths import ENVIRONMENT_COLLECTION_PATH, UI_PATH
 from constants.ui import (
-    LOAD_SIMULATION_ENVIRONMENT_CAPTION,
-    LOAD_SIMULATION_ENVIRONMENT_ERROR_TEXT,
-    LOAD_SIMULATION_ENVIRONMENT_SUCCESS_TEXT,
-    SAVE_SIMULATION_ENVIRONMENT_CAPTION,
-    SAVE_SIMULATION_ENVIRONMENT_ERROR_TEXT,
-    SAVE_SIMULATION_ENVIRONMENT_SUCCESS_TEXT
+    LOAD_SIMULATION_EXPERIMENT_CAPTION,
+    LOAD_SIMULATION_EXPERIMENT_ERROR_TEXT,
+    LOAD_SIMULATION_EXPERIMENT_SUCCESS_TEXT,
+    SAVE_SIMULATION_EXPERIMENT_CAPTION,
+    SAVE_SIMULATION_EXPERIMENT_ERROR_TEXT,
+    SAVE_SIMULATION_EXPERIMENT_SUCCESS_TEXT
 )
 from controllers.simulation_channel_controller import ChannelConfigController
 from models.distribution import ProbabilityDistribution
@@ -19,7 +19,6 @@ from models.simulation import SimulationExperiment, SimulationMeasurement
 from tools.files import export_json, load_json
 from views.resources.custom import DefaultChannelConfigView
 from views.simulator_view import SimulatorView
-
 
 CONTINUOUS_PROBABILITY_DISTRIBUTIONS_FIXTURE = f'{UI_PATH}/content/continuous_probability_distributions.json'
 DISCRETE_PROBABILITY_DISTRIBUTIONS_FIXTURE = f'{UI_PATH}/content/discrete_probability_distributions.json'
@@ -116,7 +115,7 @@ class Simulator(QtWidgets.QMainWindow, SimulatorView):
     def initialize_components(self) -> None:
         # Frames and Areas
         self.simulation_channel_frame.setEnabled(False)
-        self.simulation_player_frame.setEnabled(False)
+        # self.simulation_player_frame.setEnabled(False)
         self.simulation_parameters_frame.setEnabled(False)
         self.simulation_settings_buttons_frame.setEnabled(False)
         default_index: int = self.simulation_frequency_setup_area.addWidget(DefaultChannelConfigView(self))
@@ -138,60 +137,65 @@ class Simulator(QtWidgets.QMainWindow, SimulatorView):
         """
         filepath, _ = QtWidgets.QFileDialog.getOpenFileName(
             self,
-            LOAD_SIMULATION_ENVIRONMENT_CAPTION,
+            LOAD_SIMULATION_EXPERIMENT_CAPTION,
             ENVIRONMENT_COLLECTION_PATH,
             'Simulation settings (*.json)'
         )
-        if filepath:
-            try:
-                self.experiment: SimulationExperiment = SimulationExperiment(**load_json(filepath))
-                self.initialize_components()
-            except Exception:
-                QtWidgets.QMessageBox.critical(
-                    self,
-                    'Error',
-                    LOAD_SIMULATION_ENVIRONMENT_ERROR_TEXT,
-                    QtWidgets.QMessageBox.Ok,
-                    QtWidgets.QMessageBox.Ok
-                )
-                return
+        if not filepath:
+            return
 
-            QtWidgets.QMessageBox.information(
+        try:
+            self.experiment: SimulationExperiment = SimulationExperiment(**load_json(filepath))
+            self.initialize_components()
+        except Exception:
+            QtWidgets.QMessageBox.critical(
                 self,
-                LOAD_SIMULATION_ENVIRONMENT_SUCCESS_TEXT,
-                f'File loaded from {filepath}',
+                'Error',
+                LOAD_SIMULATION_EXPERIMENT_ERROR_TEXT,
                 QtWidgets.QMessageBox.Ok,
                 QtWidgets.QMessageBox.Ok
             )
+            return
+
+        QtWidgets.QMessageBox.information(
+            self,
+            LOAD_SIMULATION_EXPERIMENT_SUCCESS_TEXT,
+            f'File loaded from {filepath}',
+            QtWidgets.QMessageBox.Ok,
+            QtWidgets.QMessageBox.Ok
+        )
 
     def save_simulation_environment(self) -> None:
         """
-        Save the current simulation environment. The environment settings
-        and all its internal components will be stored in JSON file so that
-        it can be loaded at any time.
+        Save the current simulation experiment. The experiment settings and
+        channels parameters will be saved in a JSON file. The user will be
+        prompted to select the file path.
         """
         filepath, _ = QtWidgets.QFileDialog.getSaveFileName(
             self,
-            SAVE_SIMULATION_ENVIRONMENT_CAPTION,
+            SAVE_SIMULATION_EXPERIMENT_CAPTION,
             ENVIRONMENT_COLLECTION_PATH,
             'Simulation settings (*.json)'
         )
-        if filepath:
-            try:
-                export_json(filepath=filepath, data=self.experiment.model_dump_json())
-            except Exception:
-                QtWidgets.QMessageBox.critical(
-                    self,
-                    'Error',
-                    SAVE_SIMULATION_ENVIRONMENT_ERROR_TEXT,
-                    QtWidgets.QMessageBox.Ok,
-                    QtWidgets.QMessageBox.Ok
-                )
-                return
-            QtWidgets.QMessageBox.information(
+        if not filepath:
+            return
+
+        try:
+            export_json(filepath=filepath, data=self.experiment.model_dump_json())
+        except Exception:
+            QtWidgets.QMessageBox.critical(
                 self,
-                SAVE_SIMULATION_ENVIRONMENT_SUCCESS_TEXT,
-                f'File saved at {filepath}',
+                'Error',
+                SAVE_SIMULATION_EXPERIMENT_ERROR_TEXT,
                 QtWidgets.QMessageBox.Ok,
                 QtWidgets.QMessageBox.Ok
             )
+            return
+
+        QtWidgets.QMessageBox.information(
+            self,
+            SAVE_SIMULATION_EXPERIMENT_SUCCESS_TEXT,
+            'File saved at {filepath}',
+            QtWidgets.QMessageBox.Ok,
+            QtWidgets.QMessageBox.Ok
+        )

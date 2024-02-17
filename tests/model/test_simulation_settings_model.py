@@ -2,7 +2,7 @@ import unittest
 
 from faker import Faker
 
-from src.models.simulation import SimulationMeasurement, SimulationSettings
+from src.models.simulation import SimulationMeasurement, SimulationExperimentSettings
 from src.constants.simulation import (
     SAMPLE_INTERVAL_MIN,
     SAMPLE_INTERVAL_MAX
@@ -23,7 +23,7 @@ class TestSimulationSettingsModel(unittest.TestCase):
         Test that a simulation settings can be created with valid sample
         interval, energy threshold, and measurement.
         """
-        settings = SimulationSettings(
+        settings = SimulationExperimentSettings(
             sample_interval=self.default_sample_interval,
             energy_threshold=self.default_energy_threshold,
             measurement=self.default_measurement
@@ -38,14 +38,14 @@ class TestSimulationSettingsModel(unittest.TestCase):
         sample interval.
         """
         with self.assertRaises(ValueError):
-            SimulationSettings(
+            SimulationExperimentSettings(
                 sample_interval_minutes=fake.pyint(min_value=SAMPLE_INTERVAL_MAX + 1),
                 energy_threshold=self.default_energy_threshold,
                 measurement=self.default_measurement
             )
 
         with self.assertRaises(ValueError):
-            SimulationSettings(
+            SimulationExperimentSettings(
                 sample_interval_minutes=fake.pyint(max_value=SAMPLE_INTERVAL_MIN - 1),
                 energy_threshold=self.default_energy_threshold,
                 measurement=self.default_measurement
@@ -57,7 +57,7 @@ class TestSimulationSettingsModel(unittest.TestCase):
         energy threshold.
         """
         with self.assertRaises(ValueError):
-            SimulationSettings(
+            SimulationExperimentSettings(
                 sample_interval_minutes=self.default_sample_interval,
                 energy_threshold=fake.pyfloat(positive=False),
                 measurement=self.default_measurement

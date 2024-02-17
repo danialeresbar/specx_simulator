@@ -49,7 +49,7 @@ class SimulationMeasurement(Enum):
     OCCUPANCY = OCCUPANCY_STR
 
 
-class SimulationSettings(BaseModel):
+class SimulationExperimentSettings(BaseModel):
     sample_interval: int = Field(..., ge=SAMPLE_INTERVAL_MIN, le=SAMPLE_INTERVAL_MAX)
     energy_threshold: float = Field(..., ge=ENERGY_THRESHOLD_DEFAULT)
     measurement: SimulationMeasurement
@@ -62,5 +62,5 @@ class SimulationSettings(BaseModel):
 class SimulationExperiment(BaseModel):
     id: str = Field(default_factory=lambda: uuid4().hex)
     timestamp: datetime = Field(default_factory=datetime.now)
-    settings: SimulationSettings
+    settings: SimulationExperimentSettings
     channels: list[TVChannel] | None = None

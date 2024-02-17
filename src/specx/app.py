@@ -3,12 +3,12 @@ from models.simulation import (
     ChannelFrequency,
     SimulationExperiment,
     SimulationMeasurement,
-    SimulationSettings,
+    SimulationExperimentSettings,
     TVChannel
 )
 
 experiment: SimulationExperiment = SimulationExperiment(
-    settings=SimulationSettings(
+    settings=SimulationExperimentSettings(
         sample_interval=SAMPLE_INTERVAL_DEFAULT,
         energy_threshold=ENERGY_THRESHOLD_DEFAULT,
         measurement=SimulationMeasurement.ENERGY

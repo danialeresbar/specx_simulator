@@ -3,8 +3,8 @@ import qtawesome as qta
 from PySide6.QtGui import QFont, Qt
 from PySide6.QtWidgets import QComboBox, QFrame, QHBoxLayout, QLabel, QPlainTextEdit, QSizePolicy, QVBoxLayout, QWidget
 
-from views.resources import icons_rc
-from views.resources.custom import ChartPreviewFrame, ParameterConfigWidget
+from views.components import icons_rc
+from views.components.custom import ChartPreviewFrame, ParameterConfigWidget
 
 
 class ChannelConfigView(QWidget):
@@ -33,8 +33,6 @@ class ChannelConfigView(QWidget):
         self.function_chart_frame.setSizePolicy(size_policy)
         self.function_chart_frame.setFrameShape(QFrame.NoFrame)
         self.function_chart_frame.setFrameShadow(QFrame.Raised)
-
-        main_layout.addWidget(self.function_chart_frame)
 
         self.function_config_frame = QFrame(self)
         self.function_config_frame.setObjectName(u"function_config_frame")
@@ -110,7 +108,7 @@ class ChannelConfigView(QWidget):
         self.verticalLayout_3 = QVBoxLayout(self.function_parameters_frame)
         self.verticalLayout_3.setSpacing(10)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_3.setContentsMargins(0, 0, 0, 12)
         # Hidden function parameters
         self.function_available_parameters = []
         for _ in range(3):
@@ -120,9 +118,9 @@ class ChannelConfigView(QWidget):
             self.function_available_parameters.append(parameter_config)
 
         self.horizontalLayout.addWidget(self.function_parameters_frame, 0, Qt.AlignVCenter)
-        self.horizontalLayout.setStretch(0, 60)
-        self.horizontalLayout.setStretch(1, 40)
+        self.horizontalLayout.setStretch(0, 65)
+        self.horizontalLayout.setStretch(1, 35)
 
         main_layout.addWidget(self.function_config_frame, 0, Qt.AlignBottom)
-        main_layout.setStretch(0, 65)
-        main_layout.setStretch(1, 35)
+        main_layout.setStretch(0, 70)
+        main_layout.setStretch(1, 30)

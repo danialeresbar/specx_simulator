@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'main_windowOCWCoQ.ui'
+## Form generated from reading UI file 'main_window.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.6.0
 ##
@@ -14,8 +14,10 @@ from PySide6.QtCore import QCoreApplication, QMetaObject, QSize, Qt
 from PySide6.QtGui import QFont, QPainter, QPixmap
 from PySide6.QtWidgets import (
     QAbstractSpinBox, QDoubleSpinBox, QFrame, QGridLayout, QHBoxLayout, QLabel, QPushButton, QRadioButton,
-    QSizePolicy, QSpinBox, QStackedWidget, QVBoxLayout, QWidget
+    QSizePolicy, QSpinBox, QVBoxLayout, QWidget
 )
+
+from views.components.custom import ChannelGroupWidget, ChannelConfigStack
 
 
 class SimulatorView:
@@ -66,7 +68,6 @@ class SimulatorView:
         self.specx_label.setFont(font)
 
         self.horizontalLayout_3.addWidget(self.specx_label)
-
 
         self.horizontalLayout.addWidget(self.header_left_frame)
 
@@ -267,7 +268,6 @@ class SimulatorView:
 
         self.horizontalLayout_11.addWidget(self.simulation_header_label, 0, Qt.AlignLeft)
 
-
         self.verticalLayout_3.addWidget(self.simulation_header_frame, 0, Qt.AlignLeft|Qt.AlignTop)
 
         self.simulation_settings_frame = QFrame(self.right_simulation_frame)
@@ -282,7 +282,7 @@ class SimulatorView:
         self.horizontalLayout_12 = QHBoxLayout(self.simulation_settings_frame)
         self.horizontalLayout_12.setSpacing(0)
         self.horizontalLayout_12.setObjectName(u"horizontalLayout_12")
-        self.horizontalLayout_12.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_12.setContentsMargins(0, 0, 12, 0)
         self.simulation_settings_parameters_frame = QFrame(self.simulation_settings_frame)
         self.simulation_settings_parameters_frame.setObjectName(u"simulation_settings_parameters_frame")
         self.simulation_settings_parameters_frame.setFrameShape(QFrame.StyledPanel)
@@ -311,7 +311,6 @@ class SimulatorView:
         self.simulation_occupancy_selector_btn.setFont(font5)
 
         self.horizontalLayout_13.addWidget(self.simulation_occupancy_selector_btn)
-
 
         self.verticalLayout_4.addWidget(self.simulation_kind_frame)
 
@@ -367,6 +366,7 @@ class SimulatorView:
         self.save_simulation_settings_btn.setObjectName(u"save_simulation_settings_btn")
         self.save_simulation_settings_btn.setIcon(qta.icon('mdi6.content-save-settings'))
         self.save_simulation_settings_btn.setIconSize(QSize(32, 32))
+        self.save_simulation_settings_btn.setEnabled(False)
 
         self.horizontalLayout_14.addWidget(self.save_simulation_settings_btn)
 
@@ -386,72 +386,28 @@ class SimulatorView:
         self.verticalLayout_5 = QVBoxLayout(self.simulation_environment_frame)
         self.verticalLayout_5.setObjectName(u"verticalLayout_5")
         self.verticalLayout_5.setContentsMargins(0, 0, 0, 0)
-        self.simulation_frequency_setup_area = QStackedWidget(self.simulation_environment_frame)
-        self.simulation_frequency_setup_area.setObjectName(u"simulation_frequencies_setup_area")
+        self.channel_config_stack_area = ChannelConfigStack(self.simulation_environment_frame)
+        self.channel_config_stack_area.setObjectName(u"channel_config_stack_area")
 
-        self.verticalLayout_5.addWidget(self.simulation_frequency_setup_area)
+        self.verticalLayout_5.addWidget(self.channel_config_stack_area)
 
         self.simulation_channel_frame = QFrame(self.simulation_environment_frame)
         self.simulation_channel_frame.setObjectName(u"simulation_channel_frame")
         self.simulation_channel_frame.setFrameShape(QFrame.StyledPanel)
         self.simulation_channel_frame.setFrameShadow(QFrame.Raised)
-        self.gridLayout_2 = QGridLayout(self.simulation_channel_frame)
-        self.gridLayout_2.setSpacing(5)
-        self.gridLayout_2.setObjectName(u"gridLayout_2")
-        self.gridLayout_2.setContentsMargins(12, 0, 12, 0)
-        self.channel_1_btn = QPushButton(self.simulation_channel_frame)
-        self.channel_1_btn.setObjectName(u"channel_1_btn")
+        self.verticalLayout_6= QVBoxLayout(self.simulation_channel_frame)
+        self.verticalLayout_6.setObjectName(u"verticalLayout_6")
 
-        self.gridLayout_2.addWidget(self.channel_1_btn, 0, 0, 1, 1)
-
-        self.channel_2_btn = QPushButton(self.simulation_channel_frame)
-        self.channel_2_btn.setObjectName(u"channel_2_btn")
-
-        self.gridLayout_2.addWidget(self.channel_2_btn, 0, 1, 1, 1)
-
-        self.channel_3_btn = QPushButton(self.simulation_channel_frame)
-        self.channel_3_btn.setObjectName(u"channel_3_btn")
-
-        self.gridLayout_2.addWidget(self.channel_3_btn, 0, 2, 1, 1)
-
-        self.channel_4_btn = QPushButton(self.simulation_channel_frame)
-        self.channel_4_btn.setObjectName(u"channel_4_btn")
-
-        self.gridLayout_2.addWidget(self.channel_4_btn, 1, 0, 1, 1)
-
-        self.channel_5_btn = QPushButton(self.simulation_channel_frame)
-        self.channel_5_btn.setObjectName(u"channel_5_btn")
-
-        self.gridLayout_2.addWidget(self.channel_5_btn, 1, 1, 1, 1)
-
-        self.channel_6_btn = QPushButton(self.simulation_channel_frame)
-        self.channel_6_btn.setObjectName(u"channel_6_btn")
-
-        self.gridLayout_2.addWidget(self.channel_6_btn, 1, 2, 1, 1)
-
-        self.channel_7_btn = QPushButton(self.simulation_channel_frame)
-        self.channel_7_btn.setObjectName(u"channel_7_btn")
-
-        self.gridLayout_2.addWidget(self.channel_7_btn, 2, 0, 1, 1)
-
-        self.channel_8_btn = QPushButton(self.simulation_channel_frame)
-        self.channel_8_btn.setObjectName(u"channel_8_btn")
-
-        self.gridLayout_2.addWidget(self.channel_8_btn, 2, 1, 1, 1)
-
-        self.channel_9_btn = QPushButton(self.simulation_channel_frame)
-        self.channel_9_btn.setObjectName(u"channel_9_btn")
-
-        self.gridLayout_2.addWidget(self.channel_9_btn, 2, 2, 1, 1)
-
+        self.channel_button_group_widget = ChannelGroupWidget(self.simulation_channel_frame)
+        self.verticalLayout_6.addWidget(self.channel_button_group_widget)
 
         self.verticalLayout_5.addWidget(self.simulation_channel_frame)
 
         self.verticalLayout_3.addWidget(self.simulation_environment_frame)
 
         self.horizontalLayout_7.addWidget(self.right_simulation_frame)
-        self.horizontalLayout_7.setStretch(0, 80)
-        self.horizontalLayout_7.setStretch(1, 20)
+        self.horizontalLayout_7.setStretch(0, 75)
+        self.horizontalLayout_7.setStretch(1, 25)
 
         self.verticalLayout.addWidget(self.main_body_frame)
 
@@ -499,7 +455,6 @@ class SimulatorView:
 
         main_window.setCentralWidget(self.central_container)
         self.retranslate_ui(main_window)
-        # self.simulation_frequency_setup_area.setCurrentIndex(3)
         QMetaObject.connectSlotsByName(main_window)
     # Setup UI
 
@@ -526,15 +481,6 @@ class SimulatorView:
         self.simulation_threshold_label.setText(QCoreApplication.translate("MainWindow", u"Threshold:", None))
         self.save_simulation_settings_btn.setText(QCoreApplication.translate("MainWindow", u"Save", None))
         self.load_simulation_settings_btn.setText(QCoreApplication.translate("MainWindow", u"Load", None))
-        self.channel_1_btn.setText(QCoreApplication.translate("MainWindow", u"473 MHz", None))
-        self.channel_3_btn.setText(QCoreApplication.translate("MainWindow", u"479 MHz", None))
-        self.channel_2_btn.setText(QCoreApplication.translate("MainWindow", u"485 MHz", None))
-        self.channel_6_btn.setText(QCoreApplication.translate("MainWindow", u"491 MHz", None))
-        self.channel_4_btn.setText(QCoreApplication.translate("MainWindow", u"497 MHz", None))
-        self.channel_5_btn.setText(QCoreApplication.translate("MainWindow", u"503 MHz", None))
-        self.channel_9_btn.setText(QCoreApplication.translate("MainWindow", u"509 MHz", None))
-        self.channel_7_btn.setText(QCoreApplication.translate("MainWindow", u"551 MHz", None))
-        self.channel_8_btn.setText(QCoreApplication.translate("MainWindow", u"557 MHz", None))
         self.copyright_label.setText(QCoreApplication.translate("MainWindow", u"Version 0.1.0 | Copyright Unillanos", None))
         self.about_button.setText(QCoreApplication.translate("MainWindow", u"?", None))
     # Retranslate UI

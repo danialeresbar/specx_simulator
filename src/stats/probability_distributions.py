@@ -112,20 +112,20 @@ class LaplacePDF(PDF):
 
 
 class LogNormalPDF(PDF):
-    def __init__(self, mean: float, sigma: float):
+    def __init__(self, mean: float, std: float):
         self.mean = mean
-        self.sigma = sigma
+        self.std = std
 
     def rvs(self, size: int) -> ndarray:
-        return st.lognorm.rvs(self.sigma, loc=self.mean, scale=math.exp(self.mean), size=size)
+        return st.lognorm.rvs(self.std, loc=self.mean, scale=math.exp(self.mean), size=size)
 
     def get_vector_points(self) -> PDFVectorPoints:
         x: ndarray = np.linspace(
-            st.lognorm.ppf(PPF_LOWER_BOUND, self.sigma, loc=self.mean, scale=math.exp(self.mean)),
-            st.lognorm.ppf(PPF_UPPER_BOUND, self.sigma, loc=self.mean, scale=math.exp(self.mean)),
+            st.lognorm.ppf(PPF_LOWER_BOUND, self.std, loc=self.mean, scale=math.exp(self.mean)),
+            st.lognorm.ppf(PPF_UPPER_BOUND, self.std, loc=self.mean, scale=math.exp(self.mean)),
             PDF_SAMPLE_SIZE
         )
-        y: ndarray = st.lognorm.pdf(x, self.sigma, loc=self.mean, scale=np.exp(self.mean))
+        y: ndarray = st.lognorm.pdf(x, self.std, loc=self.mean, scale=np.exp(self.mean))
         return x, y
 
 

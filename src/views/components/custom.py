@@ -1,6 +1,5 @@
 from PySide6.QtCharts import QChart, QChartView
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QFont, QPixmap, QPainter
+from PySide6.QtGui import QFont, QPainter
 from PySide6.QtWidgets import (
     QButtonGroup,
     QDoubleSpinBox,
@@ -9,13 +8,11 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QPushButton,
-    QSizePolicy,
     QStackedWidget,
     QVBoxLayout,
     QWidget
 )
 
-from constants.paths import UI_ASSETS_PATH
 from constants.simulation import DECIMAL_PLACES
 from constants.ui import (
     PARAMETER_LABEL_DEFAULT,
@@ -59,6 +56,7 @@ class ChannelConfigStack(QStackedWidget):
     channel stack is a widget that allows the user to config the channels of
     the simulation.
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setFrameShape(QFrame.NoFrame)

@@ -6,7 +6,7 @@ __all__ = [
     'PDF',
     'PMF',
     'PMFValueSet',
-    'PDFVectorPoints'
+    'PDFVectorPoints',
 ]
 
 ############## #

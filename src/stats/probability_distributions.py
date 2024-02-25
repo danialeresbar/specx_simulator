@@ -19,7 +19,7 @@ __all__ = [
     'NormalPDF',
     'RayleighPDF',
     'UniformPDF',
-    'WeibullPDF'
+    'WeibullPDF',
 ]
 
 

@@ -4,14 +4,14 @@ from models.simulation import (
     SimulationExperiment,
     SimulationMeasurement,
     SimulationExperimentSettings,
-    TVChannel
+    TVChannel,
 )
 
 experiment: SimulationExperiment = SimulationExperiment(
     settings=SimulationExperimentSettings(
         sample_interval=SAMPLE_INTERVAL_DEFAULT,
         energy_threshold=ENERGY_THRESHOLD_DEFAULT,
-        measurement=SimulationMeasurement.ENERGY
+        measurement=SimulationMeasurement.ENERGY,
     ),
-    channels=[TVChannel(number=data.name.split('_')[1], frequency=data.value) for data in ChannelFrequency]
+    channels=[TVChannel(number=data.name.split('_')[1], frequency=data.value) for data in ChannelFrequency],
 )

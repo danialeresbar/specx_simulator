@@ -7,15 +7,16 @@ from PySide6 import QtWidgets
 from constants.paths import EXPERIMENT_COLLECTION_PATH, UI_PATH
 from constants.simulation import (
     SIMULATION_EXPERIMENT_NOT_READY_CAPTION,
-    SIMULATION_EXPERIMENT_READY_CAPTION
+    SIMULATION_EXPERIMENT_READY_CAPTION,
 )
 from constants.ui import (
+    DARK_THEME,
     LOAD_SIMULATION_EXPERIMENT_CAPTION,
     LOAD_SIMULATION_EXPERIMENT_ERROR_TEXT,
     LOAD_SIMULATION_EXPERIMENT_SUCCESS_TEXT,
     SAVE_SIMULATION_EXPERIMENT_CAPTION,
     SAVE_SIMULATION_EXPERIMENT_ERROR_TEXT,
-    SAVE_SIMULATION_EXPERIMENT_SUCCESS_TEXT
+    SAVE_SIMULATION_EXPERIMENT_SUCCESS_TEXT,
 )
 from controllers.simulation_channel_controller import ChannelConfigController
 from models.distribution import ProbabilityDistribution
@@ -39,12 +40,16 @@ def _load_fixture(fp: str):
 
 
 class Simulator(QtWidgets.QMainWindow, SimulatorView):
-    """"""
+    """
+    This class is responsible for controlling the simulation experiment. It
+    connects the UI components with the simulation experiment model.
+    """
+
     def __init__(self, experiment: SimulationExperiment, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.experiment: SimulationExperiment = experiment
         self.setup_ui(self)
-        qdarktheme.setup_theme('dark')
+        qdarktheme.setup_theme(DARK_THEME)
         self.initialize_component_values()
         self.__connect_button_signals()
 
@@ -91,10 +96,7 @@ class Simulator(QtWidgets.QMainWindow, SimulatorView):
             channel_config: ChannelConfigController = self.channel_config_stack_area.widget(index)
             selector: QtWidgets.QComboBox = channel_config.function_selector_box
             selector.setCurrentText(channel.associated_distribution.name)
-            selector.setItemData(
-                channel_config.function_selector_box.currentIndex(),
-                channel.associated_distribution
-            )
+            selector.setItemData(channel_config.function_selector_box.currentIndex(), channel.associated_distribution)
             selector.currentIndexChanged.emit(selector.currentIndex())
 
         if self.experiment_is_ready:
@@ -186,7 +188,7 @@ class Simulator(QtWidgets.QMainWindow, SimulatorView):
             self,
             LOAD_SIMULATION_EXPERIMENT_CAPTION,
             EXPERIMENT_COLLECTION_PATH,
-            'Simulation settings (*.json)'
+            'Simulation settings (*.json)',
         )
         if not filepath:
             return
@@ -206,7 +208,7 @@ class Simulator(QtWidgets.QMainWindow, SimulatorView):
                 'Error',
                 LOAD_SIMULATION_EXPERIMENT_ERROR_TEXT,
                 QtWidgets.QMessageBox.Ok,
-                QtWidgets.QMessageBox.Ok
+                QtWidgets.QMessageBox.Ok,
             )
             return
 
@@ -215,7 +217,7 @@ class Simulator(QtWidgets.QMainWindow, SimulatorView):
             LOAD_SIMULATION_EXPERIMENT_SUCCESS_TEXT,
             f'File loaded from {filepath}',
             QtWidgets.QMessageBox.Ok,
-            QtWidgets.QMessageBox.Ok
+            QtWidgets.QMessageBox.Ok,
         )
 
     def save_simulation_environment(self) -> None:
@@ -228,7 +230,7 @@ class Simulator(QtWidgets.QMainWindow, SimulatorView):
             self,
             SAVE_SIMULATION_EXPERIMENT_CAPTION,
             EXPERIMENT_COLLECTION_PATH,
-            'Simulation settings (*.json)'
+            'Simulation settings (*.json)',
         )
         if not filepath:
             return
@@ -236,14 +238,13 @@ class Simulator(QtWidgets.QMainWindow, SimulatorView):
         try:
             self._save_experiment_channel_data()
             export_json(filepath=filepath, data=self.experiment.model_dump(mode='json'))
-        except Exception as e:
-            print(e)
+        except Exception:
             QtWidgets.QMessageBox.critical(
                 self,
                 'Error',
                 SAVE_SIMULATION_EXPERIMENT_ERROR_TEXT,
                 QtWidgets.QMessageBox.Ok,
-                QtWidgets.QMessageBox.Ok
+                QtWidgets.QMessageBox.Ok,
             )
             return
 
@@ -252,5 +253,5 @@ class Simulator(QtWidgets.QMainWindow, SimulatorView):
             SAVE_SIMULATION_EXPERIMENT_SUCCESS_TEXT,
             f'File saved at {filepath}',
             QtWidgets.QMessageBox.Ok,
-            QtWidgets.QMessageBox.Ok
+            QtWidgets.QMessageBox.Ok,
         )

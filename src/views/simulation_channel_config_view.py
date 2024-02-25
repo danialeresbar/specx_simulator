@@ -11,6 +11,7 @@ class ChannelConfigView(QWidget):
     """
     This class is responsible for displaying the channel config components.
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         main_layout = QVBoxLayout(self)

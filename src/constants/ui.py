@@ -26,3 +26,8 @@ SPINBOX_STEP_DEFAULT: Final[float] = 0.1
 ################ #
 CONFIG_LOADER_SVG_DEFAULT: Final[str] = 'bouncing-circles.svg'
 CHART_LOADER_SVG_DEFAULT: Final[str] = 'loading-chart.svg'
+
+####### #
+# THEME #
+####### #
+DARK_THEME: Final[str] = 'dark'

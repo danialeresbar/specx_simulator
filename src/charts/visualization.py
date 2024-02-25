@@ -9,7 +9,7 @@ from PySide6.QtCharts import (
     QLegend,
     QLineSeries,
     QValueAxis,
-    QXYSeries
+    QXYSeries,
 )
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor
@@ -23,7 +23,7 @@ from constants.charts import (
     CHART_PMF_TITLE,
     CHART_TITLE_DEFAULT,
     CHART_X_AXIS_LABEL_DEFAULT,
-    CHART_Y_AXIS_LABEL_DEFAULT
+    CHART_Y_AXIS_LABEL_DEFAULT,
 )
 
 SERIES_COLOR = QColor(CHART_SERIES_COLOR_HEX)
@@ -35,6 +35,7 @@ class SingleSeriesChart(QChart):
     """
     QChart subclass that only allows one series to be added to the chart.
     """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.setTitle(CHART_TITLE_DEFAULT)
@@ -85,6 +86,7 @@ class PDFChart(SingleSeriesChart, PlotFunctionChart):
     QChart subclass for plotting a probability density function for a given
     continuous probability distribution. This chart has default axes attached.
     """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.setTitle(CHART_PDF_TITLE)
@@ -123,6 +125,7 @@ class PMFChart(SingleSeriesChart, PlotFunctionChart):
     discrete probability distribution. This chart does not have default axes
     attached.
     """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.setTitle(CHART_PMF_TITLE)

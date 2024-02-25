@@ -3,7 +3,7 @@ from collections.abc import Iterable
 from PySide6.QtWidgets import QDoubleSpinBox, QLayout
 
 from charts.abc import PlotFunctionChart
-from constants.charts import DECIMAL_PLACES
+from constants.charts import LEGEND_DECIMAL_PLACES
 from charts.visualization import PDFChart, PMFChart
 from models.distribution import DistributionParameter, ProbabilityDistribution
 from stats.abc import PDF, PMF
@@ -16,6 +16,7 @@ class ChannelConfigController(ChannelConfigView):
     """
     This class is responsible for controlling the channel config components.
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.function_selector_box.currentIndexChanged.connect(self.update_config_components)
@@ -28,10 +29,12 @@ class ChannelConfigController(ChannelConfigView):
         return self.selected_function is not None
 
     def _build_chart_legend(self) -> str:
-        return ', '.join([
-            f'{widget.label.text()[:-1]}={widget.value_field.value():.{DECIMAL_PLACES}f}'
-            for widget in filter(lambda widget: not widget.isHidden(), self.function_available_parameters)
-        ])
+        return ', '.join(
+            [
+                f'{widget.label.text()[:-1]}={widget.value_field.value():.{LEGEND_DECIMAL_PLACES}f}'
+                for widget in filter(lambda widget: not widget.isHidden(), self.function_available_parameters)
+            ]
+        )
 
     def _update_selected_function_attributes(self) -> None:
         """

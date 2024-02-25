@@ -17,6 +17,7 @@ from PySide6.QtWidgets import (
     QSizePolicy, QSpinBox, QVBoxLayout, QWidget
 )
 
+from constants.ui import COPYRIGHT_CAPTION, CURRENT_VERSION
 from views.components.custom import ChannelGroupWidget, ChannelConfigStack
 
 
@@ -234,7 +235,7 @@ class SimulatorView:
         self.simulation_status_label.setFont(font2)
 
         self.horizontalLayout_9.addWidget(self.simulation_status_label)
-        self.horizontalLayout_8.addWidget(self.simulation_player_info_frame, 0, Qt.AlignRight|Qt.AlignBottom)
+        self.horizontalLayout_8.addWidget(self.simulation_player_info_frame, 0, Qt.AlignRight | Qt.AlignBottom)
         self.verticalLayout_2.addWidget(self.simulation_player_frame, 0, Qt.AlignBottom)
         self.horizontalLayout_7.addWidget(self.left_simulation_frame)
 
@@ -268,7 +269,7 @@ class SimulatorView:
 
         self.horizontalLayout_11.addWidget(self.simulation_header_label, 0, Qt.AlignLeft)
 
-        self.verticalLayout_3.addWidget(self.simulation_header_frame, 0, Qt.AlignLeft|Qt.AlignTop)
+        self.verticalLayout_3.addWidget(self.simulation_header_frame, 0, Qt.AlignLeft | Qt.AlignTop)
 
         self.simulation_settings_frame = QFrame(self.right_simulation_frame)
         self.simulation_settings_frame.setObjectName(u"simulation_settings_frame")
@@ -395,7 +396,7 @@ class SimulatorView:
         self.simulation_channel_frame.setObjectName(u"simulation_channel_frame")
         self.simulation_channel_frame.setFrameShape(QFrame.StyledPanel)
         self.simulation_channel_frame.setFrameShadow(QFrame.Raised)
-        self.verticalLayout_6= QVBoxLayout(self.simulation_channel_frame)
+        self.verticalLayout_6 = QVBoxLayout(self.simulation_channel_frame)
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
 
         self.channel_button_group_widget = ChannelGroupWidget(self.simulation_channel_frame)
@@ -456,7 +457,6 @@ class SimulatorView:
         main_window.setCentralWidget(self.central_container)
         self.retranslate_ui(main_window)
         QMetaObject.connectSlotsByName(main_window)
-    # Setup UI
 
     def retranslate_ui(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
@@ -481,6 +481,7 @@ class SimulatorView:
         self.simulation_threshold_label.setText(QCoreApplication.translate("MainWindow", u"Threshold:", None))
         self.save_simulation_settings_btn.setText(QCoreApplication.translate("MainWindow", u"Save", None))
         self.load_simulation_settings_btn.setText(QCoreApplication.translate("MainWindow", u"Load", None))
-        self.copyright_label.setText(QCoreApplication.translate("MainWindow", u"Version 0.1.0 | Copyright Unillanos", None))
+        self.copyright_label.setText(QCoreApplication.translate(
+            "MainWindow", f"Version {CURRENT_VERSION} | {COPYRIGHT_CAPTION}", None)
+        )
         self.about_button.setText(QCoreApplication.translate("MainWindow", u"?", None))
-    # Retranslate UI

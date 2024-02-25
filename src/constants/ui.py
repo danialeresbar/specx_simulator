@@ -17,7 +17,6 @@ SAVE_SIMULATION_EXPERIMENT_SUCCESS_TEXT: Final[str] = 'Simulation experiment sav
 # FUNCTION DIALOG SETTINGS #
 ########################## #
 PARAMETER_LABEL_DEFAULT: Final[str] = 'Parameter:'
-SPINBOX_DECIMAL_PLACES: Final[int] = 6
 SPINBOX_MINIMUM_DEFAULT: Final[float] = 0.0
 SPINBOX_MAXIMUM_DEFAULT: Final[float] = 1e6
 SPINBOX_STEP_DEFAULT: Final[float] = 0.1

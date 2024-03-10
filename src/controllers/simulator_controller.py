@@ -102,6 +102,20 @@ class Simulator(QtWidgets.QMainWindow, SimulatorView):
         if self.experiment_is_ready:
             self.simulation_status_label.setText(SIMULATION_EXPERIMENT_READY_CAPTION)
 
+    def _reboot_selector_buttons(self) -> None:
+        """
+        Uncheck the energy and occupancy buttons. This method is used to
+        uncheck the buttons when the user loads a new simulation environment.
+
+        :return: None
+        """
+        self.simulation_energy_selector_btn.setAutoExclusive(False)
+        self.simulation_occupancy_selector_btn.setAutoExclusive(False)
+        self.simulation_energy_selector_btn.setChecked(False)
+        self.simulation_occupancy_selector_btn.setChecked(False)
+        self.simulation_energy_selector_btn.setAutoExclusive(True)
+        self.simulation_occupancy_selector_btn.setAutoExclusive(True)
+
     def _save_experiment_channel_data(self) -> None:
         for i, channel in enumerate(self.experiment.channels):
             channel_config: ChannelConfigController = self.channel_config_stack_area.widget(i)
@@ -160,13 +174,14 @@ class Simulator(QtWidgets.QMainWindow, SimulatorView):
         self.simulation_parameters_frame.setEnabled(False)
 
         # Load UI components default values
+        self._reboot_selector_buttons()
+        self.channel_button_group_widget.initialize_buttons(
+            button_labels=[channel.frequency for channel in self.experiment.channels]
+        )
         self.channel_config_stack_area.clear()
         for _ in self.experiment.channels:
             self.channel_config_stack_area.addWidget(ChannelConfigController(self))
 
-        self.channel_button_group_widget.initialize_buttons(
-            button_labels=[channel.frequency for channel in self.experiment.channels]
-        )
         self.channel_config_stack_area.setEnabled(False)
         self.simulation_sampling_box.setValue(self.experiment.settings.sample_interval)
         self.simulation_threshold_box.setValue(self.experiment.settings.energy_threshold)
@@ -197,9 +212,9 @@ class Simulator(QtWidgets.QMainWindow, SimulatorView):
             self.experiment: SimulationExperiment = SimulationExperiment(**load_json(filepath))
             self.initialize_component_values()
             if self.experiment.settings.measurement == SimulationMeasurement.ENERGY.value:
-                self.simulation_energy_selector_btn.setChecked(True)
+                self.simulation_energy_selector_btn.click()
             else:
-                self.simulation_occupancy_selector_btn.setChecked(True)
+                self.simulation_occupancy_selector_btn.click()
 
             self._load_experiment_channel_data()
         except Exception:

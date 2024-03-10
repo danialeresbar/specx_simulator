@@ -19,7 +19,7 @@ __all__ = [
     'NormalPDF',
     'RayleighPDF',
     'UniformPDF',
-    'WeibullPDF'
+    'WeibullPDF',
 ]
 
 
@@ -51,7 +51,7 @@ class BetaPDF(PDF):
         x: ndarray = np.linspace(
             st.beta.ppf(PPF_LOWER_BOUND, self.alpha, self.beta),
             st.beta.ppf(PPF_UPPER_BOUND, self.alpha, self.beta),
-            PDF_SAMPLE_SIZE
+            PDF_SAMPLE_SIZE,
         )
         y: ndarray = st.beta.pdf(x, self.alpha, self.beta)
         return x, y
@@ -69,7 +69,7 @@ class GammaPDF(PDF):
         x: ndarray = np.linspace(
             st.gamma.ppf(PPF_LOWER_BOUND, self.shape, scale=self.scale),
             st.gamma.ppf(PPF_UPPER_BOUND, self.shape, scale=self.scale),
-            PDF_SAMPLE_SIZE
+            PDF_SAMPLE_SIZE,
         )
         y: ndarray = st.gamma.pdf(x, self.shape, scale=self.scale)
         return x, y
@@ -87,7 +87,7 @@ class GumbelPDF(PDF):
         x: ndarray = np.linspace(
             st.gumbel_r.ppf(PPF_LOWER_BOUND, loc=self.location, scale=self.scale),
             st.gumbel_r.ppf(PPF_UPPER_BOUND, loc=self.location, scale=self.scale),
-            PDF_SAMPLE_SIZE
+            PDF_SAMPLE_SIZE,
         )
         y: ndarray = st.gumbel_r.pdf(x, loc=self.location, scale=self.scale)
         return x, y
@@ -105,27 +105,27 @@ class LaplacePDF(PDF):
         x: ndarray = np.linspace(
             st.laplace.ppf(PPF_LOWER_BOUND, loc=self.mean, scale=self.diversity),
             st.laplace.ppf(PPF_UPPER_BOUND, loc=self.mean, scale=self.diversity),
-            PDF_SAMPLE_SIZE
+            PDF_SAMPLE_SIZE,
         )
         y: ndarray = st.laplace.pdf(x, loc=self.mean, scale=self.diversity)
         return x, y
 
 
 class LogNormalPDF(PDF):
-    def __init__(self, mean: float, sigma: float):
+    def __init__(self, mean: float, std: float):
         self.mean = mean
-        self.sigma = sigma
+        self.std = std
 
     def rvs(self, size: int) -> ndarray:
-        return st.lognorm.rvs(self.sigma, loc=self.mean, scale=math.exp(self.mean), size=size)
+        return st.lognorm.rvs(self.std, loc=self.mean, scale=math.exp(self.mean), size=size)
 
     def get_vector_points(self) -> PDFVectorPoints:
         x: ndarray = np.linspace(
-            st.lognorm.ppf(PPF_LOWER_BOUND, self.sigma, loc=self.mean, scale=math.exp(self.mean)),
-            st.lognorm.ppf(PPF_UPPER_BOUND, self.sigma, loc=self.mean, scale=math.exp(self.mean)),
-            PDF_SAMPLE_SIZE
+            st.lognorm.ppf(PPF_LOWER_BOUND, self.std, loc=self.mean, scale=math.exp(self.mean)),
+            st.lognorm.ppf(PPF_UPPER_BOUND, self.std, loc=self.mean, scale=math.exp(self.mean)),
+            PDF_SAMPLE_SIZE,
         )
-        y: ndarray = st.lognorm.pdf(x, self.sigma, loc=self.mean, scale=np.exp(self.mean))
+        y: ndarray = st.lognorm.pdf(x, self.std, loc=self.mean, scale=np.exp(self.mean))
         return x, y
 
 
@@ -141,7 +141,7 @@ class NormalPDF(PDF):
         x: ndarray = np.linspace(
             st.norm.ppf(PPF_LOWER_BOUND, loc=self.mean, scale=self.std),
             st.norm.ppf(PPF_UPPER_BOUND, loc=self.mean, scale=self.std),
-            PDF_SAMPLE_SIZE
+            PDF_SAMPLE_SIZE,
         )
         y: ndarray = st.norm.pdf(x, loc=self.mean, scale=self.std)
         return x, y
@@ -158,7 +158,7 @@ class RayleighPDF(PDF):
         x: ndarray = np.linspace(
             st.rayleigh.ppf(PPF_LOWER_BOUND, scale=self.scale),
             st.rayleigh.ppf(PPF_UPPER_BOUND, scale=self.scale),
-            PDF_SAMPLE_SIZE
+            PDF_SAMPLE_SIZE,
         )
         y: ndarray = st.rayleigh.pdf(x, scale=self.scale)
         return x, y
@@ -192,7 +192,7 @@ class WeibullPDF(PDF):
         x: ndarray = np.linspace(
             st.weibull_min.ppf(PPF_LOWER_BOUND, self.shape, loc=self.location, scale=self.scale),
             st.weibull_min.ppf(PPF_UPPER_BOUND, self.shape, loc=self.location, scale=self.scale),
-            PDF_SAMPLE_SIZE
+            PDF_SAMPLE_SIZE,
         )
         y: ndarray = st.weibull_min.pdf(x, self.shape, loc=self.location, scale=self.scale)
         return x, y

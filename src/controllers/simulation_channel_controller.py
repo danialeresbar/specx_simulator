@@ -1,17 +1,21 @@
 from collections.abc import Iterable
+
 from PySide6.QtWidgets import QDoubleSpinBox, QLayout
 
 from charts.abc import PlotFunctionChart
-from constants.charts import DECIMAL_PLACES
+from constants.charts import LEGEND_DECIMAL_PLACES
 from charts.visualization import PDFChart, PMFChart
 from models.distribution import DistributionParameter, ProbabilityDistribution
 from stats.abc import PDF, PMF
 from stats import AVAILABLE_PROBABILITY_DISTRIBUTIONS
-from views.resources.custom import ParameterConfigWidget
+from views.components.custom import ParameterConfigWidget
 from views.simulation_channel_config_view import ChannelConfigView
 
 
 class ChannelConfigController(ChannelConfigView):
+    """
+    This class is responsible for controlling the channel config components.
+    """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -20,11 +24,17 @@ class ChannelConfigController(ChannelConfigView):
         for widget in self.function_available_parameters:
             widget.value_field.valueChanged.connect(self._update_selected_function_attributes)
 
+    @property
+    def is_ready(self) -> bool:
+        return self.selected_function is not None
+
     def _build_chart_legend(self) -> str:
-        return ', '.join([
-            f'{widget.label.text()[:-1]}={widget.value_field.value():.{DECIMAL_PLACES}f}'
-            for widget in filter(lambda widget: not widget.isHidden(), self.function_available_parameters)
-        ])
+        return ', '.join(
+            [
+                f'{widget.label.text()[:-1]}={widget.value_field.value():.{LEGEND_DECIMAL_PLACES}f}'
+                for widget in filter(lambda widget: not widget.isHidden(), self.function_available_parameters)
+            ]
+        )
 
     def _update_selected_function_attributes(self) -> None:
         """
@@ -32,8 +42,9 @@ class ChannelConfigController(ChannelConfigView):
         method is called when the user changes the value of a parameter.
         """
         sender: QDoubleSpinBox = self.sender()
-        parent: ParameterConfigWidget = sender.parent()
-        setattr(self.selected_function, parent.label.text()[:-1], sender.value())
+        parent_widget: ParameterConfigWidget = sender.parent()
+        parameter_name: str = parent_widget.label.text().strip().split(':')[0]
+        setattr(self.selected_function, parameter_name, sender.value())
         self.refresh_chart_preview()
 
     @staticmethod
@@ -49,6 +60,15 @@ class ChannelConfigController(ChannelConfigView):
             child = layout.takeAt(0)
             layout.removeWidget(child.widget())
             child.widget().setVisible(False)
+
+    def get_available_function_parameter_values(self) -> list[float]:
+        """
+        Get the available values for the parameters of the selected probability
+        distribution.
+
+        :return: The available values for the parameters.
+        """
+        return [widget.value_field.value() for widget in self.function_available_parameters if widget.isVisible()]
 
     def update_config_components(self, index: int) -> None:
         """

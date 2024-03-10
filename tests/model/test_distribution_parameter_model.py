@@ -2,6 +2,7 @@ import unittest
 
 from faker import Faker
 
+from src.constants.simulation import DECIMAL_PLACES
 from src.models.distribution import DistributionParameter
 
 fake = Faker()
@@ -18,7 +19,11 @@ class TestDistributionParameterModel(unittest.TestCase):
         Test that a distribution parameter can be created with the default interval
         and a valid value.
         """
-        value = fake.pyfloat(min_value=self.default_interval[0], max_value=self.default_interval[1])
+        value = fake.pyfloat(
+            right_digits=DECIMAL_PLACES,
+            min_value=self.default_interval[0],
+            max_value=self.default_interval[1]
+        )
         distribution_parameter = DistributionParameter(
             name=self.random_name,
             interval=self.default_interval,
@@ -64,7 +69,7 @@ class TestDistributionParameterModel(unittest.TestCase):
         and upper bounds are None.
         """
         interval = (None, None)
-        value = fake.pyfloat()
+        value = fake.pyfloat(right_digits=DECIMAL_PLACES)
         distribution_parameter = DistributionParameter(name=self.random_name, interval=interval, value=value)
         self.assertEqual(distribution_parameter.interval, interval)
         self.assertTrue(distribution_parameter.is_boundless)
@@ -76,7 +81,7 @@ class TestDistributionParameterModel(unittest.TestCase):
         interval and a valid value.
         """
         interval = (0, None)
-        valid_value = fake.pyfloat(min_value=interval[0])
+        valid_value = fake.pyfloat(right_digits=DECIMAL_PLACES, min_value=interval[0])
         distribution_parameter = DistributionParameter(name=self.random_name, interval=interval, value=valid_value)
         self.assertEqual(distribution_parameter.interval, interval)
         self.assertFalse(distribution_parameter.is_boundless)
@@ -90,7 +95,7 @@ class TestDistributionParameterModel(unittest.TestCase):
         interval and a valid value.
         """
         interval = (None, 1)
-        valid_value = fake.pyfloat(max_value=interval[1])
+        valid_value = fake.pyfloat(right_digits=DECIMAL_PLACES, max_value=interval[1])
         distribution_parameter = DistributionParameter(name=self.random_name, interval=interval, value=valid_value)
         self.assertEqual(distribution_parameter.interval, interval)
         self.assertFalse(distribution_parameter.is_boundless)

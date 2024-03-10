@@ -1,3 +1,4 @@
+from decimal import Decimal, ROUND_DOWN
 from enum import Enum
 from pydantic import BaseModel, Field, field_validator, model_validator
 from typing_extensions import Self
@@ -7,12 +8,17 @@ from constants.distributions import (
     DISTRIBUTION_PARAMETER_NAME_MAX_LENGTH,
     DISTRIBUTION_PARAMETER_NAME_MIN_LENGTH,
 )
+from constants.simulation import DECIMAL_PLACES
 from constants.field_names import CONTINUOUS_STR, DISCRETE_STR
 
 ############## #
 # CUSTOM TYPES #
 ############## #
 ParameterInterval = tuple[float | None, float | None]
+
+
+def round_decimal(value: float) -> Decimal:
+    return Decimal(str(value)).quantize(Decimal(f'1e{-DECIMAL_PLACES}'), rounding=ROUND_DOWN)
 
 
 class ProbabilityDistributionCategory(Enum):
@@ -49,6 +55,11 @@ class DistributionParameter(BaseModel):
             raise ValueError('The lower bound of the interval must be less than the upper bound.')
 
         return interval
+
+    @field_validator('value')
+    @classmethod
+    def round_value(cls, value: float) -> float:
+        return float(round_decimal(value))
 
     @model_validator(mode='after')
     def check_value_in_interval(self) -> Self:

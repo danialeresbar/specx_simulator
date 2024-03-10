@@ -8,7 +8,7 @@ jobs:
       - name: Check files using the black formatter
         uses: psf/black@stable
         with:
-          options: "--verbose --skip-string-normalization --skip-magic-trailing-comma -l 120"
+          options: "--verbose --skip-string-normalization -l 120"
           src: "./src"
           version: "24.1.0"
       - name: Annotate diff changes

@@ -1,12 +1,21 @@
 from PySide6.QtCharts import QChart, QChartView
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QFont, QPixmap, QPainter
-from PySide6.QtWidgets import QDoubleSpinBox, QFrame, QHBoxLayout, QLabel, QSizePolicy, QVBoxLayout, QWidget
+from PySide6.QtGui import QFont, QPainter
+from PySide6.QtWidgets import (
+    QButtonGroup,
+    QDoubleSpinBox,
+    QFrame,
+    QGridLayout,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QStackedWidget,
+    QVBoxLayout,
+    QWidget
+)
 
-from constants.paths import UI_ASSETS_PATH
+from constants.simulation import DECIMAL_PLACES
 from constants.ui import (
     PARAMETER_LABEL_DEFAULT,
-    SPINBOX_DECIMAL_PLACES,
     SPINBOX_MINIMUM_DEFAULT,
     SPINBOX_MAXIMUM_DEFAULT,
     SPINBOX_STEP_DEFAULT
@@ -14,9 +23,60 @@ from constants.ui import (
 from models.distribution import ParameterInterval
 
 
+class ChannelGroupWidget(QWidget):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        main_layout = QGridLayout(self)
+        main_layout.setSpacing(5)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        self.btn_group = QButtonGroup(self)
+
+    def initialize_buttons(self, button_labels: list[str]) -> None:
+        """
+        Initialize the buttons of the group. The buttons are added to the button
+        group and the button group is added to the layout.
+
+        :param button_labels: The labels for the buttons.
+
+        :return: None
+        """
+        # TODO: Check how to handle the layout distribution
+        for index, label in enumerate(button_labels):
+            button: QPushButton = QPushButton(self)
+            button.setText(label)
+            button.setCheckable(True)
+            self.btn_group.addButton(button, index + 1)
+            row, col = divmod(index, 4)
+            self.layout().addWidget(button, row, col, 1, 1)
+
+
+class ChannelConfigStack(QStackedWidget):
+    """
+    This class is responsible for displaying the channel config components. The
+    channel stack is a widget that allows the user to config the channels of
+    the simulation.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.setFrameShape(QFrame.NoFrame)
+        self.setFrameShadow(QFrame.Raised)
+
+    def clear(self) -> None:
+        """
+        Remove all the widgets from the stack.
+
+        :return: None
+        """
+        while self.count():
+            widget: QWidget = self.widget(0)
+            self.removeWidget(widget)
+            widget.deleteLater()
+
+
 class ChartPreviewFrame(QFrame):
-    def __init__(self, parent=None, *args, **kwargs):
-        super().__init__(parent, *args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.setFrameShape(QFrame.NoFrame)
         self.setFrameShadow(QFrame.Raised)
         self.content_layout = QVBoxLayout(self)
@@ -41,23 +101,6 @@ class ChartPreviewFrame(QFrame):
         self.chart_view.setChart(QChart())
 
 
-class DefaultChannelConfigView(QWidget):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        main_layout = QVBoxLayout(self)
-        main_layout.setSpacing(0)
-        main_layout.setContentsMargins(0, 0, 0, 0)
-        self.background_label = QLabel(self)
-        self.background_label.setPixmap(QPixmap(f'{UI_ASSETS_PATH}/img/settings.svg'))
-        self.background_label.setScaledContents(True)
-        main_layout.addWidget(self.background_label, 0, Qt.AlignCenter | Qt.AlignCenter)
-        size_policy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
-        size_policy.setHorizontalStretch(0)
-        size_policy.setVerticalStretch(0)
-        size_policy.setHeightForWidth(self.background_label.sizePolicy().hasHeightForWidth())
-
-
 class ParameterConfigWidget(QWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -80,7 +123,7 @@ class ParameterConfigWidget(QWidget):
         self.value_field.setFont(font)
         self.value_field.setMinimum(SPINBOX_MINIMUM_DEFAULT)
         self.value_field.setMaximum(SPINBOX_MAXIMUM_DEFAULT)
-        self.value_field.setDecimals(SPINBOX_DECIMAL_PLACES)
+        self.value_field.setDecimals(DECIMAL_PLACES)
         self.value_field.setSingleStep(SPINBOX_STEP_DEFAULT)
         main_layout.addWidget(self.value_field)
 

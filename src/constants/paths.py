@@ -3,7 +3,7 @@ from pathlib import Path
 
 BASE_DIR: Final[Path] = Path(__file__).resolve().parent.parent.parent
 SIMULATION_DATA_PATH: Final[str] = f'{BASE_DIR}/data'
-ENVIRONMENT_COLLECTION_PATH: Final[str] = f'{BASE_DIR}/environments'
+EXPERIMENT_COLLECTION_PATH: Final[str] = f'{BASE_DIR}/experiments'
 SOURCE_PATH: Final[str] = f'{BASE_DIR}/src'
 TESTS_PATH: Final[str] = f'{BASE_DIR}/tests'
 UI_PATH: Final[str] = f'{BASE_DIR}/ui'

@@ -7,7 +7,7 @@ from src.models.simulation import (
     ChannelFrequency,
     SimulationExperiment,
     SimulationMeasurement,
-    SimulationSettings,
+    SimulationExperimentSettings,
     TVChannel
 )
 from src.constants.simulation import (
@@ -22,7 +22,7 @@ fake = Faker()
 class TestSimulationEnvironmentModel(unittest.TestCase):
 
     def setUp(self):
-        self.valid_settings = SimulationSettings(
+        self.valid_settings = SimulationExperimentSettings(
             sample_interval=fake.pyint(min_value=SAMPLE_INTERVAL_MIN, max_value=SAMPLE_INTERVAL_MAX),
             energy_threshold=ENERGY_THRESHOLD_DEFAULT,
             measurement=SimulationMeasurement.ENERGY

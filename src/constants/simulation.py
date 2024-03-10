@@ -1,5 +1,6 @@
 from typing import Final
 
+DECIMAL_PLACES: Final[int] = 6
 SAMPLE_INTERVAL_MIN: Final[int] = 1
 SAMPLE_INTERVAL_MAX: Final[int] = 10
 THRESHOLD_MIN: Final[float] = 0.01
@@ -31,3 +32,13 @@ LAST_CHANNEL: Final[int] = 28
 #################### #
 PROBABILITY_DISTRIBUTIONS_MODULE: Final[str] = "probability_distributions"
 STATISTICS_PACKAGE: Final[str] = "stats"
+
+##################### #
+# SIMULATION STATUSES #
+##################### #
+SIMULATION_EXPERIMENT_READY_CAPTION: Final[str] = "Ready"
+SIMULATION_EXPERIMENT_NOT_READY_CAPTION: Final[str] = "Not Ready"
+SIMULATION_EXPERIMENT_RUNNING_CAPTION: Final[str] = "Running"
+SIMULATION_EXPERIMENT_STOPPED_CAPTION: Final[str] = "Stopped"
+SIMULATION_EXPERIMENT_PAUSED_CAPTION: Final[str] = "Paused"
+SIMULATION_EXPERIMENT_FINISHED_CAPTION: Final[str] = "Finished"

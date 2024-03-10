@@ -1,13 +1,7 @@
 from abc import ABC, abstractmethod
 from numpy import ndarray
 
-__all__ = [
-    'RandomVariableGenerator',
-    'PDF',
-    'PMF',
-    'PMFValueSet',
-    'PDFVectorPoints'
-]
+__all__ = ['RandomVariableGenerator', 'PDF', 'PMF', 'PMFValueSet', 'PDFVectorPoints']
 
 ############## #
 # CUSTOM TYPES #
